@@ -7,12 +7,16 @@
 
 #include <Adafruit_DotStar.h>
 #include <SPI.h>         // COMMENT OUT THIS LINE FOR GEMMA OR TRINKET
+#include <Bounce2.h>
 
 #define NUMPIXELS 60 // Number of LEDs in strip
 
 // Here's how to control the LEDs from any two pins:
 #define DATAPIN    4
 #define CLOCKPIN   5
+
+Bounce debouncer = Bounce();
+
 Adafruit_DotStar strip = Adafruit_DotStar(
   NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
 // The last parameter is optional -- this is the color data order of the
@@ -23,13 +27,6 @@ Adafruit_DotStar strip = Adafruit_DotStar(
 // Hardware SPI is a little faster, but must be wired to specific pins
 // (Arduino Uno = pin 11 for data, 13 for clock, other boards are different).
 //Adafruit_DotStar strip = Adafruit_DotStar(NUMPIXELS, DOTSTAR_BRG);
-
-void setup() {
-  strip.begin(); // Initialize pins for output
-  strip.show();  // Turn all LEDs off ASAP
-  /* Serial.begin(9600); */
-}
-
 int buttonPin =  A0;
 int      head  = 0, tail = 59; // Index of first 'on' and 'off' pixels
 uint32_t red = 0x00FF00;
@@ -38,7 +35,19 @@ uint32_t blue = 0x0000FF;
 uint32_t off = 0x000000;
 int animationIndex = 0;
 
+
+void setup() {
+  strip.begin(); // Initialize pins for output
+  strip.show();  // Turn all LEDs off ASAP
+  Serial.begin(9600);
+  
+  pinMode(buttonPin, INPUT_PULLUP);
+  debouncer.attach(buttonPin);
+  debouncer.interval(5);
+}
+
 void loop() {
+  debouncer.update();
   playAnimation();
   checkButton();
 }
@@ -64,11 +73,11 @@ void playAnimation(){
 
 int lastPressTime = 0;
 int checkButton(){
-  int buttonState = analogRead(buttonPin);
-  /* Serial.println(buttonState); */
+  int buttonState = debouncer.read();
+  Serial.println(buttonState);
   int currentPressTime = millis();
   int difference = currentPressTime - lastPressTime;
-  if((buttonState > 900) && (difference > 2000)){
+  if((buttonState == 0) && (difference > 1000)){
     lastPressTime = millis();
     /* Serial.println("CHANGECHANGECHNGGCHHHCH"); */
     animationIndex++;
