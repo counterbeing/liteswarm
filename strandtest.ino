@@ -8,14 +8,13 @@
 #include <Adafruit_DotStar.h>
 #include <SPI.h>         // COMMENT OUT THIS LINE FOR GEMMA OR TRINKET
 #include <Bounce2.h>
+#include <Encoder.h>
 
 #define NUMPIXELS 60 // Number of LEDs in strip
 
 // Here's how to control the LEDs from any two pins:
 #define DATAPIN    4
 #define CLOCKPIN   5
-
-Bounce debouncer = Bounce();
 
 Adafruit_DotStar strip = Adafruit_DotStar(
   NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
@@ -27,7 +26,11 @@ Adafruit_DotStar strip = Adafruit_DotStar(
 // Hardware SPI is a little faster, but must be wired to specific pins
 // (Arduino Uno = pin 11 for data, 13 for clock, other boards are different).
 //Adafruit_DotStar strip = Adafruit_DotStar(NUMPIXELS, DOTSTAR_BRG);
+
 int buttonPin =  A0;
+int rotary1 = 2;
+int rotary2 = 3;
+long posRotary = -999;
 int      head  = 0, tail = 59; // Index of first 'on' and 'off' pixels
 uint32_t red = 0x00FF00;
 uint32_t green = 0xFF0000;
@@ -35,6 +38,8 @@ uint32_t blue = 0x0000FF;
 uint32_t off = 0x000000;
 int animationIndex = 0;
 
+Bounce button_debouncer = Bounce();
+Encoder knob(rotary1, rotary2);
 
 void setup() {
   strip.begin(); // Initialize pins for output
@@ -42,14 +47,18 @@ void setup() {
   Serial.begin(9600);
   
   pinMode(buttonPin, INPUT_PULLUP);
-  debouncer.attach(buttonPin);
-  debouncer.interval(5);
+  button_debouncer.attach(buttonPin);
+  button_debouncer.interval(5);
+
+  pinMode(rotary1, INPUT_PULLUP);
+  pinMode(rotary2, INPUT_PULLUP);
 }
 
 void loop() {
-  debouncer.update();
+  button_debouncer.update();
   playAnimation();
   checkButton();
+  checkRotary(millis());
 }
 
 void playAnimation(){
@@ -70,16 +79,27 @@ void playAnimation(){
   }
 }
 
+unsigned char encoder_A;
+unsigned char encoder_B;
+unsigned char encoder_A_prev=0;
+void checkRotary(int loopTime){
+  long newPos;
+  newPos = knob.read();
+  if(newPos != posRotary){
+   posRotary = newPos;
+   Serial.println(newPos);
+  }
+}
+
 
 int lastPressTime = 0;
 int checkButton(){
-  int buttonState = debouncer.read();
-  Serial.println(buttonState);
+  int buttonState = button_debouncer.read();
+  /* Serial.println(buttonState); */
   int currentPressTime = millis();
   int difference = currentPressTime - lastPressTime;
   if((buttonState == 0) && (difference > 1000)){
     lastPressTime = millis();
-    /* Serial.println("CHANGECHANGECHNGGCHHHCH"); */
     animationIndex++;
   }
 }
