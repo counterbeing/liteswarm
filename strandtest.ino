@@ -189,12 +189,21 @@ void dazzle(){
   }
 }
 
+uint32_t lastStrobeColor = white;
 void strobe(){
   int dlay = confineRotary(0, 1000);
-  complete_color(0xFFFFFF);
-  delay(dlay);
-  complete_color(off);
-  delay(dlay);
+  if(nonBlockDelay(dlay)) { 
+    switch (lastStrobeColor) {
+      case off:
+        complete_color(white);
+        lastStrobeColor = white;
+        break;
+      case white:
+        complete_color(off);
+        lastStrobeColor = off;
+        break;
+    }
+  }
 }
 
 void complete_color(uint32_t color){
