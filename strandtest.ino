@@ -15,13 +15,15 @@ int buttonPin =  A0;
 int rotary1 = 2;
 int rotary2 = 3;
 long posRotary = -999;
-int      head  = 0, tail = 59; // Index of first 'on' and 'off' pixels
-uint32_t white = 0xFFFFFF;
-uint32_t red = 0x00FF00;
-uint32_t green = 0xFF0000;
-uint32_t blue = 0x0000FF;
-uint32_t off = 0x000000;
+int      head  = 0; // Index of first 'on' and 'off' pixels
+const uint32_t white = 0xFFFFFF;
+const uint32_t red = 0x00FF00;
+const uint32_t green = 0xFF0000;
+const uint32_t blue = 0x0000FF;
+const uint32_t off = 0x000000;
 int animationIndex = 0;
+
+int buttonPressCount = 0;
 
 Bounce button_debouncer = Bounce();
 Encoder knob(rotary1, rotary2);
@@ -31,7 +33,7 @@ void setup() {
 	FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
   strip.begin(); // Initialize pins for output
   strip.show();  // Turn all LEDs off ASAP
-  Serial.begin(9600);
+  Serial.begin(57600);
   
   pinMode(buttonPin, INPUT_PULLUP);
   button_debouncer.attach(buttonPin);
@@ -44,15 +46,15 @@ void setup() {
 void loop() {
   button_debouncer.update();
   playAnimation();
-  checkButton();
   checkRotary(millis());
+  checkButton();
 }
 
 void playAnimation(){
-  if (animationIndex > 5) animationIndex = 0;
+  if (animationIndex > 6) animationIndex = 0;
   switch (animationIndex) {
     case 0:
-      race();
+      shimmer();
       break;
     case 1:
       strobe();
@@ -61,36 +63,41 @@ void playAnimation(){
       dazzle();
       break;
     case 3:
-      crossfade();
+      find_my_bike();
       break;
-    case 4:
-      shimmer();
+		case 4:
+			color_slide();
+			break;
+    case 5:
+      race();
       break;
-		case 5:
+		case 6:
 			color_slide();
 			break;
   }
 }
 
-unsigned char encoder_A;
-unsigned char encoder_B;
-unsigned char encoder_A_prev=0;
 void checkRotary(int loopTime){
-  long newPos;
-  newPos = knob.read();
+  long newPos = knob.read();
   if(newPos != posRotary){
    posRotary = newPos;
    Serial.println(newPos);
   }
 }
 
+long lastPressTime = 0;
 
-int lastPressTime = 0;
 int checkButton(){
   int buttonState = button_debouncer.read();
-  int currentPressTime = millis();
-  int difference = currentPressTime - lastPressTime;
-  if((buttonState == 0) && (difference > 1000)){
+  long currentPressTime = millis();
+  long difference = currentPressTime - lastPressTime;
+  if((buttonState == 0) && (difference > 400)){
+    buttonPressCount++;
+    Serial.print("Button press count: ");
+    Serial.println(buttonPressCount);
+		Serial.println("BUTTON PRESSED CALLING SWITCH");
+    Serial.println(lastPressTime);
+    Serial.println(currentPressTime);
     lastPressTime = millis();
     animationIndex++;
   }
@@ -103,72 +110,87 @@ void strand_off(){
 void crossfade(){
 	int dlay = confineRotary(1, 500);
   static uint8_t hue = 0;
-  FastLED.showColor(CHSV(hue++, 255, 255)); 
-  delay(dlay);
+  if(nonBlockDelay(dlay)) {
+    FastLED.showColor(CHSV(hue++, 255, 255)); 
+  }
 }
 
 void shimmer(){
- int dlay = confineRotary(5, 500);
- complete_color(off); 
- head++;
- if(head > NUMPIXELS) head = 0;
- int leader = remapInRange(head - 1);
- int follower = remapInRange(head + 1);
- strip.setPixelColor(leader, red);
- strip.setPixelColor(head, blue);
- strip.setPixelColor(follower, white);
- strip.show();
- delay(dlay);
+  int dlay = confineRotary(5, 500);
+  if(nonBlockDelay(dlay)) {
+    complete_color(off); 
+    head++;
+    if(head > NUMPIXELS) head = 0;
+    int leader = remapInRange(head - 1);
+    int follower = remapInRange(head + 1);
+    strip.setPixelColor(leader, red);
+    strip.setPixelColor(head, blue);
+    strip.setPixelColor(follower, white);
+    strip.show();
+  }
 }
 
-/* void race(){ */
-/*  int dlay = confineRotary(5, 500); */
-/*  complete_color(off);  */
-/*  head++; */
-/*  if(head > NUMPIXELS) head = 0; */
-/*  strip.setPixelColor(head, blue); */
-/*  strip.show(); */
-/*  delay(dlay); */
-/* } */
+void find_my_bike(){
+  complete_color(off);
+  if(nonBlockDelay(3000)) {
+    complete_color(white);
+    delay(20);
+  }
+}
 
 void color_slide(){
 	int dlay = confineRotary(5, 500);
-	complete_color(off); 
-	head++;
-	if(head > NUMPIXELS) head = 0;
-	static uint8_t hue = 0;
-	leds[head] = CHSV(hue++, 255, 255);
-	FastLED.show();
-	delay(dlay);
+  if(nonBlockDelay(dlay)) {
+    static uint8_t hue = 0;
+    head++;
+    head = remapInRange(head);
+    leds[head] = CHSV(hue++, 255, 255);
+    FastLED.show();
+  }
 }
 
 
 void race(){
-	int dlay = confineRotary(5, 500);
-	static uint8_t hue = 0;
-	leds[head - 1] = CRGB::Black;
-	leds[head] = CHSV(hue++, 255, 150);
-	head++;
-	leds[head] = CHSV(hue++, 255, 255);
-	if(head > NUMPIXELS) head = 0;
-	leds[head] = CHSV(hue++, 255, 255);
-	FastLED.show();
-	delay(dlay);
+ 	int dlay = confineRotary(5, 500);
+  if(nonBlockDelay(dlay)) {
+    static uint8_t hue = 0;
+    leds[head - 1] = CRGB::Black;
+    leds[head] = CHSV(hue++, 255, 150);
+    head++;
+    leds[head] = CHSV(hue++, 255, 255);
+    if(head > NUMPIXELS) head = 0;
+    head = remapInRange(head);
+    leds[head] = CHSV(hue++, 255, 255);
+    FastLED.show();
+  }
 }
 
 
+
+uint32_t lastColor = red;
+uint32_t currentColor = red;
 void dazzle(){
-  int dlay = confineRotary(5, 500);
-  complete_color(red);
-  delay(dlay);
-  complete_color(green);
-  delay(dlay);
-  complete_color(blue);
-  delay(dlay);
+  int dlay = confineRotary(0, 500);
+  if(nonBlockDelay(dlay)) { 
+    switch (lastColor) {
+      case red:
+        complete_color(green);
+        lastColor = green;
+        break;
+      case green:
+        complete_color(blue);
+        lastColor = blue;
+        break;
+      case blue:
+        complete_color(red);
+        lastColor = red;
+        break;
+    }
+  }
 }
 
 void strobe(){
-   int dlay = confineRotary(5, 500);
+  int dlay = confineRotary(0, 1000);
   complete_color(0xFFFFFF);
   delay(dlay);
   complete_color(off);
@@ -197,6 +219,15 @@ int confineRotary(int start, int finish) {
 int remapInRange(int index){
   if (index < 0) index = (NUMPIXELS - 1) + index;
   if (index > NUMPIXELS) index = 0;
-  /* Serial.println(index); */
   return index;
+}
+
+long previousMillis = 0;
+bool nonBlockDelay(int interval){
+  unsigned long currentMillis = millis();
+  if(currentMillis - previousMillis > interval) {
+    previousMillis = currentMillis;   
+    return true;
+  }
+  return false;
 }
