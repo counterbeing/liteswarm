@@ -66,7 +66,7 @@ void playAnimation(){
       find_my_bike();
       break;
 		case 4:
-			color_slide();
+			crossfade();
 			break;
     case 5:
       race();
