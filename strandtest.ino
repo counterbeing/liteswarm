@@ -4,7 +4,7 @@
 #include <Bounce2.h>
 #include <Encoder.h>
 
-#define NUMPIXELS 60
+#define NUMPIXELS 150
 #define DATAPIN    4
 #define CLOCKPIN   5
 
@@ -81,7 +81,7 @@ void checkRotary(int loopTime){
   long newPos = knob.read();
   if(newPos != posRotary){
    posRotary = newPos;
-   Serial.println(newPos);
+   /* Serial.println(newPos); */
   }
 }
 
@@ -93,11 +93,11 @@ int checkButton(){
   long difference = currentPressTime - lastPressTime;
   if((buttonState == 0) && (difference > 400)){
     buttonPressCount++;
-    Serial.print("Button press count: ");
-    Serial.println(buttonPressCount);
-		Serial.println("BUTTON PRESSED CALLING SWITCH");
-    Serial.println(lastPressTime);
-    Serial.println(currentPressTime);
+    /* Serial.print("Button press count: "); */
+    /* Serial.println(buttonPressCount); */
+		/* Serial.println("BUTTON PRESSED CALLING SWITCH"); */
+    /* Serial.println(lastPressTime); */
+    /* Serial.println(currentPressTime); */
     lastPressTime = millis();
     animationIndex++;
   }
@@ -115,20 +115,47 @@ void crossfade(){
   }
 }
 
+int r_head = 0;
+int g_head = 0;
+int b_head = 0;
+
 void shimmer(){
   int dlay = confineRotary(5, 500);
   if(nonBlockDelay(dlay)) {
     complete_color(off); 
-    head++;
-    if(head > NUMPIXELS) head = 0;
-    int leader = remapInRange(head - 1);
-    int follower = remapInRange(head + 1);
-    strip.setPixelColor(leader, red);
-    strip.setPixelColor(head, blue);
-    strip.setPixelColor(follower, white);
+    r_head++;
+    if(r_head > NUMPIXELS) r_head = 0;
+    // green, red, blue 
+    draw_snake(r_head, 30, 255, 100);
+
+    b_head++;
+    if(b_head > NUMPIXELS) b_head = 0;
+    draw_snake((NUMPIXELS - b_head), 30, 0, 255);
+
+    g_head = g_head + 2;
+    if(g_head > NUMPIXELS) g_head = 0;
+    draw_snake((NUMPIXELS - g_head), 255, 130, 0);
+
     strip.show();
   }
 }
+
+void draw_snake(int head, int green, int red, int blue) {
+  int head_minus_5  = remapInRange(head - 5);
+  int head_minus_4  = remapInRange(head - 4);
+  int head_minus_3  = remapInRange(head - 3);
+  int head_minus_2  = remapInRange(head - 2);
+  int head_minus_1  = remapInRange(head - 1);
+  uint32_t myColor = strip.getPixelColor(head_minus_5);
+  Serial.println(String(myColor));
+  strip.setPixelColor(head_minus_5, green, red, max((blue - 255), 0));
+  strip.setPixelColor(head_minus_4, green, red, max((blue - 100), 0));
+  strip.setPixelColor(head_minus_3, green, red, max((blue - 50), 0));
+  strip.setPixelColor(head_minus_2, green, red, max((blue - 20), 0));
+  strip.setPixelColor(head_minus_1, green, red, blue);
+}
+
+
 
 void find_my_bike(){
   complete_color(off);
@@ -149,7 +176,6 @@ void color_slide(){
   }
 }
 
-
 void race(){
  	int dlay = confineRotary(5, 500);
   if(nonBlockDelay(dlay)) {
@@ -164,8 +190,6 @@ void race(){
     FastLED.show();
   }
 }
-
-
 
 uint32_t lastColor = red;
 uint32_t currentColor = red;
