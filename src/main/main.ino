@@ -1,3 +1,4 @@
+#define FASTLED_INTERNAL
 #include "FastLED.h"
 #include <Adafruit_DotStar.h>
 #include <SPI.h>         // COMMENT OUT THIS LINE FOR GEMMA OR TRINKET
