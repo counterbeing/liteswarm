@@ -8,13 +8,12 @@ Bounce button_debouncer = Bounce();
 #define MyKnob_H
 
 Encoder encoder_knob(2, 3);
+
 class MyKnob
 {
 private:
-    // class knob;
-    // int knob;
-    // Encoder knob;
-    // Encoder knob(2,3);
+    // Encoder encoder_knob;
+    // Encoder encoder_knob(2,3);
 
     int pinA;
     int pinB;
@@ -57,7 +56,7 @@ public:
         pinA = a;
         pinB = b;
         // Encoder knob(pinA, pinB);
-        // knob = Encoder(a, b);
+        // encoder_knob = Encoder(a, b);
     }
     void check(unsigned long m, int &animationIndex) {
         checkButton(animationIndex);
@@ -81,9 +80,6 @@ public:
         }
         return position;
     }
-
-
-
 };
 
 #endif
