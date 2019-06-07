@@ -6,7 +6,7 @@
 #include <MyKnob.h>
 #include <Encoder.h>
 
-#define NUMPIXELS 75
+#define NUMPIXELS 76
 #define DATAPIN 4
 #define CLOCKPIN 5
 
@@ -131,18 +131,6 @@ void find_my_bike()
   }
 }
 
-void color_slide()
-{
-  int dlay = knob.confine(5, 500);
-  if (nonBlockDelay(dlay))
-  {
-    static uint8_t hue = 0;
-    head++;
-    head = remapInRange(head);
-    leds[head] = CHSV(hue++, 255, 255);
-    FastLED.show();
-  }
-}
 // Associativity specification is redundant for unary operators and is only
 // shown for completeness: unary prefix operators always associate right-to-left
 // (delete ++*p is delete(++(*p))) and unary postfix operators always associate
@@ -160,8 +148,6 @@ void race()
     leds[head] = CHSV(hue++, 255, 150);
     head = remapInRange(++head);
     leds[head] = CHSV(hue++, 255, 255);
-    // head = remapInRange(++head);
-    // leds[head] = CHSV(hue++, 255, 255);
     FastLED.show();
   }
 }
@@ -214,8 +200,12 @@ void strobe()
 // BUG CAUTION 
 // never follow one animation function immediately with itself in the the
 // next case
+// DEBUG NOTE
+// Using strobe is an easy way to see how many pixels you have since this value
+// must be set manually.
 void playAnimation()
 {
+  // strobe();
   if (animationIndex > 5)
     animationIndex = 0;
   switch (animationIndex)
