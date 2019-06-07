@@ -154,19 +154,14 @@ void race()
   int dlay = knob.confine(5, 500);
   if (nonBlockDelay(dlay))
   {
-    Serial.print("HEAD: ");
-    Serial.println(head);
     static uint8_t hue = 0;
     head = remapInRange(++head);
-    Serial.println(head);
     leds[head] = CRGB::Black;
     leds[head] = CHSV(hue++, 255, 150);
     head = remapInRange(++head);
-    Serial.println(head);
     leds[head] = CHSV(hue++, 255, 255);
-    head = remapInRange(++head);
-    Serial.println(head);
-    leds[head] = CHSV(hue++, 255, 255);
+    // head = remapInRange(++head);
+    // leds[head] = CHSV(hue++, 255, 255);
     FastLED.show();
   }
 }
@@ -221,7 +216,7 @@ void strobe()
 // next case
 void playAnimation()
 {
-  if (animationIndex > 6)
+  if (animationIndex > 5)
     animationIndex = 0;
   switch (animationIndex)
   {
@@ -232,18 +227,15 @@ void playAnimation()
     race();
     break;
   case 2:
-    color_slide();
-    break;
-  case 3:
     dazzle();
     break;
-  case 4:
+  case 3:
     shimmer();
     break;
-  case 5:
-    break;
+  case 4:
     strobe();
-  case 6:
+    break;
+  case 5:
     find_my_bike();
     break;
   }
