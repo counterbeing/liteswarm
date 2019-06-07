@@ -4,6 +4,7 @@
 #include <Adafruit_DotStar.h>
 #include <SPI.h>
 #include <MyKnob.h>
+#include <Encoder.h>
 
 #define NUMPIXELS 76
 #define DATAPIN 4
@@ -22,8 +23,9 @@ const uint32_t off = 0x000000;
 int animationIndex = 0;
 
 // Pins for the rotary
-int rotary1 = 2;
-int rotary2 = 3;
+uint8_t rotary1 = 2;
+uint8_t rotary2 = 3;
+
 MyKnob knob(rotary1, rotary2);
 
 CRGB leds[NUMPIXELS];
