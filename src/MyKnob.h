@@ -12,6 +12,8 @@ Encoder encoder_knob(2, 3);
 class MyKnob
 {
 private:
+    // TODO: want to be able to parameterize the pins passed to Encoder when we
+    // create a new MyKnob
     // Encoder encoder_knob;
     // Encoder encoder_knob(2,3);
 

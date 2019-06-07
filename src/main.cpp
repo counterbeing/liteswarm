@@ -42,9 +42,9 @@ void complete_color(uint32_t color)
 int remapInRange(int index)
 {
   if (index < 0)
-    index = (NUMPIXELS - 1) + index;
+    return NUMPIXELS + index;
   if (index > NUMPIXELS)
-    index = 0;
+    return 0;
   return index;
 }
 
@@ -143,23 +143,26 @@ void color_slide()
     FastLED.show();
   }
 }
-
+// Associativity specification is redundant for unary operators and is only
+// shown for completeness: unary prefix operators always associate right-to-left
+// (delete ++*p is delete(++(*p))) and unary postfix operators always associate
+// left-to-right (a[1][2]++ is ((a[1])[2])++). Note that the associativity is
+// meaningful for member access operators, even though they are grouped with
+// unary postfix operators: a.b++ is parsed (a.b)++ and not a.(b++).
 void race()
 {
   int dlay = knob.confine(5, 500);
   if (nonBlockDelay(dlay))
   {
-    // Serial.print("START OF RACE");
-    // Serial.print(animationIndex);
+    Serial.print("HEAD: ");
+    Serial.println(head);
     static uint8_t hue = 0;
-    leds[head - 1] = CRGB::Black;
+    leds[head] = CRGB::Black;
+    head = remapInRange(++head);
     leds[head] = CHSV(hue++, 255, 150);
-    head++;
+    head = remapInRange(++head);
     leds[head] = CHSV(hue++, 255, 255);
-    // Remove this after bug is fixed?
-    if (head > NUMPIXELS)
-      head = 0;
-    head = remapInRange(head);
+    head = remapInRange(++head);
     leds[head] = CHSV(hue++, 255, 255);
     FastLED.show();
   }
@@ -210,10 +213,11 @@ void strobe()
   }
 }
 
+// BUG CAUTION 
+// never follow one animation function immediately with itself in the the
+// next case
 void playAnimation()
 {
-  // Serial.print("new animationIndex: ");
-  // Serial.println(animationIndex);
   if (animationIndex > 6)
     animationIndex = 0;
   switch (animationIndex)
@@ -256,20 +260,10 @@ void setup()
   pinMode(rotary1, INPUT_PULLUP);
   pinMode(rotary2, INPUT_PULLUP);
 }
-int tempCount = 0;
+
 void loop()
 {
   button_debouncer.update();
-  // if(tempCount % 500 == 0) {
-  //   Serial.print("pointer address : ");
-  //   Serial.println(reinterpret_cast<int>(&animationIndex));
-  // }
-
   playAnimation();
   knob.check(millis(), &animationIndex);
-  //  if(animationIndex % 20 == 0) {
-  //   Serial.print("PostPlay Animation: ");
-  //   Serial.println(animationIndex);
-  // }
-  ++tempCount;
 }
