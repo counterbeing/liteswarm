@@ -217,7 +217,8 @@ void playAnimation()
     crossfade();
     break;
   case 1:
-    color_slide();
+    race();
+    // color_slide();
     break;
   case 2:
     race();
