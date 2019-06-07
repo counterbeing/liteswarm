@@ -44,12 +44,18 @@ private:
             // Serial.print("Button press count: ");
             // Serial.println(buttonPressCount);
             // Serial.println(currentPressTime); 
+            Serial.println("-----------------"); 
             Serial.println(difference); 
             // Serial.println(&_aiIndex); 
-            Serial.println(*_aiIndex); 
+            Serial.print("value: ");
+            Serial.println(reinterpret_cast<int>(*_aiIndex));
+            Serial.print("addr: ");
+            Serial.println(reinterpret_cast<int>(_aiIndex));
             lastPressTime = millis();
             // *_aiIndex = *_aiIndex + 1;
             (*_aiIndex)++;
+            Serial.print("new *_aiIndex: ");
+            Serial.println(reinterpret_cast<int>(*_aiIndex));
         }
     }
 

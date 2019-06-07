@@ -21,7 +21,6 @@ const uint32_t green = 0xFF0000;
 const uint32_t blue = 0x0000FF;
 const uint32_t off = 0x000000;
 int animationIndex = 0;
-int *aiPointer;
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
@@ -150,11 +149,14 @@ void race()
   int dlay = knob.confine(5, 500);
   if (nonBlockDelay(dlay))
   {
+    // Serial.print("START OF RACE");
+    // Serial.print(animationIndex);
     static uint8_t hue = 0;
     leds[head - 1] = CRGB::Black;
     leds[head] = CHSV(hue++, 255, 150);
     head++;
     leds[head] = CHSV(hue++, 255, 255);
+    // Remove this after bug is fixed?
     if (head > NUMPIXELS)
       head = 0;
     head = remapInRange(head);
@@ -210,6 +212,8 @@ void strobe()
 
 void playAnimation()
 {
+  // Serial.print("new animationIndex: ");
+  // Serial.println(animationIndex);
   if (animationIndex > 6)
     animationIndex = 0;
   switch (animationIndex)
@@ -219,10 +223,9 @@ void playAnimation()
     break;
   case 1:
     race();
-    // color_slide();
     break;
   case 2:
-    race();
+    color_slide();
     break;
   case 3:
     dazzle();
@@ -252,9 +255,6 @@ void setup()
 
   pinMode(rotary1, INPUT_PULLUP);
   pinMode(rotary2, INPUT_PULLUP);
-
-  aiPointer = &animationIndex;
-  
 }
 int tempCount = 0;
 void loop()
