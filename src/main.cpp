@@ -42,7 +42,7 @@ void complete_color(uint32_t color)
 int remapInRange(int index)
 {
   if (index < 0)
-    return NUMPIXELS + index;
+    return NUMPIXELS;
   if (index > NUMPIXELS)
     return 0;
   return index;
@@ -157,13 +157,15 @@ void race()
     Serial.print("HEAD: ");
     Serial.println(head);
     static uint8_t hue = 0;
-    Serial.println(hue);
     head = remapInRange(++head);
+    Serial.println(head);
     leds[head] = CRGB::Black;
     leds[head] = CHSV(hue++, 255, 150);
     head = remapInRange(++head);
+    Serial.println(head);
     leds[head] = CHSV(hue++, 255, 255);
     head = remapInRange(++head);
+    Serial.println(head);
     leds[head] = CHSV(hue++, 255, 255);
     FastLED.show();
   }
