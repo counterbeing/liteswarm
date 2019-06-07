@@ -21,6 +21,7 @@ const uint32_t green = 0xFF0000;
 const uint32_t blue = 0x0000FF;
 const uint32_t off = 0x000000;
 int animationIndex = 0;
+int *aiPointer;
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
@@ -251,11 +252,24 @@ void setup()
 
   pinMode(rotary1, INPUT_PULLUP);
   pinMode(rotary2, INPUT_PULLUP);
-}
 
+  aiPointer = &animationIndex;
+  
+}
+int tempCount = 0;
 void loop()
 {
   button_debouncer.update();
+  // if(tempCount % 500 == 0) {
+  //   Serial.print("pointer address : ");
+  //   Serial.println(reinterpret_cast<int>(&animationIndex));
+  // }
+
   playAnimation();
-  knob.check(millis(), animationIndex);
+  knob.check(millis(), &animationIndex);
+  //  if(animationIndex % 20 == 0) {
+  //   Serial.print("PostPlay Animation: ");
+  //   Serial.println(animationIndex);
+  // }
+  ++tempCount;
 }

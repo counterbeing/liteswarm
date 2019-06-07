@@ -32,21 +32,24 @@ private:
         }
     }
 
-    void checkButton(int &animationIndex)
+    void checkButton(int *_aiIndex)
     {
         int buttonState = button_debouncer.read();
+        if(buttonState != 0) return;
         long currentPressTime = millis();
         long difference = currentPressTime - lastPressTime;
-        if ((buttonState == 0) && (difference > 400))
+        if (difference > 400)
         {
-            buttonPressCount++;
-            /* Serial.print("Button press count: "); */
-            /* Serial.println(buttonPressCount); */
-            /* Serial.println("BUTTON PRESSED CALLING SWITCH"); */
-            /* Serial.println(lastPressTime); */
-            /* Serial.println(currentPressTime); */
+            // buttonPressCount++;
+            // Serial.print("Button press count: ");
+            // Serial.println(buttonPressCount);
+            // Serial.println(currentPressTime); 
+            Serial.println(difference); 
+            // Serial.println(&_aiIndex); 
+            Serial.println(*_aiIndex); 
             lastPressTime = millis();
-            animationIndex++;
+            // *_aiIndex = *_aiIndex + 1;
+            (*_aiIndex)++;
         }
     }
 
@@ -58,14 +61,12 @@ public:
         // Encoder knob(pinA, pinB);
         // encoder_knob = Encoder(a, b);
     }
-    void check(unsigned long m, int &animationIndex) {
-        checkButton(animationIndex);
+    void check(unsigned long m, int *_animationIndex) {
+        checkButton(_animationIndex);
         checkRotary(m);
     }
-    int getPosition()
-    {
-        return position;
-    }
+    // Sets the value for the rotary encoder to someething reasonable for the
+    // animation. It returns that value.
     int confine(int start, int finish)
     {
         if (position < start)
