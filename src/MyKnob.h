@@ -24,7 +24,7 @@ private:
     int finish;
     int buttonPressCount = 0;
     long lastPressTime = 0;
-    void checkRotary(int loopTime)
+    void checkRotary()
     {
         long newPos = encoder_knob.read();
         if (newPos != position)
@@ -69,9 +69,9 @@ public:
         // Encoder knob(pinA, pinB);
         // encoder_knob = Encoder(a, b);
     }
-    void check(unsigned long m, int *_animationIndex) {
+    void check(int *_animationIndex) {
         checkButton(_animationIndex);
-        checkRotary(m);
+        checkRotary();
     }
     // Sets the value for the rotary encoder to someething reasonable for the
     // animation. It returns that value.

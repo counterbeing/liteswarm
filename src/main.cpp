@@ -157,8 +157,9 @@ void race()
     Serial.print("HEAD: ");
     Serial.println(head);
     static uint8_t hue = 0;
-    leds[head] = CRGB::Black;
+    Serial.println(hue);
     head = remapInRange(++head);
+    leds[head] = CRGB::Black;
     leds[head] = CHSV(hue++, 255, 150);
     head = remapInRange(++head);
     leds[head] = CHSV(hue++, 255, 255);
@@ -265,5 +266,5 @@ void loop()
 {
   button_debouncer.update();
   playAnimation();
-  knob.check(millis(), &animationIndex);
+  knob.check(&animationIndex);
 }
