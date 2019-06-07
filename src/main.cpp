@@ -2,9 +2,8 @@
 #define FASTLED_INTERNAL
 #include "FastLED.h"
 #include <Adafruit_DotStar.h>
-#include <SPI.h> // COMMENT OUT THIS LINE FOR GEMMA OR TRINKET
-#include <Bounce2.h>
-#include <Encoder.h>
+#include <SPI.h>
+#include <MyKnob.h>
 
 #define NUMPIXELS 76
 #define DATAPIN 4
@@ -14,9 +13,6 @@ Adafruit_DotStar strip = Adafruit_DotStar(
     NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
 
 int buttonPin = A0;
-int rotary1 = 2;
-int rotary2 = 3;
-long posRotary = -999;
 int head = 0; // Index of first 'on' and 'off' pixels
 const uint32_t white = 0xFFFFFF;
 const uint32_t red = 0x00FF00;
@@ -25,12 +21,12 @@ const uint32_t blue = 0x0000FF;
 const uint32_t off = 0x000000;
 int animationIndex = 0;
 
-int buttonPressCount = 0;
+// Pins for the rotary
+int rotary1 = 2;
+int rotary2 = 3;
+MyKnob knob(rotary1, rotary2);
 
-Bounce button_debouncer = Bounce();
-Encoder knob(rotary1, rotary2);
 CRGB leds[NUMPIXELS];
-
 
 void complete_color(uint32_t color)
 {
@@ -39,21 +35,6 @@ void complete_color(uint32_t color)
     strip.setPixelColor(leds, color);
   }
   strip.show();
-}
-
-int confineRotary(int start, int finish)
-{
-  if (posRotary < start)
-  {
-    posRotary = start;
-    knob.write(start);
-  }
-  if (posRotary > finish)
-  {
-    posRotary = finish;
-    knob.write(finish);
-  }
-  return posRotary;
 }
 
 int remapInRange(int index)
@@ -93,38 +74,6 @@ void draw_snake(int head, int green, int red, int blue)
   strip.setPixelColor(head_minus_1, green, red, blue);
 }
 
-
-
-void checkRotary(int loopTime)
-{
-  long newPos = knob.read();
-  if (newPos != posRotary)
-  {
-    posRotary = newPos;
-    /* Serial.println(newPos); */
-  }
-}
-
-long lastPressTime = 0;
-
-int checkButton()
-{
-  int buttonState = button_debouncer.read();
-  long currentPressTime = millis();
-  long difference = currentPressTime - lastPressTime;
-  if ((buttonState == 0) && (difference > 400))
-  {
-    buttonPressCount++;
-    /* Serial.print("Button press count: "); */
-    /* Serial.println(buttonPressCount); */
-    /* Serial.println("BUTTON PRESSED CALLING SWITCH"); */
-    /* Serial.println(lastPressTime); */
-    /* Serial.println(currentPressTime); */
-    lastPressTime = millis();
-    animationIndex++;
-  }
-}
-
 void strand_off()
 {
   complete_color(off);
@@ -132,7 +81,7 @@ void strand_off()
 
 void crossfade()
 {
-  int dlay = confineRotary(1, 500);
+  int dlay = knob.confine(1, 500);
   static uint8_t hue = 0;
   if (nonBlockDelay(dlay))
   {
@@ -146,7 +95,7 @@ int b_head = 0;
 
 void shimmer()
 {
-  int dlay = confineRotary(5, 500);
+  int dlay = knob.confine(5, 500);
   if (nonBlockDelay(dlay))
   {
     complete_color(off);
@@ -170,7 +119,6 @@ void shimmer()
   }
 }
 
-
 void find_my_bike()
 {
   complete_color(off);
@@ -183,7 +131,7 @@ void find_my_bike()
 
 void color_slide()
 {
-  int dlay = confineRotary(5, 500);
+  int dlay = knob.confine(5, 500);
   if (nonBlockDelay(dlay))
   {
     static uint8_t hue = 0;
@@ -196,7 +144,7 @@ void color_slide()
 
 void race()
 {
-  int dlay = confineRotary(5, 500);
+  int dlay = knob.confine(5, 500);
   if (nonBlockDelay(dlay))
   {
     static uint8_t hue = 0;
@@ -216,7 +164,7 @@ uint32_t lastColor = red;
 uint32_t currentColor = red;
 void dazzle()
 {
-  int dlay = confineRotary(0, 500);
+  int dlay = knob.confine(0, 500);
   if (nonBlockDelay(dlay))
   {
     switch (lastColor)
@@ -240,7 +188,7 @@ void dazzle()
 uint32_t lastStrobeColor = white;
 void strobe()
 {
-  int dlay = confineRotary(0, 1000);
+  int dlay = knob.confine(0, 1000);
   if (nonBlockDelay(dlay))
   {
     switch (lastStrobeColor)
@@ -256,7 +204,6 @@ void strobe()
     }
   }
 }
-
 
 void playAnimation()
 {
@@ -288,7 +235,6 @@ void playAnimation()
   }
 }
 
-
 void setup()
 {
   FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
@@ -308,6 +254,5 @@ void loop()
 {
   button_debouncer.update();
   playAnimation();
-  checkRotary(millis());
-  checkButton();
+  knob.check(millis(), animationIndex);
 }
