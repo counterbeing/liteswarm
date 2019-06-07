@@ -6,7 +6,7 @@
 #include <MyKnob.h>
 #include <Encoder.h>
 
-#define NUMPIXELS 76
+#define NUMPIXELS 75
 #define DATAPIN 4
 #define CLOCKPIN 5
 
