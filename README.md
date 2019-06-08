@@ -23,7 +23,6 @@ Things you might be missing.
 - using platform.io (compile/upload to arduino)
 - TODO all
   - move bike find mode to SOS press - short long short - or something like it (it's in the middle)
-  - 
 - mac wants gait recognition mode
   - TODO 
 ---
@@ -32,8 +31,6 @@ Things you might be missing.
 #### 6 Jun 18
 - cory n mac join forces
 - we both fail at trying to win with vscode config + platformio.... for now
-- ...?
-
 
 ---
 
@@ -43,6 +40,7 @@ Super tall tail for big red
 - material?
 
 Homing system for big red
+- [like this maybe](http://www.migratoryconnectivityproject.org/vhf-radios/)
 - audio / visual 
 - TODO CORY: beep... beep... beep... beep beep beep BEEEEEEP homing missile
     - thoughts: zigbee? wifi signal strength dongle? bluetooth beacon 

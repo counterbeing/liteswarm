@@ -152,6 +152,12 @@ void race()
   }
 }
 
+void color_chooser(){
+  int color = knob.confine(0, 255);
+  fill_solid( leds, NUMPIXELS, CHSV(color, 255, 255));
+  FastLED.show();
+}
+
 uint32_t lastColor = red;
 uint32_t currentColor = red;
 void dazzle()
@@ -197,7 +203,7 @@ void strobe()
   }
 }
 
-// BUG CAUTION 
+// BUG CAUTION
 // never follow one animation function immediately with itself in the the
 // next case
 // DEBUG NOTE
@@ -206,7 +212,7 @@ void strobe()
 void playAnimation()
 {
   // strobe();
-  if (animationIndex > 5)
+  if (animationIndex > 6)
     animationIndex = 0;
   switch (animationIndex)
   {
@@ -226,6 +232,9 @@ void playAnimation()
     strobe();
     break;
   case 5:
+    color_chooser();
+    break;
+  case 6:
     find_my_bike();
     break;
   }
