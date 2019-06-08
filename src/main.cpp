@@ -49,7 +49,7 @@ int remapInRange(int index)
 }
 
 long previousMillis = 0;
-bool nonBlockDelay(int interval)
+bool nonBlockDelay(unsigned int interval)
 {
   unsigned long currentMillis = millis();
   if ((currentMillis - previousMillis) > interval)
@@ -62,18 +62,10 @@ bool nonBlockDelay(int interval)
 
 void draw_snake(int head, int green, int red, int blue)
 {
-  int head_minus_5 = remapInRange(head - 5);
-  int head_minus_4 = remapInRange(head - 4);
-  int head_minus_3 = remapInRange(head - 3);
-  int head_minus_2 = remapInRange(head - 2);
-  int head_minus_1 = remapInRange(head - 1);
-  // uint32_t myColor = strip.getPixelColor(head_minus_5);
-  // Serial.println(String(myColor));
-  strip.setPixelColor(head_minus_5, green, red, max((blue - 255), 0));
-  strip.setPixelColor(head_minus_4, green, red, max((blue - 100), 0));
-  strip.setPixelColor(head_minus_3, green, red, max((blue - 50), 0));
-  strip.setPixelColor(head_minus_2, green, red, max((blue - 20), 0));
-  strip.setPixelColor(head_minus_1, green, red, blue);
+  for (int i = 0; i < 5; i++)
+  {
+    strip.setPixelColor(head - i, green, red, max((blue - 255), 0));
+  }
 }
 
 void strand_off()
@@ -105,12 +97,12 @@ void shimmer()
     if (r_head > NUMPIXELS)
       r_head = 0;
     // green, red, blue
-    draw_snake(r_head, 30, 255, 100);
+    draw_snake(r_head, 50, 255, 100);
 
     b_head++;
     if (b_head > NUMPIXELS)
       b_head = 0;
-    draw_snake((NUMPIXELS - b_head), 30, 0, 255);
+    draw_snake((NUMPIXELS - b_head), 30, 20, 255);
 
     g_head = g_head + 2;
     if (g_head > NUMPIXELS)
