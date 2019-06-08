@@ -67,8 +67,8 @@ void draw_snake(int head, int green, int red, int blue)
   int head_minus_3 = remapInRange(head - 3);
   int head_minus_2 = remapInRange(head - 2);
   int head_minus_1 = remapInRange(head - 1);
-  uint32_t myColor = strip.getPixelColor(head_minus_5);
-  Serial.println(String(myColor));
+  // uint32_t myColor = strip.getPixelColor(head_minus_5);
+  // Serial.println(String(myColor));
   strip.setPixelColor(head_minus_5, green, red, max((blue - 255), 0));
   strip.setPixelColor(head_minus_4, green, red, max((blue - 100), 0));
   strip.setPixelColor(head_minus_3, green, red, max((blue - 50), 0));
@@ -154,7 +154,7 @@ void race()
 
 void color_chooser(){
   int color = knob.confine(0, 255);
-  fill_solid( leds, NUMPIXELS, CHSV(color, 255, 255));
+  fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
   FastLED.show();
 }
 
@@ -212,7 +212,7 @@ void strobe()
 void playAnimation()
 {
   // strobe();
-  if (animationIndex > 6)
+  if (animationIndex > 5)
     animationIndex = 0;
   switch (animationIndex)
   {
@@ -232,9 +232,6 @@ void playAnimation()
     strobe();
     break;
   case 5:
-    color_chooser();
-    break;
-  case 6:
     find_my_bike();
     break;
   }

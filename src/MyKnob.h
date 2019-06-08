@@ -19,9 +19,9 @@ private:
 
     int pinA;
     int pinB;
-    int position;
-    int start;
-    int finish;
+    int position = 5;
+    int start = 0;
+    int finish = 10;
     int buttonPressCount = 0;
     long lastPressTime = 0;
     void checkRotary()
