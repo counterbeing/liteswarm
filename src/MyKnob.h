@@ -23,21 +23,23 @@ private:
     int start = 0;
     int finish = 10;
     int buttonPressCount = 0;
+    int loopRotary = false;
     long lastPressTime = 0;
     void checkRotary()
     {
         long newPos = encoder_knob.read();
-        if (newPos != position)
+        if (newPos == position)
         {
-            position = newPos;
-            // Serial.println(newPos);
+            return;
         }
+        position = newPos;
     }
 
     void checkButton(int *_aiIndex)
     {
         int buttonState = button_debouncer.read();
-        if(buttonState != 0) return;
+        if (buttonState != 0)
+            return;
         long currentPressTime = millis();
         long difference = currentPressTime - lastPressTime;
         if (difference > 400)
@@ -45,10 +47,10 @@ private:
             // buttonPressCount++;
             // Serial.print("Button press count: ");
             // Serial.println(buttonPressCount);
-            // Serial.println(currentPressTime); 
-            // Serial.println("-----------------"); 
-            // Serial.println(difference); 
-            // // Serial.println(&_aiIndex); 
+            // Serial.println(currentPressTime);
+            // Serial.println("-----------------");
+            // Serial.println(difference);
+            // // Serial.println(&_aiIndex);
             // Serial.print("value: ");
             // Serial.println(reinterpret_cast<int>(*_aiIndex));
             // Serial.print("addr: ");
@@ -68,27 +70,42 @@ public:
         // Encoder knob(pinA, pinB);
         // encoder_knob = Encoder(a, b);
     }
-    void check(int *_animationIndex) {
+    void check(int *_animationIndex)
+    {
         checkButton(_animationIndex);
         checkRotary();
     }
     // Sets the value for the rotary encoder to someething reasonable for the
     // animation. It returns that value.
-    int confine(int start, int finish)
+    int confine(int start, int finish, bool setLoop = false)
     {
+        loopRotary = setLoop;
         if (position < start)
         {
-            position = start;
-            encoder_knob.write(start);
+            if (loopRotary)
+            {
+                position = finish;
+            }
+            else
+            {
+                position = start;
+            }
+            encoder_knob.write(position);
         }
         if (position > finish)
         {
-            position = finish;
-            encoder_knob.write(finish);
+            if (loopRotary)
+            {
+                position = start;
+            }
+            else
+            {
+                position = finish;
+            }
+            encoder_knob.write(position);
         }
         return position;
     }
 };
 
 #endif
-

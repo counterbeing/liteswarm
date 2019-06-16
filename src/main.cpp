@@ -145,7 +145,7 @@ void race()
 }
 
 void color_chooser(){
-  int color = knob.confine(0, 255);
+  int color = knob.confine(0, 255, true);
   fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
   FastLED.show();
 }
@@ -206,6 +206,7 @@ void playAnimation()
   // strobe();
   if (animationIndex > 5)
     animationIndex = 0;
+  // color_chooser();
   switch (animationIndex)
   {
   case 0:
