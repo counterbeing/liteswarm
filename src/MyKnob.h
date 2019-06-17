@@ -80,6 +80,7 @@ public:
     void setDefaults(int position_, int start_, int finish_, bool loopRotary_ = false)
     {
         position = position_;
+        encoder_knob.write(position);
         start = start_;
         finish = finish_;
         loopRotary = loopRotary_;

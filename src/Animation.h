@@ -3,15 +3,13 @@
 
 class Animation
 {
-private:
+protected:
     int start;
     int finish;
     int initialSetting;
     long previousMillis = 0;
-    bool initialized;
-public:
-    Animation(){};
-    void run();
+    bool initialized = false;
+
     bool nonBlockDelay(unsigned int interval)
     {
         unsigned long currentMillis = millis();
@@ -22,5 +20,19 @@ public:
         }
         return false;
     }
+    virtual void setup() = 0;
+    virtual void loop() = 0;
+public:
+    Animation(){};
+    void run()
+    {
+        if (!initialized)
+        {
+            setup();
+            initialized = true;
+        };
+        loop();
+    }
+
 };
 #endif

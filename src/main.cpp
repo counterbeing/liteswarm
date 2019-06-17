@@ -5,7 +5,9 @@
 #include <SPI.h>
 #include <MyKnob.h>
 #include <Encoder.h>
+
 #include "DiamondNecklace.h"
+#include "Crossfade.h"
 
 #define NUMPIXELS 76
 #define DATAPIN 4
@@ -30,6 +32,7 @@ uint8_t rotary2 = 3;
 CRGB leds[NUMPIXELS];
 MyKnob knob(rotary1, rotary2);
 DiamondNecklace diamond_necklace(knob, leds);
+Crossfade crossfade(knob, leds);
 
 
 void complete_color(uint32_t color)
@@ -209,7 +212,8 @@ void playAnimation()
   // strobe();
   if (animationIndex > 5)
     animationIndex = 0;
-    diamond_necklace.run();
+    // diamond_necklace.run();
+    crossfade.run();
   // color_chooser();
   // switch (animationIndex)
   // {

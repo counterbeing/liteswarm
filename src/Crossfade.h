@@ -2,7 +2,7 @@
 #include "FastLED.h"
 #include "Animation.h"
 
-class DiamondNecklace : public Animation
+class Crossfade : public Animation
 {
 private:
     int initialPosition = 150;
@@ -16,7 +16,6 @@ private:
 
     void setup()
     {
-        Serial.println(initialPosition);
         knob.setDefaults(
             initialPosition,
             start,
@@ -35,5 +34,5 @@ private:
     }
 
 public:
-    DiamondNecklace(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+    Crossfade(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
 };
