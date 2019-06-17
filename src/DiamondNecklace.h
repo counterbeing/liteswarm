@@ -5,7 +5,7 @@
 class DiamondNecklace : public Animation
 {
 private:
-    int initialPosition = 150;
+    int initialPosition = 300;
     int start = 5;
     int finish = 300;
     bool initialized = false;
@@ -30,7 +30,15 @@ private:
         static uint8_t hue = 0;
         if (nonBlockDelay(dlay))
         {
-            FastLED.showColor(CHSV(hue++, 255, 255));
+            for (int i = 0; i < 76; i++)
+            {
+                leds[i].fadeLightBy( 128 );
+                if(random(40) == 1) {
+                    leds[i] = CRGB::White;
+                }
+
+            }
+            FastLED.show();
         }
     }
 

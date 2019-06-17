@@ -212,8 +212,8 @@ void playAnimation()
   // strobe();
   if (animationIndex > 5)
     animationIndex = 0;
-    // diamond_necklace.run();
-    crossfade.run();
+    diamond_necklace.run();
+    // crossfade.run();
   // color_chooser();
   // switch (animationIndex)
   // {
