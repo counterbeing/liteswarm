@@ -3,7 +3,7 @@
 class Race : public Animation
 {
 private:
-    int initialPosition = 80;
+    int initialPosition = 60;
     int start = 5;
     int finish = 400;
     bool initialized = false;
