@@ -2,10 +2,10 @@
 #include <Encoder.h>
 #include <Bounce2.h>
 
-Bounce button_debouncer = Bounce();
-
 #ifndef MyKnob_H
 #define MyKnob_H
+
+Bounce button_debouncer = Bounce();
 
 Encoder encoder_knob(2, 3);
 
@@ -75,6 +75,14 @@ public:
         checkButton(_animationIndex);
         checkRotary();
     }
+
+    // Set these variables once so they don't need to be set repeatedly
+    void setDefaults(int a_start, int a_finish, bool setLoop = false) {
+        start = a_start;
+        finish = a_finish;
+        loopRotary = setLoop;
+    }
+
     // Sets the value for the rotary encoder to someething reasonable for the
     // animation. It returns that value.
     int confine(int start, int finish, bool setLoop = false)

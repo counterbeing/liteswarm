@@ -5,6 +5,7 @@
 #include <SPI.h>
 #include <MyKnob.h>
 #include <Encoder.h>
+#include "DiamondNecklace.h"
 
 #define NUMPIXELS 76
 #define DATAPIN 4
@@ -26,9 +27,10 @@ int animationIndex = 0;
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 
-MyKnob knob(rotary1, rotary2);
-
 CRGB leds[NUMPIXELS];
+MyKnob knob(rotary1, rotary2);
+DiamondNecklace diamond_necklace(knob, leds);
+
 
 void complete_color(uint32_t color)
 {
@@ -195,6 +197,7 @@ void strobe()
   }
 }
 
+
 // BUG CAUTION
 // never follow one animation function immediately with itself in the the
 // next case
@@ -206,28 +209,29 @@ void playAnimation()
   // strobe();
   if (animationIndex > 5)
     animationIndex = 0;
+    diamond_necklace.run();
   // color_chooser();
-  switch (animationIndex)
-  {
-  case 0:
-    crossfade();
-    break;
-  case 1:
-    race();
-    break;
-  case 2:
-    dazzle();
-    break;
-  case 3:
-    shimmer();
-    break;
-  case 4:
-    strobe();
-    break;
-  case 5:
-    find_my_bike();
-    break;
-  }
+  // switch (animationIndex)
+  // {
+  // case 0:
+  //   crossfade();
+  //   break;
+  // case 1:
+  //   race();
+  //   break;
+  // case 2:
+  //   dazzle();
+  //   break;
+  // case 3:
+  //   shimmer();
+  //   break;
+  // case 4:
+  //   strobe();
+  //   break;
+  // case 5:
+  //   find_my_bike();
+  //   break;
+  // }
 }
 
 void setup()
