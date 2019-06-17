@@ -7,28 +7,22 @@
 #include <Encoder.h>
 #include "config.h"
 
-#include "DiamondNecklace.h"
-#include "Crossfade.h"
-#include "FuckMyEyes.h"
-#include "ColorChooser.h"
-#include "FindMyBike.h"
-#include "Race.h"
+#include "animations/DiamondNecklace.h"
+#include "animations/Crossfade.h"
+#include "animations/FuckMyEyes.h"
+#include "animations/ColorChooser.h"
+#include "animations/FindMyBike.h"
+#include "animations/Race.h"
 
 #define DATAPIN 4
 #define CLOCKPIN 5
 
-int buttonPin = A0;
-int head = 0; // Index of first 'on' and 'off' pixels
-const uint32_t white = 0xFFFFFF;
-const uint32_t red = 0x00FF00;
-const uint32_t green = 0xFF0000;
-const uint32_t blue = 0x0000FF;
-const uint32_t off = 0x000000;
-int animationIndex = 0;
-
 // Pins for the rotary
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
+
+int buttonPin = A0;
+int animationIndex = 0;
 
 CRGB leds[NUMPIXELS];
 MyKnob knob(rotary1, rotary2);
@@ -46,7 +40,6 @@ Race race(knob, leds);
 // next case
 void playAnimation()
 {
-  // strobe();
   if (animationIndex > 5)
     animationIndex = 0;
   switch (animationIndex)
