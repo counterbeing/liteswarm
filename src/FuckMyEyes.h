@@ -1,5 +1,3 @@
-#include <MyKnob.h>
-#include "FastLED.h"
 #include "Animation.h"
 
 class FuckMyEyes : public Animation
@@ -33,15 +31,15 @@ private:
             switch (lastColor)
             {
             case 0:
-                fill_solid(leds, 76, CRGB::Red);
+                fill_solid(leds, NUMPIXELS, CRGB::Red);
                 lastColor = 1;
                 break;
             case 1:
-                fill_solid(leds, 76, CRGB::Green);
+                fill_solid(leds, NUMPIXELS, CRGB::Green);
                 lastColor = 2;
                 break;
             case 2:
-                fill_solid(leds, 76, CRGB::Blue);
+                fill_solid(leds, NUMPIXELS, CRGB::Blue);
                 lastColor = 0;
                 break;
             }

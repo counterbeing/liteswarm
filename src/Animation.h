@@ -1,5 +1,8 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
+#include "config.h"
+#include "FastLED.h"
+#include <MyKnob.h>
 
 class Animation
 {
@@ -10,14 +13,15 @@ protected:
     long previousMillis = 0;
     bool initialized = false;
 
-    // int remapInRange(int index)
-    // {
-    //     if (index < 0)
-    //         return NUMPIXELS;
-    //     if (index > NUMPIXELS)
-    //         return 0;
-    //     return index;
-    // }
+    int remapInRange(int index)
+    {
+        if (index < 0)
+            return NUMPIXELS;
+        if (index > NUMPIXELS)
+            return 0;
+        return index;
+    }
+
     bool nonBlockDelay(unsigned int interval)
     {
         unsigned long currentMillis = millis();

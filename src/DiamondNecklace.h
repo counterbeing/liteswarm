@@ -1,12 +1,10 @@
-#include <MyKnob.h>
-#include "FastLED.h"
 #include "Animation.h"
 
 class DiamondNecklace : public Animation
 {
 private:
-    int initialPosition = 300;
-    int start = 5;
+    int initialPosition = 50;
+    int start = 0;
     int finish = 300;
     bool initialized = false;
     int head = 0;
@@ -27,11 +25,9 @@ private:
     void loop()
     {
         int dlay = knob.confine();
-        static uint8_t hue = 0;
-
         if (nonBlockDelay(dlay))
         {
-            for (int i = 0; i < 76; i++)
+            for (int i = 0; i < NUMPIXELS; i++)
             {
                 leds[i].fadeLightBy( 128 );
                 if(random(40) == 1) {
