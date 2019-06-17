@@ -28,18 +28,18 @@ CRGB leds[NUMPIXELS];
 MyKnob knob(rotary1, rotary2);
 
 // Load animations...
-FuckMyEyes fuck_my_eyes(knob, leds);
-DiamondNecklace diamond_necklace(knob, leds);
-Crossfade crossfade(knob, leds);
 ColorChooser color_chooser(knob, leds);
+Crossfade crossfade(knob, leds);
+DiamondNecklace diamond_necklace(knob, leds);
 FindMyBike find_my_bike(knob, leds);
+FuckMyEyes fuck_my_eyes(knob, leds);
 Race race(knob, leds);
 
 // BUG CAUTION
 // never follow one animation function immediately with itself in the the
 // next case
-Animation *current_animation = &crossfade;
-int previous_animation_index = 0;
+Animation *current_animation = &color_chooser;
+int previous_animation_index = -1;
 void playAnimation()
 {
   if (animation_index != previous_animation_index)
@@ -53,16 +53,16 @@ void playAnimation()
     switch (animation_index)
     {
     case 0:
-      current_animation = &crossfade;
-      break;
-    case 1:
       current_animation = &color_chooser;
       break;
-    case 2:
+    case 1:
       current_animation = &fuck_my_eyes;
       break;
-    case 3:
+    case 2:
       current_animation = &race;
+      break;
+    case 3:
+      current_animation = &crossfade;
       break;
     case 4:
       current_animation = &diamond_necklace;

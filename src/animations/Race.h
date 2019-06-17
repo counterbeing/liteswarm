@@ -3,9 +3,9 @@
 class Race : public Animation
 {
 private:
-    int initialPosition = 50;
+    int initialPosition = 80;
     int start = 5;
-    int finish = 200;
+    int finish = 400;
     bool initialized = false;
     int head = 0;
     bool loopRotary = false;
