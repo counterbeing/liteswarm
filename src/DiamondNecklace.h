@@ -1,40 +1,39 @@
 #include <MyKnob.h>
 #include "FastLED.h"
+#include "Animation.h"
 
 const int NUMPIXELS = 76;
 
-class DiamondNecklace
+class DiamondNecklace : public Animation
 {
 private:
-    int start = 100;
-    int finish = 200;
-    int initialSetting = 150;
+    int initialPosition = 150;
+    int start = 5;
+    int finish = 300;
     long previousMillis = 0;
     bool initialized = false;
     int head = 0;
-    void setup(){};
+    bool loopRotary = false;
     MyKnob &knob;
     CRGB *leds;
 
+    void setup()
+    {
+        knob.setDefaults(
+            initialPosition,
+            start,
+            finish,
+            loopRotary);
+    };
+
     void loop()
     {
-        int dlay = knob.confine(1, 500);
+        int dlay = knob.confine();
         static uint8_t hue = 0;
         if (nonBlockDelay(dlay))
         {
             FastLED.showColor(CHSV(hue++, 255, 255));
         }
-    }
-
-    bool nonBlockDelay(unsigned int interval)
-    {
-        unsigned long currentMillis = millis();
-        if ((currentMillis - previousMillis) > interval)
-        {
-            previousMillis = currentMillis;
-            return true;
-        }
-        return false;
     }
 
 public:
@@ -44,6 +43,7 @@ public:
         if (!initialized)
         {
             setup();
+            initialized = true;
         };
         loop();
     }

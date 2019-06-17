@@ -75,45 +75,45 @@ void strand_off()
   complete_color(off);
 }
 
-void crossfade()
-{
-  int dlay = knob.confine(1, 500);
-  static uint8_t hue = 0;
-  if (nonBlockDelay(dlay))
-  {
-    FastLED.showColor(CHSV(hue++, 255, 255));
-  }
-}
+// void crossfade()
+// {
+//   int dlay = knob.confine(1, 500);
+//   static uint8_t hue = 0;
+//   if (nonBlockDelay(dlay))
+//   {
+//     FastLED.showColor(CHSV(hue++, 255, 255));
+//   }
+// }
 
 int r_head = 0;
 int g_head = 0;
 int b_head = 0;
 
-void shimmer()
-{
-  int dlay = knob.confine(5, 500);
-  if (nonBlockDelay(dlay))
-  {
-    complete_color(off);
-    r_head++;
-    if (r_head > NUMPIXELS)
-      r_head = 0;
-    // green, red, blue
-    draw_snake(r_head, 50, 255, 100);
+// void shimmer()
+// {
+//   int dlay = knob.confine(5, 500);
+//   if (nonBlockDelay(dlay))
+//   {
+//     complete_color(off);
+//     r_head++;
+//     if (r_head > NUMPIXELS)
+//       r_head = 0;
+//     // green, red, blue
+//     draw_snake(r_head, 50, 255, 100);
 
-    b_head++;
-    if (b_head > NUMPIXELS)
-      b_head = 0;
-    draw_snake((NUMPIXELS - b_head), 30, 20, 255);
+//     b_head++;
+//     if (b_head > NUMPIXELS)
+//       b_head = 0;
+//     draw_snake((NUMPIXELS - b_head), 30, 20, 255);
 
-    g_head = g_head + 2;
-    if (g_head > NUMPIXELS)
-      g_head = 0;
-    draw_snake((NUMPIXELS - g_head), 255, 130, 0);
+//     g_head = g_head + 2;
+//     if (g_head > NUMPIXELS)
+//       g_head = 0;
+//     draw_snake((NUMPIXELS - g_head), 255, 130, 0);
 
-    strip.show();
-  }
-}
+//     strip.show();
+//   }
+// }
 
 void find_my_bike()
 {
@@ -131,71 +131,71 @@ void find_my_bike()
 // left-to-right (a[1][2]++ is ((a[1])[2])++). Note that the associativity is
 // meaningful for member access operators, even though they are grouped with
 // unary postfix operators: a.b++ is parsed (a.b)++ and not a.(b++).
-void race()
-{
-  int dlay = knob.confine(5, 500);
-  if (nonBlockDelay(dlay))
-  {
-    static uint8_t hue = 0;
-    head = remapInRange(++head);
-    leds[head] = CRGB::Black;
-    leds[head] = CHSV(hue++, 255, 150);
-    head = remapInRange(++head);
-    leds[head] = CHSV(hue++, 255, 255);
-    FastLED.show();
-  }
-}
+// void race()
+// {
+//   int dlay = knob.confine(5, 500);
+//   if (nonBlockDelay(dlay))
+//   {
+//     static uint8_t hue = 0;
+//     head = remapInRange(++head);
+//     leds[head] = CRGB::Black;
+//     leds[head] = CHSV(hue++, 255, 150);
+//     head = remapInRange(++head);
+//     leds[head] = CHSV(hue++, 255, 255);
+//     FastLED.show();
+//   }
+// }
 
-void color_chooser(){
-  int color = knob.confine(0, 255, true);
-  fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
-  FastLED.show();
-}
+// void color_chooser(){
+//   int color = knob.confine(0, 255, true);
+//   fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
+//   FastLED.show();
+// }
 
-uint32_t lastColor = red;
-uint32_t currentColor = red;
-void dazzle()
-{
-  int dlay = knob.confine(0, 500);
-  if (nonBlockDelay(dlay))
-  {
-    switch (lastColor)
-    {
-    case red:
-      complete_color(green);
-      lastColor = green;
-      break;
-    case green:
-      complete_color(blue);
-      lastColor = blue;
-      break;
-    case blue:
-      complete_color(red);
-      lastColor = red;
-      break;
-    }
-  }
-}
+// uint32_t lastColor = red;
+// uint32_t currentColor = red;
+// void dazzle()
+// {
+//   int dlay = knob.confine(0, 500);
+//   if (nonBlockDelay(dlay))
+//   {
+//     switch (lastColor)
+//     {
+//     case red:
+//       complete_color(green);
+//       lastColor = green;
+//       break;
+//     case green:
+//       complete_color(blue);
+//       lastColor = blue;
+//       break;
+//     case blue:
+//       complete_color(red);
+//       lastColor = red;
+//       break;
+//     }
+//   }
+// }
 
-uint32_t lastStrobeColor = white;
-void strobe()
-{
-  int dlay = knob.confine(0, 1000);
-  if (nonBlockDelay(dlay))
-  {
-    switch (lastStrobeColor)
-    {
-    case off:
-      complete_color(white);
-      lastStrobeColor = white;
-      break;
-    case white:
-      complete_color(off);
-      lastStrobeColor = off;
-      break;
-    }
-  }
-}
+// uint32_t lastStrobeColor = white;
+// void strobe()
+// {
+//   int dlay = knob.confine(0, 1000);
+//   if (nonBlockDelay(dlay))
+//   {
+//     switch (lastStrobeColor)
+//     {
+//     case off:
+//       complete_color(white);
+//       lastStrobeColor = white;
+//       break;
+//     case white:
+//       complete_color(off);
+//       lastStrobeColor = off;
+//       break;
+//     }
+//   }
+// }
 
 
 // BUG CAUTION

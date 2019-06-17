@@ -19,7 +19,7 @@ private:
 
     int pinA;
     int pinB;
-    int position = 5;
+    int position;
     int start = 0;
     int finish = 10;
     int buttonPressCount = 0;
@@ -77,17 +77,18 @@ public:
     }
 
     // Set these variables once so they don't need to be set repeatedly
-    void setDefaults(int a_start, int a_finish, bool setLoop = false) {
-        start = a_start;
-        finish = a_finish;
-        loopRotary = setLoop;
+    void setDefaults(int position_, int start_, int finish_, bool loopRotary_ = false)
+    {
+        position = position_;
+        start = start_;
+        finish = finish_;
+        loopRotary = loopRotary_;
     }
 
     // Sets the value for the rotary encoder to someething reasonable for the
     // animation. It returns that value.
-    int confine(int start, int finish, bool setLoop = false)
+    int confine()
     {
-        loopRotary = setLoop;
         if (position < start)
         {
             if (loopRotary)
