@@ -24,18 +24,18 @@ protected:
 
     bool nonBlockDelay(unsigned int interval)
     {
-        unsigned long currentMillis = millis();
-        if ((currentMillis - previousMillis) > interval)
+        unsigned long current_millis = millis();
+        if ((current_millis - previousMillis) > interval)
         {
-            previousMillis = currentMillis;
+            previousMillis = current_millis;
             return true;
         }
         return false;
     }
-    virtual void setup() = 0;
     virtual void loop() = 0;
 
 public:
+    virtual void setup() = 0;
     Animation(){};
     void run()
     {

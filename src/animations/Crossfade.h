@@ -14,14 +14,6 @@ private:
     MyKnob &knob;
     CRGB *leds;
 
-    void setup()
-    {
-        knob.setDefaults(
-            initialPosition,
-            start,
-            finish,
-            loopRotary);
-    };
 
     void loop()
     {
@@ -34,5 +26,14 @@ private:
     }
 
 public:
+    void setup()
+    {
+        knob.setDefaults(
+            initialPosition,
+            start,
+            finish,
+            loopRotary);
+    };
+
     Crossfade(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
 };

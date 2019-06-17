@@ -22,7 +22,7 @@ uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 
 int buttonPin = A0;
-int animationIndex = 0;
+int animation_index = 0;
 
 CRGB leds[NUMPIXELS];
 MyKnob knob(rotary1, rotary2);
@@ -35,34 +35,40 @@ ColorChooser color_chooser(knob, leds);
 FindMyBike find_my_bike(knob, leds);
 Race race(knob, leds);
 
+Animation *current_animation = &fuck_my_eyes;
+
 // BUG CAUTION
 // never follow one animation function immediately with itself in the the
 // next case
+int previous_animation_index = 0;
 void playAnimation()
 {
-  if (animationIndex > 5)
-    animationIndex = 0;
-  switch (animationIndex)
+  if (animation_index != previous_animation_index)
   {
-  case 0:
-    crossfade.run();
-    break;
-  case 1:
-    color_chooser.run();
-    break;
-  case 2:
-    diamond_necklace.run();
-    break;
-  case 3:
-    fuck_my_eyes.run();
-    break;
-  case 4:
-    race.run();
-    break;
-  case 5:
-    find_my_bike.run();
-    break;
+    if (animation_index > 1)
+      animation_index = 0;
+    switch (animation_index)
+    {
+    case 0:
+      current_animation = &fuck_my_eyes;
+      break;
+    case 1:
+      current_animation = &color_chooser;
+      break;
+    case 3:
+      current_animation = &fuck_my_eyes;
+      break;
+    case 4:
+      current_animation = &race;
+      break;
+    case 5:
+      current_animation = &find_my_bike;
+      break;
+    }
+    current_animation->setup();
+    previous_animation_index = animation_index;
   }
+  current_animation->run();
 }
 
 void setup()
@@ -82,5 +88,5 @@ void loop()
 {
   button_debouncer.update();
   playAnimation();
-  knob.check(&animationIndex);
+  knob.check(&animation_index);
 }
