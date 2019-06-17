@@ -28,6 +28,7 @@ private:
     {
         int dlay = knob.confine();
         static uint8_t hue = 0;
+
         if (nonBlockDelay(dlay))
         {
             for (int i = 0; i < 76; i++)

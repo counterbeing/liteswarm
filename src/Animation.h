@@ -10,6 +10,14 @@ protected:
     long previousMillis = 0;
     bool initialized = false;
 
+    // int remapInRange(int index)
+    // {
+    //     if (index < 0)
+    //         return NUMPIXELS;
+    //     if (index > NUMPIXELS)
+    //         return 0;
+    //     return index;
+    // }
     bool nonBlockDelay(unsigned int interval)
     {
         unsigned long currentMillis = millis();
@@ -22,6 +30,7 @@ protected:
     }
     virtual void setup() = 0;
     virtual void loop() = 0;
+
 public:
     Animation(){};
     void run()
@@ -33,6 +42,5 @@ public:
         };
         loop();
     }
-
 };
 #endif

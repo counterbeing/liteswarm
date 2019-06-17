@@ -8,13 +8,11 @@
 
 #include "DiamondNecklace.h"
 #include "Crossfade.h"
+#include "FuckMyEyes.h"
 
 #define NUMPIXELS 76
 #define DATAPIN 4
 #define CLOCKPIN 5
-
-Adafruit_DotStar strip = Adafruit_DotStar(
-    NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
 
 int buttonPin = A0;
 int head = 0; // Index of first 'on' and 'off' pixels
@@ -31,67 +29,25 @@ uint8_t rotary2 = 3;
 
 CRGB leds[NUMPIXELS];
 MyKnob knob(rotary1, rotary2);
+FuckMyEyes fuck_my_eyes(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
 Crossfade crossfade(knob, leds);
 
 
-void complete_color(uint32_t color)
-{
-  for (int leds = 0; leds < NUMPIXELS; leds++)
-  {
-    strip.setPixelColor(leds, color);
-  }
-  strip.show();
-}
 
-int remapInRange(int index)
-{
-  if (index < 0)
-    return NUMPIXELS;
-  if (index > NUMPIXELS)
-    return 0;
-  return index;
-}
 
-long previousMillis = 0;
-bool nonBlockDelay(unsigned int interval)
-{
-  unsigned long currentMillis = millis();
-  if ((currentMillis - previousMillis) > interval)
-  {
-    previousMillis = currentMillis;
-    return true;
-  }
-  return false;
-}
-
-void draw_snake(int head, int green, int red, int blue)
-{
-  for (int i = 0; i < 5; i++)
-  {
-    strip.setPixelColor(head - i, green, red, max((blue - 255), 0));
-  }
-}
-
-void strand_off()
-{
-  complete_color(off);
-}
-
-// void crossfade()
+// void draw_snake(int head, int green, int red, int blue)
 // {
-//   int dlay = knob.confine(1, 500);
-//   static uint8_t hue = 0;
-//   if (nonBlockDelay(dlay))
+//   for (int i = 0; i < 5; i++)
 //   {
-//     FastLED.showColor(CHSV(hue++, 255, 255));
+//     strip.setPixelColor(head - i, green, red, max((blue - 255), 0));
 //   }
 // }
 
-int r_head = 0;
-int g_head = 0;
-int b_head = 0;
 
+// int r_head = 0;
+// int g_head = 0;
+// int b_head = 0;
 // void shimmer()
 // {
 //   int dlay = knob.confine(5, 500);
@@ -118,15 +74,15 @@ int b_head = 0;
 //   }
 // }
 
-void find_my_bike()
-{
-  complete_color(off);
-  if (nonBlockDelay(3000))
-  {
-    complete_color(white);
-    delay(20);
-  }
-}
+// void find_my_bike()
+// {
+//   complete_color(off);
+//   if (nonBlockDelay(3000))
+//   {
+//     complete_color(white);
+//     delay(20);
+//   }
+// }
 
 // Associativity specification is redundant for unary operators and is only
 // shown for completeness: unary prefix operators always associate right-to-left
@@ -155,50 +111,6 @@ void find_my_bike()
 //   FastLED.show();
 // }
 
-// uint32_t lastColor = red;
-// uint32_t currentColor = red;
-// void dazzle()
-// {
-//   int dlay = knob.confine(0, 500);
-//   if (nonBlockDelay(dlay))
-//   {
-//     switch (lastColor)
-//     {
-//     case red:
-//       complete_color(green);
-//       lastColor = green;
-//       break;
-//     case green:
-//       complete_color(blue);
-//       lastColor = blue;
-//       break;
-//     case blue:
-//       complete_color(red);
-//       lastColor = red;
-//       break;
-//     }
-//   }
-// }
-
-// uint32_t lastStrobeColor = white;
-// void strobe()
-// {
-//   int dlay = knob.confine(0, 1000);
-//   if (nonBlockDelay(dlay))
-//   {
-//     switch (lastStrobeColor)
-//     {
-//     case off:
-//       complete_color(white);
-//       lastStrobeColor = white;
-//       break;
-//     case white:
-//       complete_color(off);
-//       lastStrobeColor = off;
-//       break;
-//     }
-//   }
-// }
 
 
 // BUG CAUTION
@@ -212,7 +124,7 @@ void playAnimation()
   // strobe();
   if (animationIndex > 5)
     animationIndex = 0;
-    diamond_necklace.run();
+    fuck_my_eyes.run();
     // crossfade.run();
   // color_chooser();
   // switch (animationIndex)
@@ -241,8 +153,6 @@ void playAnimation()
 void setup()
 {
   FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
-  strip.begin(); // Initialize pins for output
-  strip.show();  // Turn all LEDs off ASAP
   Serial.begin(57600);
 
   pinMode(buttonPin, INPUT_PULLUP);
