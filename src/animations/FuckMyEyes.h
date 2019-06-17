@@ -7,7 +7,6 @@ private:
     int start = 0;
     int finish = 300;
     bool initialized = false;
-    int head = 0;
     bool loopRotary = false;
     MyKnob &knob;
     CRGB *leds;
@@ -15,7 +14,6 @@ private:
 
     void setup()
     {
-        Serial.println(initialPosition);
         knob.setDefaults(
             initialPosition,
             start,

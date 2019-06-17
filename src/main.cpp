@@ -35,31 +35,37 @@ ColorChooser color_chooser(knob, leds);
 FindMyBike find_my_bike(knob, leds);
 Race race(knob, leds);
 
-Animation *current_animation = &fuck_my_eyes;
-
 // BUG CAUTION
 // never follow one animation function immediately with itself in the the
 // next case
+Animation *current_animation = &crossfade;
 int previous_animation_index = 0;
 void playAnimation()
 {
   if (animation_index != previous_animation_index)
   {
-    if (animation_index > 1)
+    // Serial.print("Coming from ");
+    // Serial.print(previous_animation_index);
+    // Serial.print(" to ");
+    // Serial.println(animation_index);
+    if (animation_index > 5)
       animation_index = 0;
     switch (animation_index)
     {
     case 0:
-      current_animation = &fuck_my_eyes;
+      current_animation = &crossfade;
       break;
     case 1:
       current_animation = &color_chooser;
       break;
-    case 3:
+    case 2:
       current_animation = &fuck_my_eyes;
       break;
-    case 4:
+    case 3:
       current_animation = &race;
+      break;
+    case 4:
+      current_animation = &diamond_necklace;
       break;
     case 5:
       current_animation = &find_my_bike;

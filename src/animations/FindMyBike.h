@@ -15,7 +15,6 @@ private:
 
     void setup()
     {
-        Serial.println(initialPosition);
         knob.setDefaults(
             initialPosition,
             start,

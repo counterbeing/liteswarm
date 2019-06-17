@@ -39,11 +39,11 @@ public:
     Animation(){};
     void run()
     {
-        if (!initialized)
-        {
-            setup();
-            initialized = true;
-        };
+        // if (!initialized)
+        // {
+        //     setup();
+        //     initialized = true;
+        // };
         loop();
     }
 };

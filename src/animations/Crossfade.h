@@ -5,9 +5,9 @@
 class Crossfade : public Animation
 {
 private:
-    int initialPosition = 100;
+    int initialPosition = 50;
     int start = 5;
-    int finish = 300;
+    int finish = 200;
     bool initialized = false;
     int head = 0;
     bool loopRotary = false;
