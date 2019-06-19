@@ -14,7 +14,9 @@
 #include "animations/FindMyBike.h"
 #include "animations/Race.h"
 
+// All that matters to a 3pin WS* strand
 #define DATAPIN 4
+// Not applicable to 4 wire APA102 type strands
 #define CLOCKPIN 5
 
 // Pins for the rotary
@@ -22,7 +24,6 @@ uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 
 int buttonPin = A0;
-int animation_index = 0;
 
 CRGB leds[NUMPIXELS];
 MyKnob knob(rotary1, rotary2);
@@ -35,10 +36,9 @@ FindMyBike find_my_bike(knob, leds);
 FuckMyEyes fuck_my_eyes(knob, leds);
 Race race(knob, leds);
 
-// BUG CAUTION
-// never follow one animation function immediately with itself in the the
-// next case
+
 Animation *current_animation = &color_chooser;
+int animation_index = 0;
 int previous_animation_index = -1;
 void playAnimation()
 {
@@ -50,6 +50,9 @@ void playAnimation()
     // Serial.println(animation_index);
     if (animation_index > 5)
       animation_index = 0;
+    // BUG CAUTION
+    // never follow one animation function immediately with itself in the the
+    // next case
     switch (animation_index)
     {
     case 0:
@@ -79,7 +82,8 @@ void playAnimation()
 
 void setup()
 {
-  FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
+  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
+  // FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
   Serial.begin(57600);
 
   pinMode(buttonPin, INPUT_PULLUP);
