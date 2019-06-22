@@ -5,6 +5,7 @@
 #include <SPI.h>
 #include <MyKnob.h>
 #include <Encoder.h>
+
 #include "config.h"
 
 #include "animations/DiamondNecklace.h"
@@ -14,10 +15,7 @@
 #include "animations/FindMyBike.h"
 #include "animations/Race.h"
 
-// All that matters to a 3pin WS* strand
-#define DATAPIN 4
-// Not applicable to 4 wire APA102 type strands
-#define CLOCKPIN 5
+
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
