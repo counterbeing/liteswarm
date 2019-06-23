@@ -7,9 +7,9 @@ struct RadioPacket // Any packet up to 32 bytes can be sent.
 
     uint8_t sharedSecret;
     // uint8_t senderId;
-    // uint8_t action;
     uint32_t rotaryPosition;
     // uint32_t animationId;
+    // uint32_t keyframe;
 };
 
 class Radio
