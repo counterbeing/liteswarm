@@ -70,6 +70,14 @@ public:
         // Encoder knob(pinA, pinB);
         // encoder_knob = Encoder(a, b);
     }
+    void set(int position)
+    {
+        encoder_knob.write(position);
+    }
+    uint32_t get()
+    {
+        encoder_knob.read();
+    }
     void check(int *_animationIndex)
     {
         checkButton(_animationIndex);

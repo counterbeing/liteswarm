@@ -8,6 +8,8 @@
 
 #include "config.h"
 
+#include "Radio.h"
+
 #include "animations/DiamondNecklace.h"
 #include "animations/Crossfade.h"
 #include "animations/FuckMyEyes.h"
@@ -34,6 +36,7 @@ FindMyBike find_my_bike(knob, leds);
 FuckMyEyes fuck_my_eyes(knob, leds);
 Race race(knob, leds);
 
+Radio radio(knob);
 
 Animation *current_animation = &color_chooser;
 int animation_index = 0;
@@ -90,10 +93,12 @@ void setup()
 
   pinMode(rotary1, INPUT_PULLUP);
   pinMode(rotary2, INPUT_PULLUP);
+  radio.setup();
 }
 
 void loop()
 {
+  radio.check();
   button_debouncer.update();
   playAnimation();
   knob.check(&animation_index);
