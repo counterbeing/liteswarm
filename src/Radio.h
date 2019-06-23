@@ -43,6 +43,7 @@ private:
     void checkRadioSend()
     {
         _radioData.rotaryPosition = knob.get();
+        Serial.println(_radioData.rotaryPosition);
         _radioData.sharedSecret = SHARED_SECRET;
         _radio.send(SHARED_RADIO_ID, &_radioData, sizeof(_radioData), NRFLite::NO_ACK);
     }

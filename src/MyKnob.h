@@ -76,7 +76,7 @@ public:
     }
     uint32_t get()
     {
-        encoder_knob.read();
+        return encoder_knob.read();
     }
     void check(int *_animationIndex)
     {
