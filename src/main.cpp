@@ -36,10 +36,10 @@ FindMyBike find_my_bike(knob, leds);
 FuckMyEyes fuck_my_eyes(knob, leds);
 Race race(knob, leds);
 
-Radio radio(knob);
+int animation_index = 0;
+Radio radio(knob, animation_index);
 
 Animation *current_animation = &color_chooser;
-int animation_index = 0;
 int previous_animation_index = -1;
 void playAnimation()
 {

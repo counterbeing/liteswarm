@@ -8,7 +8,7 @@ struct RadioPacket // Any packet up to 32 bytes can be sent.
     uint8_t sharedSecret;
     // uint8_t senderId;
     uint32_t rotaryPosition;
-    // uint32_t animationId;
+    uint8_t animationId;
     // uint32_t keyframe;
 };
 
@@ -20,11 +20,13 @@ private:
     bool radioAlive = false;
     // int *animationIndex;
     MyKnob &knob;
+    int &animation_index;
     const static uint8_t SHARED_RADIO_ID = 1;
-    const static uint8_t PIN_RADIO_CE = 9;           // hardware pins
-    const static uint8_t PIN_RADIO_CSN = 10;         // hardware pins
+    const static uint8_t PIN_RADIO_CE = 9;   // hardware pins
+    const static uint8_t PIN_RADIO_CSN = 10; // hardware pins
     const static uint8_t SHARED_SECRET = 42;
-
+    int previousAnimationIndex;
+    int previousRotaryPosition = -100;
 
     void checkRadioReceive()
     {
@@ -36,20 +38,24 @@ private:
             Serial.println(_radioData.sharedSecret);
             Serial.print("rotaryPosition: ");
             Serial.println(_radioData.rotaryPosition);
+            Serial.print("animationId: ");
+            Serial.println(_radioData.animationId);
             knob.set(_radioData.rotaryPosition);
+            animation_index = _radioData.animationId;
         }
     }
 
     void checkRadioSend()
     {
+        Serial.println("--- Sending Data");
         _radioData.rotaryPosition = knob.get();
-        Serial.println(_radioData.rotaryPosition);
         _radioData.sharedSecret = SHARED_SECRET;
+        _radioData.animationId = animation_index;
         _radio.send(SHARED_RADIO_ID, &_radioData, sizeof(_radioData), NRFLite::NO_ACK);
     }
 
 public:
-    Radio(MyKnob &knob_) : knob(knob_) {}
+    Radio(MyKnob &knob_, int &animation_index_) : knob(knob_), animation_index(animation_index_) {}
     void setup()
     {
         pinMode(14, INPUT_PULLUP);
@@ -66,10 +72,17 @@ public:
     }
     void check()
     {
+        int newRotaryPosition = knob.get();
         if (radioAlive)
         {
             checkRadioReceive();
-            checkRadioSend();
+            if (!(previousRotaryPosition == newRotaryPosition))
+            {
+                Serial.print("Previous rotary: ");
+                Serial.println(previousRotaryPosition);
+                previousRotaryPosition = newRotaryPosition;
+                checkRadioSend();
+            }
         }
     }
 };

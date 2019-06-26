@@ -7,6 +7,6 @@
 #define CLOCKPIN 5
 
 #define STRIP WS2811
-const int NUMPIXELS = 60;
+const int NUMPIXELS = 180;
 
-#endif
+#endif 
