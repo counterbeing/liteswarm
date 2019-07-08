@@ -25,6 +25,7 @@ private:
     int buttonPressCount = 0;
     int loopRotary = false;
     long lastPressTime = 0;
+    bool manualChange = false;
     void checkRotary()
     {
         long newPos = encoder_knob.read();
@@ -32,6 +33,7 @@ private:
         {
             return;
         }
+        manualChange = true;
         position = newPos;
     }
 
@@ -56,6 +58,7 @@ private:
             // Serial.print("addr: ");
             // Serial.println(reinterpret_cast<int>(_aiIndex));
             lastPressTime = millis();
+            manualChange = true;
             (*_aiIndex)++;
             // Serial.print("new *_aiIndex: ");
             // Serial.println(reinterpret_cast<int>(*_aiIndex));
@@ -80,8 +83,13 @@ public:
     }
     void check(int *_animationIndex)
     {
+        manualChange = false;
         checkButton(_animationIndex);
         checkRotary();
+    }
+    bool manuallyChanged()
+    {
+        return manualChange;
     }
 
     // Set these variables once so they don't need to be set repeatedly
