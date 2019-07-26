@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #define FASTLED_INTERNAL
 #include "FastLED.h"
-#include <Adafruit_DotStar.h>
 #include <SPI.h>
 #include <MyKnob.h>
 #include <Encoder.h>
@@ -10,12 +9,13 @@
 
 #include "Radio.h"
 
-#include "animations/DiamondNecklace.h"
-#include "animations/Crossfade.h"
-#include "animations/FuckMyEyes.h"
 #include "animations/ColorChooser.h"
+#include "animations/Crossfade.h"
+#include "animations/DiamondNecklace.h"
 #include "animations/FindMyBike.h"
+#include "animations/FuckMyEyes.h"
 #include "animations/Race.h"
+#include "animations/Rainbow.h"
 
 
 
@@ -35,11 +35,12 @@ DiamondNecklace diamond_necklace(knob, leds);
 FindMyBike find_my_bike(knob, leds);
 FuckMyEyes fuck_my_eyes(knob, leds);
 Race race(knob, leds);
+Rainbow rainbow(knob, leds);
 
 int animation_index = 0;
 Radio radio(knob, animation_index);
 
-Animation *current_animation = &color_chooser;
+Animation *current_animation = &rainbow;
 int previous_animation_index = -1;
 void playAnimation()
 {
@@ -49,15 +50,17 @@ void playAnimation()
     // Serial.print(previous_animation_index);
     // Serial.print(" to ");
     // Serial.println(animation_index);
-    if (animation_index > 5)
+    if (animation_index > 6)
       animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
     // next case
+    Serial.print("Animation Index: ");
+    Serial.println(animation_index);
     switch (animation_index)
     {
     case 0:
-      current_animation = &color_chooser;
+      current_animation = &rainbow;
       break;
     case 1:
       current_animation = &fuck_my_eyes;
@@ -72,6 +75,9 @@ void playAnimation()
       current_animation = &diamond_necklace;
       break;
     case 5:
+      current_animation = &color_chooser;
+      break;
+    case 6:
       current_animation = &find_my_bike;
       break;
     }
@@ -83,6 +89,7 @@ void playAnimation()
 
 void setup()
 {
+  Serial.println("SETTING UP -------");
   FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
   // FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
   Serial.begin(57600);
