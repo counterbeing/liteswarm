@@ -3,7 +3,7 @@
 <eagle version="9.4.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="50" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
@@ -148,6 +148,7 @@
 <wire x1="20.371" y1="-1.27" x2="20.371" y2="49.52" width="0" layer="20"/>
 <wire x1="20.371" y1="49.52" x2="-1.27" y2="49.52" width="0" layer="20"/>
 <wire x1="-1.27" y1="49.52" x2="-1.27" y2="-1.27" width="0" layer="20"/>
+<text x="6.35" y="20.32" size="0.8128" layer="22" rot="MR270">Back Sizide</text>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors">

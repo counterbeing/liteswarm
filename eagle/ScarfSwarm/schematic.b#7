@@ -318,7 +318,6 @@ Pins are staggered by 0.005" from center to hold pins in place while soldering.
 &lt;p&gt;The Nano was designed and is being produced by Gravitech.&lt;br&gt;
 
 &lt;a href="http://www.gravitech.us/arna30wiatp.html"&gt;Gravitech Arduino Nano V3.0&lt;/a&gt;&lt;/p&gt;</description>
-<hole x="-22.86" y="-7.62" drill="1.778"/>
 <pad name="1" x="-20.32" y="-7.62" drill="0.8" shape="square"/>
 <pad name="2" x="-17.78" y="-7.62" drill="0.8"/>
 <pad name="3" x="-15.24" y="-7.62" drill="0.8"/>
@@ -349,9 +348,6 @@ Pins are staggered by 0.005" from center to hold pins in place while soldering.
 <pad name="28" x="-15.24" y="7.62" drill="0.8"/>
 <pad name="29" x="-17.78" y="7.62" drill="0.8"/>
 <pad name="30" x="-20.32" y="7.62" drill="0.8"/>
-<hole x="-22.86" y="7.62" drill="1.778"/>
-<hole x="17.78" y="7.62" drill="1.778"/>
-<hole x="17.78" y="-7.62" drill="1.778"/>
 <wire x1="-24.13" y1="8.89" x2="19.05" y2="8.89" width="0.127" layer="21"/>
 <wire x1="19.05" y1="8.89" x2="19.05" y2="3.81" width="0.127" layer="21"/>
 <wire x1="19.05" y1="3.81" x2="19.05" y2="-3.81" width="0.127" layer="21"/>
@@ -606,8 +602,6 @@ design rules under a new name.</description>
 <contactref element="J3" pad="1"/>
 <contactref element="J2" pad="4"/>
 <contactref element="J4" pad="2"/>
-<contactref element="ARDUINO_NANO1" pad="19"/>
-<contactref element="ARDUINO_NANO1" pad="14"/>
 <wire x1="10.8204" y1="17.0688" x2="10.8204" y2="3.048" width="0.1524" layer="1"/>
 <wire x1="5.7912" y1="22.098" x2="10.8204" y2="17.0688" width="0.1524" layer="1"/>
 <wire x1="10.8204" y1="3.048" x2="10.922" y2="3.048" width="0.1524" layer="1"/>
@@ -629,6 +623,8 @@ design rules under a new name.</description>
 <wire x1="13.2588" y1="33.528" x2="5.7912" y2="26.0604" width="0.1524" layer="16"/>
 <wire x1="5.7912" y1="22.098" x2="5.715" y2="22.098" width="0.1524" layer="16"/>
 <wire x1="13.2588" y1="33.528" x2="13.335" y2="33.528" width="0.1524" layer="16"/>
+<contactref element="ARDUINO_NANO1" pad="19"/>
+<contactref element="ARDUINO_NANO1" pad="14"/>
 </signal>
 <signal name="N$1">
 <contactref element="J1" pad="6"/>

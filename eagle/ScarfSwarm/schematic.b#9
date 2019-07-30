@@ -144,10 +144,10 @@
 </layers>
 <board>
 <plain>
-<wire x1="-1.27" y1="-1.27" x2="20.371" y2="-1.27" width="0" layer="20"/>
-<wire x1="20.371" y1="-1.27" x2="20.371" y2="48.25" width="0" layer="20"/>
-<wire x1="20.371" y1="48.25" x2="-1.27" y2="48.25" width="0" layer="20"/>
-<wire x1="-1.27" y1="48.25" x2="-1.27" y2="-1.27" width="0" layer="20"/>
+<wire x1="-1.27" y1="-1.27" x2="87.681" y2="-1.27" width="0" layer="20"/>
+<wire x1="87.681" y1="-1.27" x2="87.681" y2="66.03" width="0" layer="20"/>
+<wire x1="87.681" y1="66.03" x2="-1.27" y2="66.03" width="0" layer="20"/>
+<wire x1="-1.27" y1="66.03" x2="-1.27" y2="-1.27" width="0" layer="20"/>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors">
@@ -595,178 +595,86 @@ design rules under a new name.</description>
 <attribute name="NAME" x="6.985" y="4.699" size="0.6096" layer="25" font="vector" ratio="20"/>
 <attribute name="VALUE" x="6.985" y="0.762" size="0.6096" layer="27" font="vector" ratio="20"/>
 </element>
-<element name="ARDUINO_NANO1" library="ArduinoNanoV30" package="ARDUINO_NANO" value="" x="25.4" y="-11.43" smashed="yes">
-<attribute name="NAME" x="7.62" y="-11.43" size="1.27" layer="21" font="vector"/>
-<attribute name="VALUE" x="7.62" y="-13.97" size="1.27" layer="21" font="vector"/>
+<element name="ARDUINO_NANO1" library="ArduinoNanoV30" package="ARDUINO_NANO" value="" x="9.525" y="25.273" smashed="yes" rot="R90">
+<attribute name="NAME" x="9.525" y="7.493" size="1.27" layer="21" font="vector" rot="R90"/>
+<attribute name="VALUE" x="12.065" y="7.493" size="1.27" layer="21" font="vector" rot="R90"/>
 </element>
 </elements>
 <signals>
-<signal name="COM">
-<wire x1="5.08" y1="35.56" x2="1.905" y2="32.385" width="0.1524" layer="16"/>
-<wire x1="12.7" y1="35.56" x2="5.08" y2="35.56" width="0.1524" layer="16"/>
-<wire x1="13.97" y1="36.83" x2="12.7" y2="35.56" width="0.1524" layer="1"/>
-<wire x1="13.97" y1="37.465" x2="13.97" y2="36.83" width="0.1524" layer="1"/>
-<wire x1="17.145" y1="37.465" x2="13.97" y2="37.465" width="0.1524" layer="16"/>
-<wire x1="1.905" y1="32.385" x2="1.905" y2="32.258" width="0.1524" layer="16"/>
-<wire x1="17.145" y1="37.465" x2="17.145" y2="37.338" width="0.1524" layer="16"/>
-<via x="12.7" y="35.56" extent="1-16" drill="0.35"/>
-<via x="13.97" y="37.465" extent="1-16" drill="0.35"/>
-</signal>
 <signal name="GND">
 <contactref element="J1" pad="7"/>
 <contactref element="J3" pad="1"/>
 <contactref element="J2" pad="4"/>
 <contactref element="J4" pad="2"/>
-<wire x1="9.525" y1="1.27" x2="10.795" y2="2.54" width="0.1524" layer="1"/>
-<wire x1="5.715" y1="1.27" x2="9.525" y2="1.27" width="0.1524" layer="1"/>
-<wire x1="5.715" y1="22.098" x2="5.715" y2="1.27" width="0.1524" layer="1"/>
-<wire x1="10.795" y1="2.54" x2="10.922" y2="3.048" width="0.1524" layer="1"/>
-<wire x1="13.335" y1="24.13" x2="13.335" y2="33.528" width="0.1524" layer="16"/>
-<wire x1="7.62" y1="24.13" x2="13.335" y2="24.13" width="0.1524" layer="16"/>
-<wire x1="5.715" y1="22.225" x2="7.62" y2="24.13" width="0.1524" layer="16"/>
-<wire x1="5.715" y1="22.225" x2="5.715" y2="22.098" width="0.1524" layer="16"/>
-<wire x1="4.445" y1="43.18" x2="1.905" y2="45.72" width="0.1524" layer="1"/>
-<wire x1="4.445" y1="23.495" x2="4.445" y2="43.18" width="0.1524" layer="1"/>
-<wire x1="5.715" y1="22.225" x2="4.445" y2="23.495" width="0.1524" layer="1"/>
-<wire x1="1.905" y1="45.72" x2="1.905" y2="46.228" width="0.1524" layer="1"/>
-<wire x1="5.715" y1="22.225" x2="5.715" y2="22.098" width="0.1524" layer="1"/>
 <contactref element="ARDUINO_NANO1" pad="19"/>
 <contactref element="ARDUINO_NANO1" pad="14"/>
-<wire x1="38.1" y1="-19.05" x2="33.02" y2="-3.81" width="0" layer="19" extent="1-1"/>
-<wire x1="10.795" y1="2.54" x2="33.02" y2="-3.81" width="0" layer="19" extent="1-1"/>
+<wire x1="13.335" y1="33.528" x2="1.905" y2="46.228" width="0" layer="19" extent="1-1"/>
+<wire x1="5.715" y1="22.098" x2="13.335" y2="33.528" width="0" layer="19" extent="1-1"/>
+<wire x1="10.922" y1="3.048" x2="5.715" y2="22.098" width="0" layer="19" extent="1-1"/>
+<wire x1="1.905" y1="32.893" x2="10.922" y2="3.048" width="0" layer="19" extent="1-1"/>
+<wire x1="17.145" y1="37.973" x2="1.905" y2="32.893" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$1">
 <contactref element="J1" pad="6"/>
-<wire x1="15.875" y1="8.255" x2="17.145" y2="6.985" width="0.1524" layer="16"/>
-<wire x1="15.875" y1="36.83" x2="15.875" y2="8.255" width="0.1524" layer="16"/>
-<wire x1="6.35" y1="36.83" x2="15.875" y2="36.83" width="0.1524" layer="16"/>
-<wire x1="5.08" y1="38.1" x2="6.35" y2="36.83" width="0.1524" layer="1"/>
-<wire x1="5.08" y1="45.085" x2="5.08" y2="38.1" width="0.1524" layer="1"/>
-<wire x1="4.445" y1="45.72" x2="5.08" y2="45.085" width="0.1524" layer="1"/>
-<wire x1="4.445" y1="45.72" x2="4.445" y2="46.228" width="0.1524" layer="1"/>
-<via x="6.35" y="36.83" extent="1-16" drill="0.35"/>
 <contactref element="ARDUINO_NANO1" pad="2"/>
-<wire x1="7.62" y1="-19.05" x2="17.145" y2="6.985" width="0" layer="19" extent="16-16"/>
+<wire x1="17.145" y1="7.493" x2="4.445" y2="46.228" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$2">
 <contactref element="J1" pad="5"/>
-<wire x1="2.54" y1="20.32" x2="1.905" y2="19.685" width="0.1524" layer="16"/>
-<wire x1="13.335" y1="20.32" x2="2.54" y2="20.32" width="0.1524" layer="16"/>
-<wire x1="15.24" y1="22.225" x2="13.335" y2="20.32" width="0.1524" layer="16"/>
-<wire x1="15.24" y1="36.195" x2="15.24" y2="22.225" width="0.1524" layer="16"/>
-<wire x1="3.81" y1="36.195" x2="15.24" y2="36.195" width="0.1524" layer="16"/>
-<wire x1="3.175" y1="36.83" x2="3.81" y2="36.195" width="0.1524" layer="16"/>
-<wire x1="3.175" y1="40.64" x2="3.175" y2="36.83" width="0.1524" layer="16"/>
-<wire x1="6.985" y1="44.45" x2="3.175" y2="40.64" width="0.1524" layer="16"/>
-<wire x1="6.985" y1="46.228" x2="6.985" y2="44.45" width="0.1524" layer="16"/>
 <contactref element="ARDUINO_NANO1" pad="24"/>
-<wire x1="20.32" y1="-3.81" x2="13.335" y2="20.32" width="0" layer="19" extent="16-16"/>
+<wire x1="1.905" y1="20.193" x2="6.985" y2="46.228" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$3">
 <contactref element="J1" pad="4"/>
-<wire x1="4.445" y1="19.685" x2="1.905" y2="17.145" width="0.1524" layer="16"/>
-<wire x1="7.62" y1="19.685" x2="4.445" y2="19.685" width="0.1524" layer="16"/>
-<wire x1="9.525" y1="21.59" x2="7.62" y2="19.685" width="0.1524" layer="1"/>
-<wire x1="9.525" y1="46.228" x2="9.525" y2="21.59" width="0.1524" layer="1"/>
-<via x="7.62" y="19.685" extent="1-16" drill="0.35"/>
 <contactref element="ARDUINO_NANO1" pad="25"/>
-<wire x1="17.78" y1="-3.81" x2="7.62" y2="19.685" width="0" layer="19" extent="1-1"/>
+<wire x1="1.905" y1="17.653" x2="9.525" y2="46.228" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$4">
 <contactref element="J1" pad="3"/>
-<wire x1="12.065" y1="9.525" x2="17.145" y2="4.445" width="0.1524" layer="1"/>
-<wire x1="12.065" y1="46.228" x2="12.065" y2="9.525" width="0.1524" layer="1"/>
 <contactref element="ARDUINO_NANO1" pad="1"/>
-<wire x1="5.08" y1="-19.05" x2="17.145" y2="4.445" width="0" layer="19" extent="1-1"/>
+<wire x1="17.145" y1="4.953" x2="12.065" y2="46.228" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$5">
 <contactref element="J1" pad="2"/>
-<wire x1="14.605" y1="19.685" x2="1.905" y2="6.985" width="0.1524" layer="16"/>
-<wire x1="14.605" y1="46.228" x2="14.605" y2="19.685" width="0.1524" layer="1"/>
-<via x="14.605" y="19.685" extent="1-16" drill="0.35"/>
 <contactref element="ARDUINO_NANO1" pad="29"/>
-<wire x1="7.62" y1="-3.81" x2="1.905" y2="6.985" width="0" layer="19" extent="16-16"/>
+<wire x1="1.905" y1="7.493" x2="14.605" y2="46.228" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$6">
 <contactref element="J1" pad="1"/>
-<wire x1="3.81" y1="6.35" x2="1.905" y2="4.445" width="0.1524" layer="1"/>
-<wire x1="3.81" y1="37.465" x2="3.81" y2="6.35" width="0.1524" layer="1"/>
-<wire x1="10.795" y1="44.45" x2="3.81" y2="37.465" width="0.1524" layer="16"/>
-<wire x1="15.875" y1="44.45" x2="10.795" y2="44.45" width="0.1524" layer="16"/>
-<wire x1="17.145" y1="45.72" x2="15.875" y2="44.45" width="0.1524" layer="16"/>
-<wire x1="17.145" y1="45.72" x2="17.145" y2="46.228" width="0.1524" layer="16"/>
-<via x="3.81" y="37.465" extent="1-16" drill="0.35"/>
 <contactref element="ARDUINO_NANO1" pad="30"/>
-<wire x1="5.08" y1="-3.81" x2="1.905" y2="4.445" width="0" layer="19" extent="1-1"/>
+<wire x1="1.905" y1="4.953" x2="17.145" y2="46.228" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$8">
 <contactref element="J3" pad="2"/>
-<wire x1="3.81" y1="26.67" x2="1.905" y2="24.765" width="0.1524" layer="16"/>
-<wire x1="8.255" y1="26.67" x2="3.81" y2="26.67" width="0.1524" layer="16"/>
-<wire x1="10.795" y1="29.21" x2="8.255" y2="26.67" width="0.1524" layer="16"/>
-<wire x1="10.795" y1="33.528" x2="10.795" y2="29.21" width="0.1524" layer="1"/>
-<via x="10.795" y="29.21" extent="1-16" drill="0.35"/>
 <contactref element="ARDUINO_NANO1" pad="22"/>
-<wire x1="25.4" y1="-3.81" x2="8.255" y2="26.67" width="0" layer="19" extent="16-16"/>
+<wire x1="1.905" y1="25.273" x2="10.795" y2="33.528" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$9">
 <contactref element="J2" pad="3"/>
-<wire x1="7.62" y1="27.305" x2="1.905" y2="27.305" width="0.1524" layer="16"/>
-<wire x1="8.255" y1="26.67" x2="7.62" y2="27.305" width="0.1524" layer="1"/>
-<wire x1="8.255" y1="22.098" x2="8.255" y2="26.67" width="0.1524" layer="1"/>
-<via x="7.62" y="27.305" extent="1-16" drill="0.35"/>
 <contactref element="ARDUINO_NANO1" pad="21"/>
-<wire x1="27.94" y1="-3.81" x2="8.255" y2="22.098" width="0" layer="19" extent="1-1"/>
+<wire x1="1.905" y1="27.813" x2="8.255" y2="22.098" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$10">
 <contactref element="J2" pad="2"/>
-<wire x1="3.81" y1="31.75" x2="1.905" y2="29.845" width="0.1524" layer="16"/>
-<wire x1="5.715" y1="31.75" x2="3.81" y2="31.75" width="0.1524" layer="16"/>
-<wire x1="6.985" y1="33.02" x2="5.715" y2="31.75" width="0.1524" layer="16"/>
-<wire x1="6.985" y1="34.925" x2="6.985" y2="33.02" width="0.1524" layer="16"/>
-<wire x1="13.97" y1="34.925" x2="6.985" y2="34.925" width="0.1524" layer="16"/>
-<wire x1="14.605" y1="34.29" x2="13.97" y2="34.925" width="0.1524" layer="16"/>
-<wire x1="14.605" y1="23.495" x2="14.605" y2="34.29" width="0.1524" layer="16"/>
-<wire x1="12.065" y1="23.495" x2="14.605" y2="23.495" width="0.1524" layer="16"/>
-<wire x1="10.795" y1="22.225" x2="12.065" y2="23.495" width="0.1524" layer="16"/>
-<wire x1="10.795" y1="22.225" x2="10.795" y2="22.098" width="0.1524" layer="16"/>
 <contactref element="ARDUINO_NANO1" pad="20"/>
-<wire x1="30.48" y1="-3.81" x2="14.605" y2="23.495" width="0" layer="19" extent="16-16"/>
+<wire x1="1.905" y1="30.353" x2="10.795" y2="22.098" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$11">
 <contactref element="J2" pad="1"/>
-<wire x1="13.335" y1="15.875" x2="17.145" y2="12.065" width="0.1524" layer="1"/>
-<wire x1="13.335" y1="22.098" x2="13.335" y2="15.875" width="0.1524" layer="1"/>
 <contactref element="ARDUINO_NANO1" pad="4"/>
-<wire x1="12.7" y1="-19.05" x2="17.145" y2="12.065" width="0" layer="19" extent="1-1"/>
+<wire x1="17.145" y1="12.573" x2="13.335" y2="22.098" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$12">
 <contactref element="J3" pad="4"/>
 <contactref element="J4" pad="1"/>
-<wire x1="6.985" y1="3.81" x2="7.62" y2="3.175" width="0.1524" layer="1"/>
-<wire x1="6.985" y1="31.75" x2="6.985" y2="3.81" width="0.1524" layer="1"/>
-<wire x1="5.715" y1="33.02" x2="6.985" y2="31.75" width="0.1524" layer="1"/>
-<wire x1="7.62" y1="3.175" x2="8.128" y2="3.048" width="0.1524" layer="1"/>
-<wire x1="5.715" y1="33.02" x2="5.715" y2="33.528" width="0.1524" layer="1"/>
-<wire x1="15.875" y1="38.1" x2="17.145" y2="39.37" width="0.1524" layer="16"/>
-<wire x1="8.89" y1="38.1" x2="15.875" y2="38.1" width="0.1524" layer="16"/>
-<wire x1="5.715" y1="34.925" x2="8.89" y2="38.1" width="0.1524" layer="1"/>
-<wire x1="5.715" y1="33.528" x2="5.715" y2="34.925" width="0.1524" layer="1"/>
-<via x="8.89" y="38.1" extent="1-16" drill="0.35"/>
 <contactref element="ARDUINO_NANO1" pad="15"/>
-<wire x1="8.128" y1="3.048" x2="40.64" y2="-19.05" width="0" layer="19" extent="1-1"/>
+<wire x1="8.128" y1="3.048" x2="5.715" y2="33.528" width="0" layer="19" extent="1-1"/>
+<wire x1="17.145" y1="40.513" x2="8.128" y2="3.048" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$13">
 <contactref element="J3" pad="3"/>
-<wire x1="5.715" y1="26.035" x2="1.905" y2="22.225" width="0.1524" layer="16"/>
-<wire x1="8.89" y1="26.035" x2="5.715" y2="26.035" width="0.1524" layer="16"/>
-<wire x1="11.43" y1="28.575" x2="8.89" y2="26.035" width="0.1524" layer="16"/>
-<wire x1="11.43" y1="31.75" x2="11.43" y2="28.575" width="0.1524" layer="16"/>
-<wire x1="9.525" y1="31.75" x2="11.43" y2="31.75" width="0.1524" layer="16"/>
-<wire x1="8.255" y1="33.02" x2="9.525" y2="31.75" width="0.1524" layer="16"/>
-<wire x1="8.255" y1="33.02" x2="8.255" y2="33.528" width="0.1524" layer="16"/>
 <contactref element="ARDUINO_NANO1" pad="23"/>
-<wire x1="22.86" y1="-3.81" x2="8.89" y2="26.035" width="0" layer="19" extent="16-16"/>
+<wire x1="1.905" y1="22.733" x2="8.255" y2="33.528" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="5V">
 <contactref element="ARDUINO_NANO1" pad="12"/>
