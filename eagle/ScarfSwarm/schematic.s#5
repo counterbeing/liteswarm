@@ -2406,7 +2406,6 @@ This footprint was designed to help hold the alignment of a through-hole compone
 &lt;p&gt;The Nano was designed and is being produced by Gravitech.&lt;br&gt;
 
 &lt;a href="http://www.gravitech.us/arna30wiatp.html"&gt;Gravitech Arduino Nano V3.0&lt;/a&gt;&lt;/p&gt;</description>
-<hole x="-22.86" y="-7.62" drill="1.778"/>
 <pad name="1" x="-20.32" y="-7.62" drill="0.8" shape="square"/>
 <pad name="2" x="-17.78" y="-7.62" drill="0.8"/>
 <pad name="3" x="-15.24" y="-7.62" drill="0.8"/>
@@ -2437,9 +2436,6 @@ This footprint was designed to help hold the alignment of a through-hole compone
 <pad name="28" x="-15.24" y="7.62" drill="0.8"/>
 <pad name="29" x="-17.78" y="7.62" drill="0.8"/>
 <pad name="30" x="-20.32" y="7.62" drill="0.8"/>
-<hole x="-22.86" y="7.62" drill="1.778"/>
-<hole x="17.78" y="7.62" drill="1.778"/>
-<hole x="17.78" y="-7.62" drill="1.778"/>
 <wire x1="-24.13" y1="8.89" x2="19.05" y2="8.89" width="0.127" layer="21"/>
 <wire x1="19.05" y1="8.89" x2="19.05" y2="3.81" width="0.127" layer="21"/>
 <wire x1="19.05" y1="3.81" x2="19.05" y2="-3.81" width="0.127" layer="21"/>
@@ -2763,10 +2759,10 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <part name="GND1" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND3" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND4" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
-<part name="J1" library="SparkFun-Connectors" deviceset="CONN_07" device=""/>
-<part name="J2" library="SparkFun-Connectors" deviceset="CONN_04" device="PTH"/>
-<part name="J3" library="SparkFun-Connectors" deviceset="CONN_04" device="PTH"/>
-<part name="J4" library="SparkFun-Connectors" deviceset="CONN_02" device="LOCK_LONGPADS"/>
+<part name="RFCONN" library="SparkFun-Connectors" deviceset="CONN_07" device=""/>
+<part name="ROTARY" library="SparkFun-Connectors" deviceset="CONN_04" device="PTH"/>
+<part name="LEDSTRIP" library="SparkFun-Connectors" deviceset="CONN_04" device="PTH"/>
+<part name="POWER" library="SparkFun-Connectors" deviceset="CONN_02" device="LOCK_LONGPADS"/>
 <part name="GND2" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="ARDUINO_NANO1" library="ArduinoNanoV30" deviceset="ARDUINO_NANO" device=""/>
 </parts>
@@ -2784,19 +2780,19 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <instance part="GND4" gate="1" x="12.7" y="20.32" smashed="yes" rot="R180">
 <attribute name="VALUE" x="15.24" y="22.86" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="J1" gate="J1" x="7.62" y="5.08" smashed="yes">
+<instance part="RFCONN" gate="J1" x="7.62" y="5.08" smashed="yes">
 <attribute name="VALUE" x="2.54" y="-4.826" size="1.778" layer="96" font="vector"/>
 <attribute name="NAME" x="2.54" y="18.288" size="1.778" layer="95" font="vector"/>
 </instance>
-<instance part="J2" gate="J1" x="-17.78" y="71.12" smashed="yes">
+<instance part="ROTARY" gate="J1" x="-17.78" y="71.12" smashed="yes">
 <attribute name="VALUE" x="-22.86" y="63.754" size="1.778" layer="96" font="vector"/>
 <attribute name="NAME" x="-22.86" y="79.248" size="1.778" layer="95" font="vector"/>
 </instance>
-<instance part="J3" gate="J1" x="-2.54" y="33.02" smashed="yes">
+<instance part="LEDSTRIP" gate="J1" x="-2.54" y="33.02" smashed="yes">
 <attribute name="VALUE" x="-7.62" y="25.654" size="1.778" layer="96" font="vector"/>
 <attribute name="NAME" x="-7.62" y="41.148" size="1.778" layer="95" font="vector"/>
 </instance>
-<instance part="J4" gate="G$1" x="12.7" y="86.36" smashed="yes">
+<instance part="POWER" gate="G$1" x="12.7" y="86.36" smashed="yes">
 <attribute name="VALUE" x="10.16" y="81.534" size="1.778" layer="96" font="vector"/>
 <attribute name="NAME" x="10.16" y="91.948" size="1.778" layer="95" font="vector"/>
 </instance>
@@ -2813,29 +2809,29 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <nets>
 <net name="GND" class="0">
 <segment>
-<pinref part="J1" gate="J1" pin="7"/>
+<pinref part="RFCONN" gate="J1" pin="7"/>
 <pinref part="GND4" gate="1" pin="GND"/>
 <wire x1="12.7" y1="15.24" x2="12.7" y2="17.78" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="J3" gate="J1" pin="1"/>
+<pinref part="LEDSTRIP" gate="J1" pin="1"/>
 <pinref part="GND3" gate="1" pin="GND"/>
 <wire x1="2.54" y1="30.48" x2="10.16" y2="30.48" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="J2" gate="J1" pin="4"/>
+<pinref part="ROTARY" gate="J1" pin="4"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 <wire x1="-12.7" y1="76.2" x2="-10.16" y2="76.2" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="J4" gate="G$1" pin="2"/>
+<pinref part="POWER" gate="G$1" pin="2"/>
 <pinref part="GND2" gate="1" pin="GND"/>
 <wire x1="20.32" y1="88.9" x2="25.4" y2="88.9" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
 <segment>
-<pinref part="J1" gate="J1" pin="6"/>
+<pinref part="RFCONN" gate="J1" pin="6"/>
 <wire x1="12.7" y1="12.7" x2="30.48" y2="12.7" width="0.1524" layer="91"/>
 <wire x1="30.48" y1="12.7" x2="30.48" y2="43.18" width="0.1524" layer="91"/>
 <wire x1="30.48" y1="43.18" x2="109.22" y2="43.18" width="0.1524" layer="91"/>
@@ -2846,7 +2842,7 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 </net>
 <net name="N$2" class="0">
 <segment>
-<pinref part="J1" gate="J1" pin="5"/>
+<pinref part="RFCONN" gate="J1" pin="5"/>
 <wire x1="12.7" y1="10.16" x2="40.64" y2="10.16" width="0.1524" layer="91"/>
 <wire x1="40.64" y1="10.16" x2="40.64" y2="15.24" width="0.1524" layer="91"/>
 <pinref part="ARDUINO_NANO1" gate="G$1" pin="D6"/>
@@ -2855,7 +2851,7 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 </net>
 <net name="N$3" class="0">
 <segment>
-<pinref part="J1" gate="J1" pin="4"/>
+<pinref part="RFCONN" gate="J1" pin="4"/>
 <wire x1="12.7" y1="7.62" x2="43.18" y2="7.62" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="7.62" x2="45.72" y2="12.7" width="0.1524" layer="91"/>
 <pinref part="ARDUINO_NANO1" gate="G$1" pin="D7"/>
@@ -2864,32 +2860,32 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 </net>
 <net name="N$4" class="0">
 <segment>
-<pinref part="J1" gate="J1" pin="3"/>
+<pinref part="RFCONN" gate="J1" pin="3"/>
 <wire x1="12.7" y1="5.08" x2="25.4" y2="5.08" width="0.1524" layer="91"/>
 <wire x1="25.4" y1="5.08" x2="25.4" y2="-12.7" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="-12.7" x2="104.14" y2="-15.24" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="-12.7" x2="104.14" y2="-12.7" width="0.1524" layer="91"/>
 <pinref part="ARDUINO_NANO1" gate="G$1" pin="D13"/>
-<wire x1="104.14" y1="-15.24" x2="104.14" y2="0" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="0" x2="101.6" y2="0" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="-12.7" x2="104.14" y2="2.54" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="2.54" x2="101.6" y2="0" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
 <segment>
-<pinref part="J1" gate="J1" pin="2"/>
+<pinref part="RFCONN" gate="J1" pin="2"/>
 <wire x1="12.7" y1="2.54" x2="60.96" y2="2.54" width="0.1524" layer="91"/>
 <pinref part="ARDUINO_NANO1" gate="G$1" pin="D11"/>
 </segment>
 </net>
 <net name="N$6" class="0">
 <segment>
-<pinref part="J1" gate="J1" pin="1"/>
+<pinref part="RFCONN" gate="J1" pin="1"/>
 <wire x1="60.96" y1="0" x2="12.7" y2="0" width="0.1524" layer="91"/>
 <pinref part="ARDUINO_NANO1" gate="G$1" pin="D12"/>
 </segment>
 </net>
 <net name="N$8" class="0">
 <segment>
-<pinref part="J3" gate="J1" pin="2"/>
+<pinref part="LEDSTRIP" gate="J1" pin="2"/>
 <wire x1="2.54" y1="33.02" x2="20.32" y2="35.56" width="0.1524" layer="91"/>
 <wire x1="20.32" y1="35.56" x2="48.26" y2="35.56" width="0.1524" layer="91"/>
 <wire x1="48.26" y1="35.56" x2="48.26" y2="22.86" width="0.1524" layer="91"/>
@@ -2899,7 +2895,7 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 </net>
 <net name="N$9" class="0">
 <segment>
-<pinref part="J2" gate="J1" pin="3"/>
+<pinref part="ROTARY" gate="J1" pin="3"/>
 <wire x1="-12.7" y1="73.66" x2="35.56" y2="48.26" width="0.1524" layer="91"/>
 <wire x1="35.56" y1="48.26" x2="53.34" y2="48.26" width="0.1524" layer="91"/>
 <pinref part="ARDUINO_NANO1" gate="G$1" pin="D3"/>
@@ -2909,17 +2905,16 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 </net>
 <net name="N$10" class="0">
 <segment>
-<pinref part="J2" gate="J1" pin="2"/>
-<wire x1="-12.7" y1="71.12" x2="50.8" y2="71.12" width="0.1524" layer="91"/>
-<wire x1="71.12" y1="71.12" x2="50.8" y2="71.12" width="0.1524" layer="91"/>
-<wire x1="50.8" y1="71.12" x2="50.8" y2="27.94" width="0.1524" layer="91"/>
+<pinref part="ROTARY" gate="J1" pin="2"/>
+<wire x1="-12.7" y1="71.12" x2="43.18" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="71.12" x2="50.8" y2="27.94" width="0.1524" layer="91"/>
 <pinref part="ARDUINO_NANO1" gate="G$1" pin="D2"/>
 <wire x1="50.8" y1="27.94" x2="60.96" y2="25.4" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$11" class="0">
 <segment>
-<pinref part="J2" gate="J1" pin="1"/>
+<pinref part="ROTARY" gate="J1" pin="1"/>
 <wire x1="-12.7" y1="68.58" x2="10.16" y2="53.34" width="0.1524" layer="91"/>
 <wire x1="10.16" y1="53.34" x2="114.3" y2="53.34" width="0.1524" layer="91"/>
 <wire x1="114.3" y1="53.34" x2="114.3" y2="10.16" width="0.1524" layer="91"/>
@@ -2929,10 +2924,9 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 </net>
 <net name="N$12" class="0">
 <segment>
-<pinref part="J3" gate="J1" pin="4"/>
-<wire x1="2.54" y1="38.1" x2="2.54" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="2.54" y1="78.74" x2="17.78" y2="78.74" width="0.1524" layer="91"/>
-<pinref part="J4" gate="G$1" pin="1"/>
+<pinref part="LEDSTRIP" gate="J1" pin="4"/>
+<wire x1="2.54" y1="38.1" x2="17.78" y2="78.74" width="0.1524" layer="91"/>
+<pinref part="POWER" gate="G$1" pin="1"/>
 <wire x1="17.78" y1="78.74" x2="17.78" y2="86.36" width="0.1524" layer="91"/>
 <wire x1="17.78" y1="86.36" x2="20.32" y2="86.36" width="0.1524" layer="91"/>
 <junction x="17.78" y="78.74"/>
@@ -2943,7 +2937,7 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 </net>
 <net name="N$13" class="0">
 <segment>
-<pinref part="J3" gate="J1" pin="3"/>
+<pinref part="LEDSTRIP" gate="J1" pin="3"/>
 <wire x1="2.54" y1="35.56" x2="20.32" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="20.32" y1="33.02" x2="45.72" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="45.72" y1="33.02" x2="45.72" y2="20.32" width="0.1524" layer="91"/>

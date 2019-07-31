@@ -618,11 +618,13 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <contactref element="POWER" pad="2"/>
 <contactref element="ARDUINO_NANO1" pad="19"/>
 <contactref element="ARDUINO_NANO1" pad="14"/>
+<wire x1="10.922" y1="3.048" x2="10.922" y2="9.652" width="1.524" layer="1"/>
+<wire x1="13.335" y1="12.065" x2="13.335" y2="20.828" width="1.524" layer="1"/>
+<wire x1="10.922" y1="9.652" x2="13.335" y2="12.065" width="1.524" layer="1"/>
 <wire x1="5.715" y1="32.258" x2="17.145" y2="37.973" width="0" layer="19" extent="1-1"/>
 <wire x1="1.905" y1="32.893" x2="5.715" y2="32.258" width="0" layer="19" extent="1-1"/>
 <wire x1="1.905" y1="46.228" x2="1.905" y2="32.893" width="0" layer="19" extent="1-1"/>
 <wire x1="13.335" y1="20.828" x2="5.715" y2="32.258" width="0" layer="19" extent="1-1"/>
-<wire x1="10.922" y1="3.048" x2="13.335" y2="20.828" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$1">
 <contactref element="RFCONN" pad="6"/>
@@ -678,8 +680,9 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <contactref element="LEDSTRIP" pad="4"/>
 <contactref element="POWER" pad="1"/>
 <contactref element="ARDUINO_NANO1" pad="15"/>
+<wire x1="8.128" y1="3.048" x2="5.715" y2="5.461" width="1.524" layer="16"/>
+<wire x1="5.715" y1="5.461" x2="5.715" y2="20.828" width="1.524" layer="16"/>
 <wire x1="5.715" y1="20.828" x2="17.145" y2="40.513" width="0" layer="19" extent="1-1"/>
-<wire x1="8.128" y1="3.048" x2="5.715" y2="20.828" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$13">
 <contactref element="LEDSTRIP" pad="3"/>
