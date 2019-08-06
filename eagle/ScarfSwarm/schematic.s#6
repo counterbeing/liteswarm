@@ -2855,9 +2855,9 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <segment>
 <pinref part="RFCONN" gate="J1" pin="5"/>
 <wire x1="12.7" y1="10.16" x2="40.64" y2="10.16" width="0.1524" layer="91"/>
-<wire x1="40.64" y1="10.16" x2="40.64" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="40.64" y1="10.16" x2="43.18" y2="15.24" width="0.1524" layer="91"/>
 <pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="D6"/>
-<wire x1="40.64" y1="15.24" x2="60.96" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="15.24" x2="60.96" y2="15.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$3" class="0">
@@ -2907,20 +2907,20 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <net name="N$9" class="0">
 <segment>
 <pinref part="ROTARY" gate="J1" pin="3"/>
-<wire x1="-12.7" y1="73.66" x2="35.56" y2="48.26" width="0.1524" layer="91"/>
-<wire x1="35.56" y1="48.26" x2="53.34" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="-12.7" y1="73.66" x2="38.1" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="38.1" y1="48.26" x2="55.88" y2="48.26" width="0.1524" layer="91"/>
 <pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="D3"/>
-<wire x1="53.34" y1="48.26" x2="53.34" y2="25.4" width="0.1524" layer="91"/>
-<wire x1="53.34" y1="25.4" x2="60.96" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="55.88" y1="48.26" x2="55.88" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="55.88" y1="22.86" x2="60.96" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$10" class="0">
 <segment>
 <pinref part="ROTARY" gate="J1" pin="2"/>
-<wire x1="-12.7" y1="71.12" x2="43.18" y2="71.12" width="0.1524" layer="91"/>
-<wire x1="43.18" y1="71.12" x2="50.8" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="-12.7" y1="71.12" x2="58.42" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="58.42" y1="71.12" x2="58.42" y2="25.4" width="0.1524" layer="91"/>
 <pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="D2"/>
-<wire x1="50.8" y1="27.94" x2="60.96" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="58.42" y1="25.4" x2="60.96" y2="25.4" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$11" class="0">

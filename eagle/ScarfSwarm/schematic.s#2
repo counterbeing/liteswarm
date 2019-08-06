@@ -2901,11 +2901,10 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <net name="N$11" class="0">
 <segment>
 <pinref part="ROTARY" gate="J1" pin="1"/>
-<wire x1="33.02" y1="63.5" x2="33.02" y2="50.8" width="0.1524" layer="91"/>
-<wire x1="33.02" y1="50.8" x2="142.24" y2="50.8" width="0.1524" layer="91"/>
-<wire x1="142.24" y1="50.8" x2="119.38" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="63.5" x2="116.84" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="63.5" x2="116.84" y2="7.62" width="0.1524" layer="91"/>
 <pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="A0"/>
-<wire x1="119.38" y1="7.62" x2="101.6" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="7.62" x2="101.6" y2="7.62" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$12" class="0">

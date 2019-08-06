@@ -2872,11 +2872,10 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <net name="N$8" class="0">
 <segment>
 <pinref part="LEDSTRIP" gate="J1" pin="2"/>
-<wire x1="2.54" y1="33.02" x2="20.32" y2="35.56" width="0.1524" layer="91"/>
-<wire x1="20.32" y1="35.56" x2="48.26" y2="35.56" width="0.1524" layer="91"/>
-<wire x1="48.26" y1="35.56" x2="48.26" y2="22.86" width="0.1524" layer="91"/>
-<pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="D4"/>
-<wire x1="48.26" y1="22.86" x2="60.96" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="33.02" x2="40.64" y2="33.02" width="0.1524" layer="91"/>
+<pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="D5"/>
+<wire x1="40.64" y1="33.02" x2="40.64" y2="17.78" width="0.1524" layer="91"/>
+<wire x1="40.64" y1="17.78" x2="60.96" y2="17.78" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$9" class="0">
@@ -2923,11 +2922,10 @@ Each pin can provide or receive a maximum of 40 mA and has an internal pull-up r
 <net name="N$13" class="0">
 <segment>
 <pinref part="LEDSTRIP" gate="J1" pin="3"/>
-<wire x1="2.54" y1="35.56" x2="20.32" y2="33.02" width="0.1524" layer="91"/>
-<wire x1="20.32" y1="33.02" x2="45.72" y2="33.02" width="0.1524" layer="91"/>
-<wire x1="45.72" y1="33.02" x2="45.72" y2="20.32" width="0.1524" layer="91"/>
-<pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="D5"/>
-<wire x1="45.72" y1="20.32" x2="60.96" y2="17.78" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="35.56" x2="45.72" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="45.72" y1="35.56" x2="45.72" y2="20.32" width="0.1524" layer="91"/>
+<pinref part="SCARFYMCSCARFFACE" gate="G$1" pin="D4"/>
+<wire x1="45.72" y1="20.32" x2="60.96" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
