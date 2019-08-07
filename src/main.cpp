@@ -63,7 +63,7 @@ void playAnimation()
       current_animation = &rainbow;
       break;
     case 1:
-      current_animation = &fuck_my_eyes;
+      current_animation = &color_chooser;
       break;
     case 2:
       current_animation = &race;
@@ -75,7 +75,7 @@ void playAnimation()
       current_animation = &diamond_necklace;
       break;
     case 5:
-      current_animation = &color_chooser;
+      current_animation = &fuck_my_eyes;
       break;
     case 6:
       current_animation = &find_my_bike;

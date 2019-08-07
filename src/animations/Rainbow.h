@@ -23,7 +23,7 @@ private:
     void loop()
     {
         int offset = knob.confine();
-        fill_rainbow(leds, NUMPIXELS, offset, 1);
+        fill_rainbow(leds, NUMPIXELS, offset, 5);
         FastLED.show();
     }
 
