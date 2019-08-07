@@ -25,7 +25,9 @@ private:
     int buttonPressCount = 0;
     int loopRotary = false;
     long lastPressTime = 0;
+    long holdingSince = 0;
     bool manualChange = false;
+    int lastButtonState = 1;
     void checkRotary()
     {
         long newPos = encoder_knob.read();
@@ -40,29 +42,24 @@ private:
     void checkButton(int *_aiIndex)
     {
         int buttonState = button_debouncer.read();
-        if (buttonState != 0)
-            return;
-        long currentPressTime = millis();
-        long difference = currentPressTime - lastPressTime;
-        if (difference > 400)
-        {
-            // buttonPressCount++;
-            // Serial.print("Button press count: ");
-            // Serial.println(buttonPressCount);
-            // Serial.println(currentPressTime);
-            // Serial.println("-----------------");
-            // Serial.println(difference);
-            // // Serial.println(&_aiIndex);
-            // Serial.print("value: ");
-            // Serial.println(reinterpret_cast<int>(*_aiIndex));
-            // Serial.print("addr: ");
-            // Serial.println(reinterpret_cast<int>(_aiIndex));
-            lastPressTime = millis();
-            manualChange = true;
-            (*_aiIndex)++;
-            // Serial.print("new *_aiIndex: ");
-            // Serial.println(reinterpret_cast<int>(*_aiIndex));
-        }
+        if (lastButtonState == 1 && buttonState == 0) holdingSince = millis();
+        if(lastButtonState == 0 && buttonState == 1) {
+            // A press or hold was finished
+            long currentPressTime = millis();
+            long difference = currentPressTime - lastPressTime;
+            long holdTime = millis() - holdingSince;
+            if (difference > 400 && holdTime < 400)
+            {
+                lastPressTime = millis();
+                manualChange = true;
+                (*_aiIndex)++;
+            }
+            if (holdTime > 2000) {
+                Serial.println(holdTime);
+            }
+            holdingSince = 0;
+        };
+        lastButtonState = buttonState;
     }
 
 public:
