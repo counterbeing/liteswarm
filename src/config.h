@@ -9,4 +9,4 @@
 #define STRIP WS2811
 const int NUMPIXELS = 75;
 
-#endif 
+#endif

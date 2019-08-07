@@ -4,9 +4,7 @@
 #include <SPI.h>
 #include <MyKnob.h>
 #include <Encoder.h>
-
 #include "config.h"
-
 #include "Radio.h"
 
 #include "animations/ColorChooser.h"
@@ -16,8 +14,6 @@
 #include "animations/FuckMyEyes.h"
 #include "animations/Race.h"
 #include "animations/Rainbow.h"
-
-
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
@@ -46,10 +42,6 @@ void playAnimation()
 {
   if (animation_index != previous_animation_index)
   {
-    // Serial.print("Coming from ");
-    // Serial.print(previous_animation_index);
-    // Serial.print(" to ");
-    // Serial.println(animation_index);
     if (animation_index > 6)
       animation_index = 0;
     // BUG CAUTION
@@ -89,17 +81,12 @@ void playAnimation()
 
 void setup()
 {
-  Serial.println("SETTING UP -------");
   FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
   // FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
   Serial.begin(57600);
 
-  pinMode(buttonPin, INPUT_PULLUP);
-  button_debouncer.attach(buttonPin);
+  button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);
-
-  pinMode(rotary1, INPUT_PULLUP);
-  pinMode(rotary2, INPUT_PULLUP);
   radio.setup();
 }
 
