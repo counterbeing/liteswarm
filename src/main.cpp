@@ -10,7 +10,9 @@
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
 #include "animations/DiamondNecklace.h"
+#include "animations/Dimmer.h"
 #include "animations/Stripes.h"
+#include "animations/Stars.h"
 #include "animations/FuckMyEyes.h"
 #include "animations/Race.h"
 #include "animations/Rainbow.h"
@@ -29,7 +31,9 @@ MyKnob knob(rotary1, rotary2, offMode);
 ColorChooser color_chooser(knob, leds);
 Crossfade crossfade(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
+Dimmer dimmer(knob, leds);
 Stripes stripes(knob, leds);
+Stars stars(knob, leds);
 FuckMyEyes fuck_my_eyes(knob, leds);
 Race race(knob, leds);
 Rainbow rainbow(knob, leds);
@@ -43,7 +47,7 @@ void playAnimation()
 {
   if (animation_index != previous_animation_index)
   {
-    if (animation_index > 6)
+    if (animation_index > 8)
       animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
@@ -53,7 +57,7 @@ void playAnimation()
     switch (animation_index)
     {
     case 0:
-      current_animation = &rainbow;
+      current_animation = &crossfade;
       break;
     case 1:
       current_animation = &color_chooser;
@@ -62,16 +66,22 @@ void playAnimation()
       current_animation = &race;
       break;
     case 3:
-      current_animation = &crossfade;
+      current_animation = &stars;
       break;
     case 4:
-      current_animation = &diamond_necklace;
+      current_animation = &rainbow;
       break;
     case 5:
       current_animation = &fuck_my_eyes;
       break;
     case 6:
       current_animation = &stripes;
+      break;
+    case 7:
+      current_animation = &diamond_necklace;
+      break;
+    case 8:
+      current_animation = &dimmer;
       break;
     }
     current_animation->setup();
