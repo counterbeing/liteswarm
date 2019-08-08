@@ -10,7 +10,7 @@
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
 #include "animations/DiamondNecklace.h"
-#include "animations/FindMyBike.h"
+#include "animations/Stripes.h"
 #include "animations/FuckMyEyes.h"
 #include "animations/Race.h"
 #include "animations/Rainbow.h"
@@ -29,7 +29,7 @@ MyKnob knob(rotary1, rotary2, offMode);
 ColorChooser color_chooser(knob, leds);
 Crossfade crossfade(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
-FindMyBike find_my_bike(knob, leds);
+Stripes stripes(knob, leds);
 FuckMyEyes fuck_my_eyes(knob, leds);
 Race race(knob, leds);
 Rainbow rainbow(knob, leds);
@@ -71,7 +71,7 @@ void playAnimation()
       current_animation = &fuck_my_eyes;
       break;
     case 6:
-      current_animation = &find_my_bike;
+      current_animation = &stripes;
       break;
     }
     current_animation->setup();
@@ -82,7 +82,7 @@ void playAnimation()
 
 void setup()
 {
-  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
+  FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
   // FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
   Serial.begin(57600);
 
