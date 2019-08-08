@@ -21,8 +21,8 @@ private:
     MyKnob &knob;
     int &animation_index;
     const static uint8_t SHARED_RADIO_ID = 1;
-    const static uint8_t PIN_RADIO_CE = 6;   // will be 6, was 9
-    const static uint8_t PIN_RADIO_CSN = 7; // will be 7, was 10
+    const static uint8_t PIN_RADIO_CE = 6; // will be 6 on PCBs, was 9
+    const static uint8_t PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
     const static uint8_t SHARED_SECRET = 42;
     uint8_t RADIO_ID = random();
     int previousAnimationIndex;
