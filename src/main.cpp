@@ -20,9 +20,10 @@ uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 
 int buttonPin = A0;
+bool offMode = false;
 
 CRGB leds[NUMPIXELS];
-MyKnob knob(rotary1, rotary2);
+MyKnob knob(rotary1, rotary2, offMode);
 
 // Load animations...
 ColorChooser color_chooser(knob, leds);
@@ -92,8 +93,13 @@ void setup()
 
 void loop()
 {
-  radio.check();
   button_debouncer.update();
-  playAnimation();
   knob.check(&animation_index);
+  if(offMode) {
+    fill_solid(leds, NUMPIXELS, CRGB::Black);
+    FastLED.show();
+    return;
+  }
+  radio.check();
+  playAnimation();
 }

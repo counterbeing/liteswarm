@@ -28,6 +28,7 @@ private:
     long holdingSince = 0;
     bool manualChange = false;
     int lastButtonState = 1;
+    bool &offMode;
     void checkRotary()
     {
         long newPos = encoder_knob.read();
@@ -50,11 +51,16 @@ private:
             long holdTime = millis() - holdingSince;
             if (difference > 400 && holdTime < 400)
             {
+                if(offMode) {
+                    offMode = false;
+                    return;
+                }
                 lastPressTime = millis();
                 manualChange = true;
                 (*_aiIndex)++;
             }
             if (holdTime > 2000) {
+                offMode = true;
                 Serial.println(holdTime);
             }
             holdingSince = 0;
@@ -63,7 +69,7 @@ private:
     }
 
 public:
-    MyKnob(uint8_t a, uint8_t b)
+    MyKnob(uint8_t a, uint8_t b, bool &offMode_) : offMode(offMode_)
     {
         pinA = a;
         pinB = b;
