@@ -43,6 +43,7 @@ Radio radio(knob, animation_index);
 
 Animation *current_animation = &rainbow;
 int previous_animation_index = -1;
+
 void playAnimation()
 {
   if (animation_index != previous_animation_index)

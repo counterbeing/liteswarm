@@ -75,6 +75,7 @@ private:
     const unsigned int shortPress = 200;
     const unsigned int mediumPress = 500;
     const unsigned int longPress = 1000;
+    const unsigned int sleepPress = 2200;
     const unsigned long comboInterval = 1200;
     int comboLength = 0;  // index for comboPattern array
     char comboPattern[COMBO_MAX_ITEMS]; // combos can be 2-4 presses in sequence
@@ -100,33 +101,35 @@ private:
     {
         int buttonState = button_debouncer.read();
         if (lastButtonState == 1 && buttonState == 0) holdingSince = millis();  // started press
-        if (lastButtonState == 0 && buttonState == 1) {                         // after first frame of press interval lastButtonState == 0
+
+        if (millis() - holdingSince > sleepPress && lastButtonState == 0 && buttonState == 0) {
+          offMode = !offMode;
+          lastButtonState = 1;  // virtual relase of button
+          holdingSince = 0;
+          Serial.print("\n\n ====== intercepted VERY LONG PRESS! fliping offMode...  ======");
+        
+        } else if (lastButtonState == 0 && buttonState == 1) {                         // after first frame of press interval lastButtonState == 0
           // A press or hold was finished
           unsigned long currentPressTime = millis();
           unsigned long holdTime         = currentPressTime - holdingSince;
           unsigned long difference       = currentPressTime - lastPressTime - holdTime;  // compensate for duration of push interval
 
-          bool thisPressIsShort = false;
-          bool thisPressIsMedium = false;
-          bool thisPressIsLong = false;
-          thisPressIsShort = holdTime < shortPress;
-          thisPressIsMedium = holdTime > shortPress && holdTime < longPress;
-          thisPressIsLong = holdTime >= longPress;
+          bool thisPressIsShort = holdTime < shortPress;
+          bool thisPressIsMedium = holdTime > shortPress && holdTime < longPress;
+          bool thisPressIsLong = holdTime >= longPress && holdTime < sleepPress;
+          bool thisPressIsVeryLong = holdTime >= sleepPress;
+                    
+          bool firstPressInCmdMode = cmdMode && comboLength == 0;
+          // difference < comboInterval implies previous press just happened
+          bool stillTimeToCombo = difference < comboInterval;
 
           // useful only for combo detection - based on indirect timing comparison
-          // bool lastPressWasShort  = false;
-          // bool lastPressWasMedium = false;
-          // bool lastPressWasLong   = false;
-          // lastPressWasShort = difference < shortPress;
-          // lastPressWasMedium = difference < longPress && difference > shortPress;
-          // lastPressWasLong = difference >= longPress;
-          
-          bool firstPressInCmdMode = false;
-          firstPressInCmdMode = cmdMode && comboLength == 0;
-
-          // difference < comboInterval implies previous press just happened
-          bool stillTimeToCombo = false;
-          stillTimeToCombo = difference < comboInterval;
+          //   BUG can't use difference for first press in combo since it could be really large
+          //   and therefore always indicate lastPressWasLong
+          // 
+          // bool lastPressWasShort  = difference < shortPress;
+          // bool lastPressWasMedium = difference < longPress && difference > shortPress;
+          // bool lastPressWasLong   = difference >= longPress;
           
           if (KNOBDEBUG) {
             Serial.print("\ncmdMode: ");
@@ -151,6 +154,11 @@ private:
             Serial.print(firstPressInCmdMode);
             Serial.print("\tstillTimeToCombo: ");
             Serial.print(stillTimeToCombo);
+
+            Serial.print("\noffMode: ");
+            Serial.print(offMode);
+            // Serial.print("\t*offMode: ");
+            // Serial.print(*offMode);            
           }
 
           // momentary press typically takes 90-130ms, but possible to get as fast as 30ms
@@ -165,7 +173,7 @@ private:
                   Serial.print(cmdMode ? "TRUE" : "FALSE");
                 }
               }
-            } else {
+            } else if (!cmdMode){
               manualChange = true;
               (*_aiIndex)++;;  
               // TODO buffer rapid presses - see readme 
@@ -186,6 +194,18 @@ private:
             lastPressWasShort = false;
             lastPressWasMedium = false;
             lastPressWasLong = true;
+          
+          } else if (thisPressIsVeryLong) {
+            Serial.print("\nVERY LONG PRESS! sleepytime ");
+            cmdMode = false;
+            resetCombo();
+            // addToCombo('s');
+            
+            // offMode = !offMode; // now handled in press-down logic
+            
+            lastPressWasShort = false;
+            lastPressWasMedium = false;
+            lastPressWasLong = false;
           }
 
           // finished button processing!
@@ -223,6 +243,7 @@ private:
         for (int i = 0; i < COMBO_MAX_ITEMS - 1; i++) {
             comboPattern[i] = 0;
         }
+        // cmdMode = false; // exits too quickly
     }
 
     void addToCombo(char comboChar) {
@@ -268,17 +289,22 @@ private:
     /////////////////////////////////////////////////////////
     // command functions & str lookup
     const char *patternList[4] = {
-      {"...."},   // case 0: lowPowerMode
-      {".-.-"},   // case 1: strobeMode
-      {"---"},    // case 2: debugMode
-      {"..--"}    // case 3: sneakyStrobeMode
+      {"s"},      // case 0: lowPowerMode
+      {"--"},     // case 1: strobeMode
+      {"-.-"},    // case 2: debugMode
+      {"--.."}    // case 3: sneakyStrobeMode
       // {"--.."},// case 4: TBD
       // {"---"}, // case 5: TBD
       // {"..--"} // case 6: TBD
     };
 
     void lowPowerMode() {
-      Serial.println("entering lowPowerMode()");
+      // if(_lowPowerMode) {
+      //   Serial.println("toggling lowPowerMode OFF");
+      // } else {
+      //   Serial.println("toggling lowPowerMode ON");
+      // }
+      // _lowPowerMode = !lowPowerMode;
     }
     void strobeMode() {
       Serial.println("entering strobeMode()");
@@ -346,6 +372,9 @@ public:
         pinB = b;
         // Encoder knob(pinA, pinB);
         // encoder_knob = Encoder(a, b);
+        Serial.print("\n\noffMode_: ");
+        Serial.print(offMode);
+        
     }
     void set(int position)
     {

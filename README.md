@@ -29,7 +29,7 @@ Things you might be missing.
 
   - [ ] TODO add visual feedback (use amimationCombinator w/ strobe)
 
-  - [ ] TODO lowpower mode triggered by 3000 ms long press
+  - [x] TODO lowpower mode triggered by 3000 ms long press
 
   - [ ] TODO buffer rapid presses?
 
