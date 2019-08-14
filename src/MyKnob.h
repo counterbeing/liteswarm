@@ -97,6 +97,14 @@ private:
                 Serial.print(comboLength);
             }
 
+            // TODO swap order of cmdMode pattern from short-med to med-short
+            
+            // TODO animation fx return FastLed[], then main fx optionally combines
+            // overlay led[] before writing to strip
+
+            // TODO add visual feedback (use amimationCombinator w/ strobe)
+
+            // TODO lowpower mode triggered by 3000 ms long press
 
             // short press
             // momentary press typically takes 90-130ms, but possible to get as fast as 30ms
@@ -184,10 +192,6 @@ private:
         }
     }
 
-    void dispatchAndResetCombo(){
-        resetCombo();
-    }
-
     void addToCombo(char comboChar) {
         // uncomment to prove that weird ascii in serial console
         // is due to c_string requiring special terminal char
@@ -197,6 +201,110 @@ private:
         comboPattern[comboLength] = comboChar;
         comboLength++;
     }
+
+    void dispatchAndResetCombo() {
+        dispatch();
+        resetCombo();
+    }
+
+    void dispatch() {
+        Serial.print("\nMyKnob::dispatch() getting cmd for combo");
+        switch (getCaseForCombo())
+        {
+        case 0:
+            Serial.print("\ncase 0: calling lowPowerMode()");
+            break;
+        case 1:
+            Serial.print("\ncase 1: calling strobeMode()");
+            break;
+        case 2:
+            Serial.print("\ncase 2: calling debugMode()");
+            break;
+        case 3:
+            Serial.print("\ncase 3: calling sneakyStrobeMode()");
+            break;
+        case 4:
+            Serial.print("\ncase 4: calling TBD() ");
+            break;
+        default:
+            Serial.println("\n\nWARN: default switch case; couldn't find fx for pattern ");
+            break;
+        }
+    }
+
+    /////////////////////////////////////////////////////////
+    // command functions & str lookup
+    const char *patternList[4] = { 
+        {"...."},   // case 0: lowPowerMode
+        {".-.-"},   // case 1: strobeMode
+        {"---"},    // case 2: debugMode
+        {"..--"}    // case 3: sneakyStrobeMode
+        // {"--.."},   // case 4: TBD
+        // {"---"},    // case 5: TBD
+        // {"..--"}    // case 6: TBD
+    };
+
+    void lowPowerMode(){
+        Serial.println("entering lowPowerMode()");
+    }
+    void strobeMode(){
+        Serial.println("entering strobeMode()");
+    }
+    void debugMode() {
+        Serial.println("entering debugMode()");
+    }
+    void sneakyStrobeMode(){
+        Serial.println("entering sneakyStrobeMode()");
+    }
+    /////////////////////////////////////////////////////////
+
+    int getCaseForCombo() {
+        int patternMatch = -1;
+        for (int patternIdx = 0; patternIdx < 3; patternIdx++) 
+        {
+            const char *candidate = patternList[patternIdx];
+            patternMatch = patternIdx;
+            Serial.print("\ncandidate: ");
+            Serial.print(candidate);
+            for (int i = 0; i < COMBO_MAX_ITEMS - 1; i++)
+            {
+                if (comboPattern[i] != candidate[i]) patternMatch = -1;
+            }
+
+            if (patternMatch > -1) {
+                if (DEBUGLOG) { 
+                    Serial.print("\n found it! return case #");
+                    Serial.print(patternMatch);
+                }
+                return patternMatch;
+            } else {
+                // if (DEBUGLOG) Serial.print("\n couldnt find it - returning case #-1");
+            }
+        }
+        return patternMatch;
+    }
+
+
+
+    /////////////////////////////////////////////////////////
+    // hashmap implementation instead of switch statement (allows string->fx() mapping)
+    //
+    // typedef void (*funcPointer)();
+    // unordered_map<string, funcPointer> modeMap = {
+    //     {"....", &strobeMode},
+    //     {".-.-", &debugMode},
+    //     {"---",  &lowPowerMode},
+    //     {"..--", &sneakyStrobeMode}
+    // };
+
+    // void dispatch(string pat){
+    //     unordered_map<string, funcPointer>::const_iterator got = modeMap.find (pat);
+    //     if( got == stringFunctionMap.end() ) {
+    //         cout << "Error: patternDispatcher() unable to find pattern " << pat << " in stringFunctionMap\n";
+    //     } else {
+    //         stringFunctionMap[pat]();
+    //     }
+    // }
 
 public:
     MyKnob(uint8_t a, uint8_t b, bool &offMode_) : offMode(offMode_)
