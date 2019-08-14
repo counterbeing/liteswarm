@@ -94,7 +94,6 @@ void setup()
 {
   FastLED.addLeds<SK9822, CLOCKPIN, DATAPIN, BGR>(leds, NUMPIXELS);   // IT WORKS!
   Serial.begin(57600);
-  Serial.println("BGR");
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);

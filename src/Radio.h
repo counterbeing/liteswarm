@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <NRFLite.h>
 #include <SPI.h>
+#include "config.h"
 
 struct RadioPacket // Any packet up to 32 bytes can be sent.
 {
@@ -36,15 +37,17 @@ private:
         while (_radio.hasData())
         {
             _radio.readData(&_incomingRadioPacket);
-            Serial.println("------INCOMING---------");
-            // Serial.print("SHARED_SECRET: ");
-            // Serial.println(_incomingRadioPacket.SHARED_SECRET);
-            // Serial.print("rotaryPosition: ");
-            // Serial.println(_incomingRadioPacket.rotaryPosition);
-            // Serial.print("animationId: ");
-            // Serial.println(_incomingRadioPacket.animationId);
-            Serial.print("senderId: ");
-            Serial.println(_incomingRadioPacket.senderId);
+            if (RADIODEBUG) {
+                Serial.println("------INCOMING---------");
+                // Serial.print("SHARED_SECRET: ");
+                // Serial.println(_incomingRadioPacket.SHARED_SECRET);
+                // Serial.print("rotaryPosition: ");
+                // Serial.println(_incomingRadioPacket.rotaryPosition);
+                // Serial.print("animationId: ");
+                // Serial.println(_incomingRadioPacket.animationId);
+                Serial.print("senderId: ");
+                Serial.println(_incomingRadioPacket.senderId);
+            }
             if (stateChanged())
             {
                 knob.set(_incomingRadioPacket.rotaryPosition);

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Encoder.h>
 #include <Bounce2.h>
+#include "config.h"
 
 #ifndef MyKnob_H
 #define MyKnob_H
@@ -69,7 +70,7 @@ private:
         position = newPos;
     }
     
-    #define DEBUGLOG true     // flag to enable/disable serial logging
+    // #define KNOBDEBUG true     // set in config.h
     #define COMBO_MAX_ITEMS 5 // recognize combo sequences of up to 5 presses
     const unsigned int shortPress = 200;
     const unsigned int mediumPress = 500;
@@ -78,97 +79,129 @@ private:
     int comboLength = 0;  // index for comboPattern array
     char comboPattern[COMBO_MAX_ITEMS]; // combos can be 2-4 presses in sequence
     bool cmdMode = false;
+    bool lastPressWasShort  = false;
+    bool lastPressWasMedium = false;
+    bool lastPressWasLong   = false;
+    // enum lastPressWas { SHORT MEDIUM LONG EXTRALONG }
+    // bool theCorrectPressCouldActivateCmdMode = false; // unused
 
+
+    // DONE wrap press duration logic in descriptive variables
+    // DONE swap order of cmdMode pattern from short-med to med-short
+
+    // TODO animation fx return FastLed[], then main fx optionally combines
+    //   overlay led[] before writing to strip
+
+    // TODO add visual feedback (use amimationCombinator w/ strobe)
+
+    // TODO lowpower mode triggered by 3000 ms long press
 
     void checkButton(int *_aiIndex)
     {
         int buttonState = button_debouncer.read();
         if (lastButtonState == 1 && buttonState == 0) holdingSince = millis();  // started press
-        if (lastButtonState == 0 && buttonState == 1) {  // after first frame of press interval lastButtonState == 0
-            // A press or hold was finished
-            unsigned long currentPressTime = millis();
-            unsigned long holdTime = currentPressTime - holdingSince;
-            unsigned long difference = currentPressTime - lastPressTime - holdTime;  // compensate for duration of push interval
+        if (lastButtonState == 0 && buttonState == 1) {                         // after first frame of press interval lastButtonState == 0
+          // A press or hold was finished
+          unsigned long currentPressTime = millis();
+          unsigned long holdTime         = currentPressTime - holdingSince;
+          unsigned long difference       = currentPressTime - lastPressTime - holdTime;  // compensate for duration of push interval
 
-            if (DEBUGLOG) {
-                Serial.print("\ncmdMode: ");
-                Serial.print(cmdMode ? "TRUE" : "FALSE");
-                Serial.print("\tcomboLength: ");
-                Serial.print(comboLength);
-            }
+          bool thisPressIsShort = false;
+          bool thisPressIsMedium = false;
+          bool thisPressIsLong = false;
+          thisPressIsShort = holdTime < shortPress;
+          thisPressIsMedium = holdTime > shortPress && holdTime < longPress;
+          thisPressIsLong = holdTime >= longPress;
 
-            // TODO swap order of cmdMode pattern from short-med to med-short
+          // useful only for combo detection - based on indirect timing comparison
+          // bool lastPressWasShort  = false;
+          // bool lastPressWasMedium = false;
+          // bool lastPressWasLong   = false;
+          // lastPressWasShort = difference < shortPress;
+          // lastPressWasMedium = difference < longPress && difference > shortPress;
+          // lastPressWasLong = difference >= longPress;
+          
+          bool firstPressInCmdMode = false;
+          firstPressInCmdMode = cmdMode && comboLength == 0;
+
+          // difference < comboInterval implies previous press just happened
+          bool stillTimeToCombo = false;
+          stillTimeToCombo = difference < comboInterval;
+          
+          if (KNOBDEBUG) {
+            Serial.print("\ncmdMode: ");
+            Serial.print(cmdMode ? "TRUE" : "FALSE");
+            Serial.print("\tcomboLength: ");
+            Serial.print(comboLength);
             
-            // TODO animation fx return FastLed[], then main fx optionally combines
-            // overlay led[] before writing to strip
+            Serial.print("\n\tthisPressIsShort: ");
+            Serial.print(thisPressIsShort);
+            Serial.print("\tlastPressWasShort: ");
+            Serial.print(lastPressWasShort);
+            Serial.print("\n\tthisPressIsMedium: ");
+            Serial.print(thisPressIsMedium);
+            Serial.print("\tlastPressWasMedium: ");
+            Serial.print(lastPressWasMedium);
+            Serial.print("\n\tthisPressIsLong: ");
+            Serial.print(thisPressIsLong);
+            Serial.print("\tlastPressWasLong: ");
+            Serial.print(lastPressWasLong);
 
-            // TODO add visual feedback (use amimationCombinator w/ strobe)
+            Serial.print("\n\tfirstPressInCmdMode: ");
+            Serial.print(firstPressInCmdMode);
+            Serial.print("\tstillTimeToCombo: ");
+            Serial.print(stillTimeToCombo);
+          }
 
-            // TODO lowpower mode triggered by 3000 ms long press
+          // momentary press typically takes 90-130ms, but possible to get as fast as 30ms
+          if (thisPressIsShort) {
+            if (firstPressInCmdMode || (cmdMode && stillTimeToCombo)) addToCombo('.');
 
-            // short press
-            // momentary press typically takes 90-130ms, but possible to get as fast as 30ms
-            // if (difference > 400 && holdTime < 400)  // no spamming the button so we don't spam the swarm?
-            if (holdTime < shortPress)  {
-                // is it the first combo press in cmdMode? only check difference if its a subsequent combo press
-                if(cmdMode && (comboLength == 0 || difference < comboInterval)){
-                    addToCombo('.');
-                    // comboPattern[comboLength] = '.';
-                    // comboLength++;
+            if (!cmdMode && lastPressWasMedium) {
+              if (stillTimeToCombo) {
+                cmdMode = true;
+                if (KNOBDEBUG) { 
+                  Serial.print("\nCOMBOed! (med->short) CMDMODE now ");
+                  Serial.print(cmdMode ? "TRUE" : "FALSE");
                 }
-                if(!cmdMode && difference > shortPress) {
-                    manualChange = true;
-                    (*_aiIndex)++;
-                } // TODO buffer rapid presses 
-                  //   IF rapid presses (where difference < shortPress):
-                  //     skip (*_aiIndex)++;
-                  //     instead increment rapidPressCount++, once per rapid press
-                  //   IF rapid presses over (buttonState == 1 && rapidPressCount > 0)
-                  //     (*_aiIndex) += rapidPressCount;
-                  //     rapidPressCount == 0;
-                
-                lastPressTime = currentPressTime;  // records when the button was RELEASED
+              }
+            } else {
+              manualChange = true;
+              (*_aiIndex)++;;  
+              // TODO buffer rapid presses - see readme 
             }
+            lastPressWasShort = true;
+            lastPressWasMedium = false;
+            lastPressWasLong = false;
+          
+          } else if (thisPressIsMedium) {
+            if (firstPressInCmdMode || (cmdMode && stillTimeToCombo)) addToCombo('-');
+            lastPressWasShort = false;
+            lastPressWasMedium = true;
+            lastPressWasLong = false;
+              
+          } else if (thisPressIsLong) {
+            cmdMode = false;
+            Serial.print("\nexiting CMDMODE... ");
+            lastPressWasShort = false;
+            lastPressWasMedium = false;
+            lastPressWasLong = true;
+          }
 
-
-            // medium press
-            if (holdTime > shortPress && holdTime < longPress) {
-                // enter cmdMode via special short-long press combo: 
-                // difference < comboInterval implies short press just happened
-                if(!cmdMode && difference < comboInterval) {
-                    cmdMode = true;
-                    Serial.print("\nCOMBOed! CMDMODE now ");
-                    Serial.print(cmdMode ? "TRUE" : "FALSE");
-                // don't check difference if this is the first combo press in cmdMode
-                } else if (cmdMode && (comboLength == 0 || difference < comboInterval)) {
-                    // comboPattern[comboLength] = '-';
-                    // comboLength++;
-                    addToCombo('-');
-                }
-                lastPressTime = currentPressTime;
-            }
-
-
-            // long press - how we exit cmdMode
-            if (holdTime > 1000) {
-                cmdMode = false;
-                Serial.print("\nexiting CMDMODE... ");
-            }
-
-
-            // finished button processing!
-            holdingSince = 0;
-            
-            if (DEBUGLOG) {
-                Serial.print("\nheld: ");
-                Serial.print(holdTime);
-                Serial.print(" ms\tdifference: ");
-                Serial.print(difference);
-                Serial.print(" ms\n");
-                Serial.print("combopattern:\t");
-                Serial.print(comboPattern);
-                Serial.print("\n-------------------------------------");
-            }
+          // finished button processing!
+          lastPressTime = currentPressTime;
+          holdingSince = 0;
+          
+          if (KNOBDEBUG) {
+            Serial.print("\nheld: ");
+            Serial.print(holdTime);
+            Serial.print(" ms\tdifference: ");
+            Serial.print(difference);
+            Serial.print(" ms\n");
+            Serial.print("combopattern:\t");
+            Serial.print(comboPattern);
+            Serial.print("\n-------------------------------------");
+          }
         };
         lastButtonState = buttonState;
 
@@ -183,7 +216,7 @@ private:
     }
 
     void resetCombo() {
-        if (DEBUGLOG) Serial.println("\n================= resetting combopattern =================");
+        if (KNOBDEBUG) Serial.println("\n================= resetting combopattern =================");
         comboLength = 0;
         // memset(comboPattern, 0, sizeof(comboPattern));
         // another way to clear it
@@ -234,27 +267,27 @@ private:
 
     /////////////////////////////////////////////////////////
     // command functions & str lookup
-    const char *patternList[4] = { 
-        {"...."},   // case 0: lowPowerMode
-        {".-.-"},   // case 1: strobeMode
-        {"---"},    // case 2: debugMode
-        {"..--"}    // case 3: sneakyStrobeMode
-        // {"--.."},   // case 4: TBD
-        // {"---"},    // case 5: TBD
-        // {"..--"}    // case 6: TBD
+    const char *patternList[4] = {
+      {"...."},   // case 0: lowPowerMode
+      {".-.-"},   // case 1: strobeMode
+      {"---"},    // case 2: debugMode
+      {"..--"}    // case 3: sneakyStrobeMode
+      // {"--.."},// case 4: TBD
+      // {"---"}, // case 5: TBD
+      // {"..--"} // case 6: TBD
     };
 
-    void lowPowerMode(){
-        Serial.println("entering lowPowerMode()");
+    void lowPowerMode() {
+      Serial.println("entering lowPowerMode()");
     }
-    void strobeMode(){
-        Serial.println("entering strobeMode()");
+    void strobeMode() {
+      Serial.println("entering strobeMode()");
     }
     void debugMode() {
-        Serial.println("entering debugMode()");
+      Serial.println("entering debugMode()");
     }
-    void sneakyStrobeMode(){
-        Serial.println("entering sneakyStrobeMode()");
+    void sneakyStrobeMode() {
+      Serial.println("entering sneakyStrobeMode()");
     }
     /////////////////////////////////////////////////////////
 
@@ -272,18 +305,17 @@ private:
             }
 
             if (patternMatch > -1) {
-                if (DEBUGLOG) { 
+                if (KNOBDEBUG) { 
                     Serial.print("\n found it! return case #");
                     Serial.print(patternMatch);
                 }
                 return patternMatch;
             } else {
-                // if (DEBUGLOG) Serial.print("\n couldnt find it - returning case #-1");
+                // if (KNOBDEBUG) Serial.print("\n couldnt find it - returning case #-1");
             }
         }
         return patternMatch;
     }
-
 
 
     /////////////////////////////////////////////////////////
@@ -305,6 +337,7 @@ private:
     //         stringFunctionMap[pat]();
     //     }
     // }
+    /////////////////////////////////////////////////////////
 
 public:
     MyKnob(uint8_t a, uint8_t b, bool &offMode_) : offMode(offMode_)

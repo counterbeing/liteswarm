@@ -19,18 +19,55 @@ Things you might be missing.
 
 
 ## SOFTWARE TODO
-- cory improving codebase, rotary switch
-- using platform.io (compile/upload to arduino)
-- TODO all
-  - move bike find mode to SOS press - short long short - or something like it (it's in the middle)
-- mac wants gait recognition mode
-  - TODO 
+#### 13 aug 18
+  
+  - [x] TODO wrap press duration logic in descriptive variables
+
+  - [x] TODO swap order of cmdMode pattern from short-med to med-short
+
+  - [ ] TODO animation fx return `FastLed[]`, then main fx optionally combines overlay `led[]` before writing to strip
+
+  - [ ] TODO add visual feedback (use amimationCombinator w/ strobe)
+
+  - [ ] TODO lowpower mode triggered by 3000 ms long press
+
+  - [ ] TODO buffer rapid presses?
+
+  
 ---
 
 ## LOG
 #### 6 Jun 18
 - cory n mac join forces
 - we both fail at trying to win with vscode config + platformio.... for now
+
+#### 13 aug 18
+- switch push-pattern cmd dispatcher
+- FIX pcb v1.3 swapped CS<->CSM pins in `Radio.h`
+  ```c
+    const static uint8_t PIN_RADIO_CE = 7;  // 7 on PCBs 1.3, was 6 on 1.1
+    const static uint8_t PIN_RADIO_CSN = 6; // 6 on PCBs 1.3, was 7 on 1.1
+  ```
+- determined color channel order for SK9822: BGR
+
+- c experiments
+  - https://repl.it/@100ideas/hashmap-vs-switch
+  - https://repl.it/@100ideas/knobreducer-binary-sandbox
+  - https://repl.it/@100ideas/c-string-and-array-practice
+  - https://www.programiz.com/cpp-programming/strings
+  - https://en.cppreference.com/w/cpp/language/operator_arithmetic
+
+- buffer rapid presses TODO pseudocode
+  ```
+  // TODO buffer rapid presses
+    } else { ....
+      IF rapid presses (where difference < shortPress):
+        skip (*_aiIndex)++;
+        instead increment rapidPressCount++, once per rapid press
+      IF rapid presses over (buttonState == 1 && rapidPressCount > 0)
+        (*_aiIndex) += rapidPressCount;
+        rapidPressCount == 0;
+  ```
 
 ---
 
