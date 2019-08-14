@@ -18,29 +18,9 @@ private:
     // Encoder encoder_knob;
     // Encoder encoder_knob(2,3);
 
-    int pinA;
-    int pinB;
-    int position;
-    int start = 0;
-    int finish = 10;
-    int buttonPressCount = 0;
-    int loopRotary = false;
-    long lastPressTime = 0;
-    long holdingSince = 0;
-    bool manualChange = false;
-    int lastButtonState = 1;
-    bool &offMode;
-    void checkRotary()
-    {
-        long newPos = encoder_knob.read();
-        if (newPos == position)
-        {
-            return;
-        }
-        manualChange = true;
-        position = newPos;
-    }
-    
+    /////////////////////////////////////////////////
+    // button check logic trace
+    //
     // button not being pressed: 
     //   lastButtonState = 1, lastPressTime = 000400
     //   buttonState     = 1, holdingSince  = 0
@@ -66,13 +46,49 @@ private:
     //      holdingSince = 0
     //   lastButtonState = 1
 
-    int shortPress = 300;
-    int mediumPress = 500;
-    int longPress = 1000;
-    int comboInterval = 600;
-    char comboPattern[4]; // combos can be 2-4 presses in sequence
+    int pinA;
+    int pinB;
+    int position;
+    int start = 0;
+    int finish = 10;
+    int buttonPressCount = 0;
+    int loopRotary = false;
+    long lastPressTime = 0;
+    long holdingSince = 0;
+    bool manualChange = false;
+    int lastButtonState = 1;
+    bool &offMode;
+    void checkRotary()
+    {
+        long newPos = encoder_knob.read();
+        if (newPos == position)
+        {
+            return;
+        }
+        manualChange = true;
+        position = newPos;
+    }
+    
+    #define COMBO_MAX_ITEMS 5 // recognize combo sequences of up to 5 presses
+    const unsigned int shortPress = 300;
+    const unsigned int mediumPress = 500;
+    const unsigned int longPress = 1000;
+    const unsigned long comboInterval = 1200;
     int comboLength = 0;  // index for comboPattern array
+    char comboPattern[COMBO_MAX_ITEMS]; // combos can be 2-4 presses in sequence
     bool cmdMode = false;
+
+    void resetCombo() {
+        Serial.println("\n================= resetting combopattern =================");
+        comboLength = 0;
+        // memset(comboPattern, 0, sizeof(comboPattern));
+        // another way to clear it
+        for (int i = 0; i < COMBO_MAX_ITEMS; i++)
+        {
+            comboPattern[i] = 0;
+        }
+    }
+
 
     void checkButton(int *_aiIndex)
     {
@@ -80,33 +96,23 @@ private:
         if (lastButtonState == 1 && buttonState == 0) holdingSince = millis();  // started press
         if(lastButtonState == 0 && buttonState == 1) {  // after first frame of press interval lastButtonState == 0
             // A press or hold was finished
-            long currentPressTime = millis();
-            // long holdTime = millis() - holdingSince; // save a call to millis()?
-            long holdTime = currentPressTime - holdingSince;
+            unsigned long currentPressTime = millis();
+            unsigned long holdTime = currentPressTime - holdingSince;
             // long difference = currentPressTime - lastPressTime;  
-            long difference = currentPressTime - lastPressTime - holdTime;  // compensate for duration of push interval
+            unsigned long difference = currentPressTime - lastPressTime - holdTime;  // compensate for duration of push interval
 
-            // reset combo accumulator if too long between presses
-            if ( difference > comboInterval || comboLength >= 3)
+            // reset combo accumulator if too long between presses, but not for first combo press
+            if ( ((comboLength != 0) && difference > comboInterval) || comboLength > 3)
             {
-                Serial.println("\n================= resetting combopattern =================");
-                comboLength = 0;
-                // memset(comboPattern, 0, sizeof(comboPattern));
-                // Serial.println(comboPattern);
-                // Serial.println("=============================\n");
-                // another way to clear it
-                for (int i = 0; i < 4; ++i)
-                {
-                    comboPattern[i] = 0;
-                }
+                resetCombo();
             }
 
             Serial.print("\ncmdMode: ");
             Serial.print(cmdMode);
             Serial.print("\tcomboLength: ");
             Serial.println(comboLength);
-            Serial.print("combopattern: ");
-            Serial.println(comboPattern);
+            // Serial.print("combopattern: ");
+            // Serial.println(comboPattern);
 
             // short press
             // momentary press typically takes 110ms +- 20ms, but possible to get as fast as 30ms
@@ -114,7 +120,7 @@ private:
             if (holdTime < shortPress) 
             {
                 // first press in cmdMode so don't check difference, or its a subsequent combo press
-                if(cmdMode && (comboInterval == 0 || difference < comboInterval)){
+                if(cmdMode && (comboLength == 0 || difference < comboInterval)){
                     comboPattern[comboLength] = '.';
                     comboLength++;
                 }
@@ -141,15 +147,19 @@ private:
                   //   don't 
             }
             // combo detection - medium press following short press, like this: ".-"
-            // difference < comboInterval implies short press just happened
-            if (holdTime > shortPress && holdTime < longPress && difference < comboInterval) {
-                if(!cmdMode) {
+            if (holdTime > shortPress && holdTime < longPress) {
+                Serial.println("-- mediumPress registered -- \n");
+                // difference < comboInterval implies short press just happened
+                if(!cmdMode && difference < comboInterval) {
                     cmdMode = true;
                     Serial.print("\nCOMBOed into CMDMODE ");
-                } else {
+                // don't check difference if this is the first combo press in cmdMode
+                } else if (cmdMode && (comboLength == 0 || difference < comboInterval)) {
+                    Serial.println("-- adding '-' to comboPattern -- \n");
                     comboPattern[comboLength] = '-';
-                    comboLength ++;
+                    comboLength++;
                 }
+                lastPressTime = currentPressTime;
             }
 
             if (holdTime > 1000) {
@@ -171,6 +181,15 @@ private:
             Serial.println(comboPattern);
         };
         lastButtonState = buttonState;
+        unsigned long _now = millis();
+        // unsigned long last = lastPressTime == 0 ? _now : lastPressTime;
+        unsigned long last = lastPressTime;
+        unsigned long combo = comboInterval;
+        if ( comboLength > 0 && lastPressTime > 0 && (_now - last) > combo ) {
+            Serial.println("final resetCombo(); _now - last:");
+            Serial.println(_now - last);
+            resetCombo();
+        }
     }
 
 public:
