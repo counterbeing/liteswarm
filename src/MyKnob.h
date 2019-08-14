@@ -69,8 +69,9 @@ private:
         position = newPos;
     }
     
+    #define DEBUGLOG true     // flag to enable/disable serial logging
     #define COMBO_MAX_ITEMS 5 // recognize combo sequences of up to 5 presses
-    const unsigned int shortPress = 300;
+    const unsigned int shortPress = 200;
     const unsigned int mediumPress = 500;
     const unsigned int longPress = 1000;
     const unsigned long comboInterval = 1200;
@@ -79,14 +80,15 @@ private:
     bool cmdMode = false;
 
     void resetCombo() {
-        Serial.println("\n================= resetting combopattern =================");
+        if (DEBUGLOG) Serial.println("\n================= resetting combopattern =================");
         comboLength = 0;
         // memset(comboPattern, 0, sizeof(comboPattern));
         // another way to clear it
-        for (int i = 0; i < COMBO_MAX_ITEMS; i++)
+        for (int i = 0; i < COMBO_MAX_ITEMS - 1; i++)
         {
             comboPattern[i] = 0;
         }
+        comboPattern[4] = '\0'; // c_string ending char
     }
 
 
@@ -98,98 +100,96 @@ private:
             // A press or hold was finished
             unsigned long currentPressTime = millis();
             unsigned long holdTime = currentPressTime - holdingSince;
-            // long difference = currentPressTime - lastPressTime;  
             unsigned long difference = currentPressTime - lastPressTime - holdTime;  // compensate for duration of push interval
 
             // reset combo accumulator if too long between presses, but not for first combo press
-            if ( ((comboLength != 0) && difference > comboInterval) || comboLength > 3)
+            // if ( ((comboLength > 0) && difference > comboInterval) || comboLength > COMBO_MAX_ITEMS - 1) // 
+            if ( ((comboLength > 0) && difference > comboInterval) || comboLength > COMBO_MAX_ITEMS - 1)
             {
                 resetCombo();
             }
 
-            Serial.print("\ncmdMode: ");
-            Serial.print(cmdMode);
-            Serial.print("\tcomboLength: ");
-            Serial.println(comboLength);
-            // Serial.print("combopattern: ");
-            // Serial.println(comboPattern);
+            if (DEBUGLOG) {
+                Serial.print("\n---------------------\ncmdMode: ");
+                Serial.print(cmdMode);
+                Serial.print("\tcomboLength: ");
+                Serial.print(comboLength);
+            }
+
 
             // short press
-            // momentary press typically takes 110ms +- 20ms, but possible to get as fast as 30ms
+            // momentary press typically takes 90-130ms, but possible to get as fast as 30ms
             // if (difference > 400 && holdTime < 400)  // no spamming the button so we don't spam the swarm?
-            if (holdTime < shortPress) 
-            {
-                // first press in cmdMode so don't check difference, or its a subsequent combo press
+            if (holdTime < shortPress)  {
+                // is it the first combo press in cmdMode? only check difference if its a subsequent combo press
                 if(cmdMode && (comboLength == 0 || difference < comboInterval)){
                     comboPattern[comboLength] = '.';
                     comboLength++;
                 }
-                // subsequent presses in cmdMode
-                // if(cmdMode && difference < comboInterval) {
-                //     comboPattern[comboLength] = '.';
-                //     comboLength++;
-                // }
-
-                // if(offMode) {
-                //     offMode = false;
-                //     Serial.println("exiting OFFMODE");
-                //     return;
-                // }
-
-                // lastPressTime = millis(); // save a call to millis()?
-                lastPressTime = currentPressTime;  // records when the button was RELEASED
                 if(!cmdMode && difference > shortPress) {
                     manualChange = true;
                     (*_aiIndex)++;
                 } // TODO buffer rapid presses 
-                  //   IF rapdid presses:
-                  //   count sequence ("seq") of rapid presses where difference > shortPress
-                  //   don't 
+                  //   IF rapid presses (where difference < shortPress):
+                  //     skip (*_aiIndex)++;
+                  //     instead increment rapidPressCount++, once per rapid press
+                  //   IF rapid presses over (buttonState == 1 && rapidPressCount > 0)
+                  //     (*_aiIndex) += rapidPressCount;
+                  //     rapidPressCount == 0;
+                
+                lastPressTime = currentPressTime;  // records when the button was RELEASED
             }
-            // combo detection - medium press following short press, like this: ".-"
+
+
+            // medium press
             if (holdTime > shortPress && holdTime < longPress) {
-                Serial.println("-- mediumPress registered -- \n");
+                // enter cmdMode via special short-long press combo: 
                 // difference < comboInterval implies short press just happened
                 if(!cmdMode && difference < comboInterval) {
                     cmdMode = true;
                     Serial.print("\nCOMBOed into CMDMODE ");
                 // don't check difference if this is the first combo press in cmdMode
                 } else if (cmdMode && (comboLength == 0 || difference < comboInterval)) {
-                    Serial.println("-- adding '-' to comboPattern -- \n");
                     comboPattern[comboLength] = '-';
                     comboLength++;
                 }
                 lastPressTime = currentPressTime;
             }
 
+
+            // long press - how we exit cmdMode
             if (holdTime > 1000) {
-                // offMode = true;
                 cmdMode = false;
                 Serial.print("\nexiting CMDMODE... ");
-                // lastPressTime = currentPressTime;
-                // Serial.println("entering OFFMODE; button was held (ms) ");
-                // Serial.print(holdTime);
             }
-            holdingSince = 0;
-            Serial.print("\nheld: ");
-            Serial.print(holdTime);
-            Serial.print(" ms\tdifference: ");
-            Serial.print(difference);
-            Serial.print(" ms\n");
 
-            Serial.print("combopattern: ");
-            Serial.println(comboPattern);
+
+            // finished button processing!
+            holdingSince = 0;
+            
+            if (DEBUGLOG) {
+                Serial.print("\nheld: ");
+                Serial.print(holdTime);
+                Serial.print(" ms\tdifference: ");
+                Serial.print(difference);
+                Serial.print(" ms\n");
+                Serial.print("combopattern:\t");
+                Serial.print(comboPattern);
+            }
         };
         lastButtonState = buttonState;
-        unsigned long _now = millis();
-        // unsigned long last = lastPressTime == 0 ? _now : lastPressTime;
-        unsigned long last = lastPressTime;
-        unsigned long combo = comboInterval;
-        if ( comboLength > 0 && lastPressTime > 0 && (_now - last) > combo ) {
-            Serial.println("final resetCombo(); _now - last:");
-            Serial.println(_now - last);
+
+        // dispatch & reset combo
+        bool tooManyCombos      = comboLength > COMBO_MAX_ITEMS - 1;
+        bool stillTryingToCombo = comboLength > 0 && lastPressTime > 0;
+        bool butItsTooLate      = millis() - lastPressTime > comboInterval;
+        
+        if (tooManyCombos || stillTryingToCombo && butItsTooLate){
+            // dispatchAndResetCombo(comboPattern)
             resetCombo();
         }
+        //    [---------- in combo? ---------------]    [----------combo interval over?----------]
+        // if ( (comboLength > 0 && lastPressTime > 0) && (millis() - lastPressTime) > comboInterval ) {
     }
 
 public:
