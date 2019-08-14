@@ -44,3 +44,11 @@ libraries scanning project source files.
 
 More information about PlatformIO Library Dependency Finder
 - https://docs.platformio.org/page/librarymanager/ldf.html
+
+
+---
+
+#### 2019-08-13 bitshift switch c++7
+https://repl.it/@100ideas/knobreducer-binary-sandbox
+- basically its too tricky to use binary representations
+- instead use hash map (unordered_map) fx for dispatcher
