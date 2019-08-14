@@ -92,9 +92,9 @@ void playAnimation()
 
 void setup()
 {
-  FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
-  // FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, RGB>(leds, NUMPIXELS);
+  FastLED.addLeds<SK9822, CLOCKPIN, DATAPIN, BGR>(leds, NUMPIXELS);   // IT WORKS!
   Serial.begin(57600);
+  Serial.println("BGR");
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);

@@ -21,10 +21,10 @@ private:
     MyKnob &knob;
     int &animation_index;
     const static uint8_t SHARED_RADIO_ID = 1;
-    // const static uint8_t PIN_RADIO_CE = 6; // will be 6 on PCBs, was 9
-    // const static uint8_t PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
-    const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
-    const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
+    const static uint8_t PIN_RADIO_CE = 7;  // 7 on PCBs 1.3, was 6 on 1.1
+    const static uint8_t PIN_RADIO_CSN = 6; // 6 on PCBs 1.3, was 7 on 1.1
+    // const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
+    // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
     const static uint8_t SHARED_SECRET = 42;
     uint8_t RADIO_ID = random();
     int previousAnimationIndex;

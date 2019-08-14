@@ -1,14 +1,28 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+////////////////////////////////////////////////////
+// DEFAULTS
 // All that matters to a 3pin WS* strand
-// #define DATAPIN 4 // default for SCARFYMCSARFACE pcb
-#define DATAPIN 5 // mac's protoboard
-// Not applicable to 4 wire APA102 type strands
-// #define CLOCKPIN 5
-#define CLOCKPIN 7 // mac protoboard
+#define DATAPIN 4 // default for SCARFYMCSARFACE pcb
+#define CLOCKPIN 5 // Not applicable to 4 wire APA102 type strands
+///////////////////////////////////////////////////
 
-#define STRIP WS2811
+
+
+//////////////////////////////////////////////////
+// mac
+//
+// mac's SK9822 - oddly flipping the order of the default CLOCKPIN & DATAPIN in  constructor fixed strip
+// FastLED.addLeds<SK9822, CLOCKPIN, DATAPIN, BGR>(leds, NUMPIXELS);
+// #define DATAPIN 5 // mac's SK9822
+// #define CLOCKPIN 4 // mac's SK9822
+
+// #define DATAPIN 5 // mac's protoboard
+// #define CLOCKPIN 7 // mac protoboard
+
+
+#define STRIP WS2811 // TODO figure this out - looks unused
 const int NUMPIXELS = 75;
 
 // knob defaults
