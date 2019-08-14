@@ -102,13 +102,15 @@ private:
         int buttonState = button_debouncer.read();
         if (lastButtonState == 1 && buttonState == 0) holdingSince = millis();  // started press
 
-        if (millis() - holdingSince > sleepPress && lastButtonState == 0 && buttonState == 0) {
-          offMode = !offMode;
-          lastButtonState = 1;  // virtual relase of button
-          holdingSince = 0;
-          Serial.print("\n\n ====== intercepted VERY LONG PRESS! fliping offMode...  ======");
+        // if (millis() - holdingSince > sleepPress && lastButtonState == 0 && buttonState == 0) {
+        //   offMode = !offMode;
+        //   lastButtonState = 1;  // virtual relase of button
+        //   holdingSince = 0;
+        //   Serial.print("\n\n ====== intercepted VERY LONG PRESS! fliping offMode...  ======");
         
-        } else if (lastButtonState == 0 && buttonState == 1) {                         // after first frame of press interval lastButtonState == 0
+        // } else if (lastButtonState == 0 && buttonState == 1) {                         // after first frame of press interval lastButtonState == 0
+        
+        if (lastButtonState == 0 && buttonState == 1) {                         // after first frame of press interval lastButtonState == 0
           // A press or hold was finished
           unsigned long currentPressTime = millis();
           unsigned long holdTime         = currentPressTime - holdingSince;
@@ -201,7 +203,7 @@ private:
             resetCombo();
             // addToCombo('s');
             
-            // offMode = !offMode; // now handled in press-down logic
+            offMode = !offMode; // now handled in press-down logic
             
             lastPressWasShort = false;
             lastPressWasMedium = false;
