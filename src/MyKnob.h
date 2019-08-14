@@ -79,39 +79,20 @@ private:
     char comboPattern[COMBO_MAX_ITEMS]; // combos can be 2-4 presses in sequence
     bool cmdMode = false;
 
-    void resetCombo() {
-        if (DEBUGLOG) Serial.println("\n================= resetting combopattern =================");
-        comboLength = 0;
-        // memset(comboPattern, 0, sizeof(comboPattern));
-        // another way to clear it
-        for (int i = 0; i < COMBO_MAX_ITEMS - 1; i++)
-        {
-            comboPattern[i] = 0;
-        }
-        comboPattern[4] = '\0'; // c_string ending char
-    }
-
 
     void checkButton(int *_aiIndex)
     {
         int buttonState = button_debouncer.read();
         if (lastButtonState == 1 && buttonState == 0) holdingSince = millis();  // started press
-        if(lastButtonState == 0 && buttonState == 1) {  // after first frame of press interval lastButtonState == 0
+        if (lastButtonState == 0 && buttonState == 1) {  // after first frame of press interval lastButtonState == 0
             // A press or hold was finished
             unsigned long currentPressTime = millis();
             unsigned long holdTime = currentPressTime - holdingSince;
             unsigned long difference = currentPressTime - lastPressTime - holdTime;  // compensate for duration of push interval
 
-            // reset combo accumulator if too long between presses, but not for first combo press
-            // if ( ((comboLength > 0) && difference > comboInterval) || comboLength > COMBO_MAX_ITEMS - 1) // 
-            if ( ((comboLength > 0) && difference > comboInterval) || comboLength > COMBO_MAX_ITEMS - 1)
-            {
-                resetCombo();
-            }
-
             if (DEBUGLOG) {
-                Serial.print("\n---------------------\ncmdMode: ");
-                Serial.print(cmdMode);
+                Serial.print("\ncmdMode: ");
+                Serial.print(cmdMode ? "TRUE" : "FALSE");
                 Serial.print("\tcomboLength: ");
                 Serial.print(comboLength);
             }
@@ -123,8 +104,9 @@ private:
             if (holdTime < shortPress)  {
                 // is it the first combo press in cmdMode? only check difference if its a subsequent combo press
                 if(cmdMode && (comboLength == 0 || difference < comboInterval)){
-                    comboPattern[comboLength] = '.';
-                    comboLength++;
+                    addToCombo('.');
+                    // comboPattern[comboLength] = '.';
+                    // comboLength++;
                 }
                 if(!cmdMode && difference > shortPress) {
                     manualChange = true;
@@ -147,11 +129,13 @@ private:
                 // difference < comboInterval implies short press just happened
                 if(!cmdMode && difference < comboInterval) {
                     cmdMode = true;
-                    Serial.print("\nCOMBOed into CMDMODE ");
+                    Serial.print("\nCOMBOed! CMDMODE now ");
+                    Serial.print(cmdMode ? "TRUE" : "FALSE");
                 // don't check difference if this is the first combo press in cmdMode
                 } else if (cmdMode && (comboLength == 0 || difference < comboInterval)) {
-                    comboPattern[comboLength] = '-';
-                    comboLength++;
+                    // comboPattern[comboLength] = '-';
+                    // comboLength++;
+                    addToCombo('-');
                 }
                 lastPressTime = currentPressTime;
             }
@@ -175,6 +159,7 @@ private:
                 Serial.print(" ms\n");
                 Serial.print("combopattern:\t");
                 Serial.print(comboPattern);
+                Serial.print("\n-------------------------------------");
             }
         };
         lastButtonState = buttonState;
@@ -184,12 +169,33 @@ private:
         bool stillTryingToCombo = comboLength > 0 && lastPressTime > 0;
         bool butItsTooLate      = millis() - lastPressTime > comboInterval;
         
-        if (tooManyCombos || stillTryingToCombo && butItsTooLate){
-            // dispatchAndResetCombo(comboPattern)
-            resetCombo();
+        if (tooManyCombos || (stillTryingToCombo && butItsTooLate)) {
+            dispatchAndResetCombo();
         }
-        //    [---------- in combo? ---------------]    [----------combo interval over?----------]
-        // if ( (comboLength > 0 && lastPressTime > 0) && (millis() - lastPressTime) > comboInterval ) {
+    }
+
+    void resetCombo() {
+        if (DEBUGLOG) Serial.println("\n================= resetting combopattern =================");
+        comboLength = 0;
+        // memset(comboPattern, 0, sizeof(comboPattern));
+        // another way to clear it
+        for (int i = 0; i < COMBO_MAX_ITEMS - 1; i++) {
+            comboPattern[i] = 0;
+        }
+    }
+
+    void dispatchAndResetCombo(){
+        resetCombo();
+    }
+
+    void addToCombo(char comboChar) {
+        // uncomment to prove that weird ascii in serial console
+        // is due to c_string requiring special terminal char
+        //
+        // if(comboLength == COMBO_MAX_ITEMS - 1) comboChar = '\0';
+        
+        comboPattern[comboLength] = comboChar;
+        comboLength++;
     }
 
 public:
