@@ -17,6 +17,8 @@
 #include "animations/Race.h"
 #include "animations/Rainbow.h"
 
+#include "store.h"
+
 // Pins for the rotary
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
@@ -99,6 +101,12 @@ void setup()
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);
   radio.setup();
+
+  printer();
+
+  timer_handler(2);
+  
+  _setup();  //cedux
 }
 
 void loop()
@@ -112,4 +120,6 @@ void loop()
   }
   radio.check();
   playAnimation();
+  
+  _main();  //cedux
 }

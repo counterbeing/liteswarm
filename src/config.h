@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define KNOBDEBUG true     // flag to enable/disable serial logging in knob
+#define KNOBDEBUG false     // flag to enable/disable serial logging in knob
 #define RADIODEBUG false     // flag to enable/disable serial logging for Radio
 
 ////////////////////////////////////////////////////
