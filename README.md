@@ -51,6 +51,7 @@ Things you might be missing.
 ## LOG
 
 #### 22 aug 19
+- got WS2815s working
 - discovered that `NUMLEDS = 375` uses 120% of available memory
   - removing all serial.print statements with static strings saved 406 bytes
   - that was enough space for all animations @ 375 leds
