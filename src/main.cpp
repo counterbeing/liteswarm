@@ -1,21 +1,21 @@
 #include <Arduino.h>
 #define FASTLED_INTERNAL
-#include "FastLED.h"
-#include <SPI.h>
-#include <MyKnob.h>
 #include <Encoder.h>
-#include "config.h"
+#include <MyKnob.h>
+#include <SPI.h>
+#include "FastLED.h"
 #include "Radio.h"
+#include "config.h"
 
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
 #include "animations/DiamondNecklace.h"
 #include "animations/Dimmer.h"
-#include "animations/Stripes.h"
-#include "animations/Stars.h"
 #include "animations/FuckMyEyes.h"
 #include "animations/Race.h"
 #include "animations/Rainbow.h"
+#include "animations/Stars.h"
+#include "animations/Stripes.h"
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
@@ -45,12 +45,9 @@ Radio radio(knob, animation_index);
 Animation *current_animation = &crossfade;
 int previous_animation_index = -1;
 
-void playAnimation()
-{
-  if (animation_index != previous_animation_index)
-  {
-    if (animation_index > 8)
-      animation_index = 0;
+void playAnimation() {
+  if (animation_index != previous_animation_index) {
+    if (animation_index > 8) animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
     // next case
@@ -60,38 +57,37 @@ void playAnimation()
       Serial.println(animation_index);
     }
 
-    switch (animation_index)
-    {
-    case 0:
-      current_animation = &crossfade;
-      break;
-    case 1:
-      current_animation = &color_chooser;
-      break;
-    case 2:
-      current_animation = &race;
-      break;
-    case 3:
-      current_animation = &stars;
-      break;
-    case 4:
-      current_animation = &rainbow;
-      break;
-    case 5:
-      current_animation = &fuck_my_eyes;
-      break;
-    case 6:
-      current_animation = &stripes;
-      break;
-    case 7:
-      current_animation = &diamond_necklace;
-      break;
-    case 8:
-      current_animation = &dimmer;
-      break;
-    default:
-      // Serial.println("\n\nWARN: default animation switch case");
-      break;
+    switch (animation_index) {
+      case 0:
+        current_animation = &crossfade;
+        break;
+      case 1:
+        current_animation = &color_chooser;
+        break;
+      case 2:
+        current_animation = &race;
+        break;
+      case 3:
+        current_animation = &stars;
+        break;
+      case 4:
+        current_animation = &rainbow;
+        break;
+      case 5:
+        current_animation = &fuck_my_eyes;
+        break;
+      case 6:
+        current_animation = &stripes;
+        break;
+      case 7:
+        current_animation = &diamond_necklace;
+        break;
+      case 8:
+        current_animation = &dimmer;
+        break;
+      default:
+        // Serial.println("\n\nWARN: default animation switch case");
+        break;
     }
     current_animation->setup();
     previous_animation_index = animation_index;
@@ -99,17 +95,17 @@ void playAnimation()
   current_animation->run();
 }
 
-void setup()
-{
-  #ifdef SCARF_WS2811
+void setup() {
+#ifdef SCARF_WS2811
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
-  #endif
-  #ifdef SCARF_SK9822
-  FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);   // IT WORKS!
-  #endif
-  #ifdef BIGRED_WS2815
-  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);   // IT WORKS!
-  #endif
+#endif
+#ifdef SCARF_SK9822
+  FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds,
+                                                  NUMPIXELS);  // IT WORKS!
+#endif
+#ifdef BIGRED_WS2815
+  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);  // IT WORKS!
+#endif
   Serial.begin(57600);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
@@ -117,11 +113,10 @@ void setup()
   radio.setup();
 }
 
-void loop()
-{
+void loop() {
   button_debouncer.update();
   knob.check(&animation_index);
-  if(offMode) {
+  if (offMode) {
     fill_solid(leds, NUMPIXELS, CRGB::Black);
     FastLED.show();
     return;

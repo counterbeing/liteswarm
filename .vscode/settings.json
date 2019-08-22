@@ -5,5 +5,9 @@
   //   https://code.visualstudio.com/docs/cpp/cpp-ide#_code-formatting
   //   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
   "C_Cpp.clang_format_style": "Google",
+  "terminal.integrated.env.osx": {
+    "PATH": "/Users/100ideas/.platformio/penv/bin:/Users/100ideas/.platformio/penv:/Users/100ideas/.nodenv/shims:/usr/local/sbin:/Users/100ideas/dev/bin:/usr/local/opt/curl/bin:/usr/local/opt/sqlite/bin:/Applications/Visual Studio Code.app/Contents/Resources/app/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "PLATFORMIO_CALLER": "vscode"
+  },
   
 }
