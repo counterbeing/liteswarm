@@ -7,8 +7,8 @@
 ////////////////////////////////////////////////////
 // DEFAULTS
 // All that matters to a 3pin WS* strand
-#define DATAPIN 4 // default for SCARFYMCSARFACE pcb
-#define CLOCKPIN 5 // Not applicable to 4 wire APA102 type strands
+#define DATAPIN 5 // default for SCARFYMCSARFACE pcb
+#define CLOCKPIN 4 // Not applicable to 4 wire APA102 type strands
 ///////////////////////////////////////////////////
 
 
