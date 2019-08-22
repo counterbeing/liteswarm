@@ -23,7 +23,8 @@ Things you might be missing.
 
 ## SOFTWARE TODO
 
-#### last updated 22 aug 18  
+#### last updated 22 aug 18
+  - [ ] add `ifdefs` to `config.h` to set options for ws2811, ws2815, sk9822
   - [x] `config.h` `KNOBDEBUG` & `RADIODEBUG` enable/disable serial print lines
     - [ ] debug flag that enables the above and sets `NUMLEDS` to ~10 (trade leds  for serial print strings in memory)
   - [ ] save memory by casting `long`s to something else (`uint_16`?) i.e. in MyKnob.h

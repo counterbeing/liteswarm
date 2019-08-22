@@ -4,12 +4,15 @@
 #define KNOBDEBUG false      // set flag to false to disable serial logging in knob
 #define RADIODEBUG false     // set flag to false to disable logging for Radio
 
+#define WS2811
+// #define SK9822
+// #define WS2815
 
 ////////////////////////////////////////////////////
 // DEFAULTS
 // All that matters to a 3pin WS* strand
-#define DATAPIN 4 // default for SCARFYMCSARFACE pcb
-#define CLOCKPIN 5 // Not applicable to 4 wire APA102 type strands
+#define DATAPIN 4    // default for SCARFYMCSARFACE pcb
+#define CLOCKPIN 5   // Not applicable to 4 wire APA102 type strands
 #define STRIP WS2811 // TODO figure this out - looks unused
 // const int NUMPIXELS = 75;
 //
