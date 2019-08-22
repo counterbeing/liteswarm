@@ -4,12 +4,13 @@
 #include "config.h"
 
 struct RadioPacket // Any packet up to 32 bytes can be sent.
-{
-    uint8_t SHARED_SECRET;
-    uint8_t senderId;
-    uint32_t rotaryPosition;
-    uint8_t animationId;
-    // uint32_t keyframe;
+{                               // 0 - bit count (256 max)
+    uint8_t SHARED_SECRET;      // 8
+    uint8_t senderId;           // 16
+    uint32_t rotaryPosition;    // 48
+    uint8_t animationId;        // 56
+    // uint32_t keyframe;       // 
+                                // ... 200
 };
 
 class Radio
@@ -39,12 +40,12 @@ private:
             _radio.readData(&_incomingRadioPacket);
             if (RADIODEBUG) {
                 Serial.println("------INCOMING---------");
-                // Serial.print("SHARED_SECRET: ");
-                // Serial.println(_incomingRadioPacket.SHARED_SECRET);
-                // Serial.print("rotaryPosition: ");
-                // Serial.println(_incomingRadioPacket.rotaryPosition);
-                // Serial.print("animationId: ");
-                // Serial.println(_incomingRadioPacket.animationId);
+                Serial.print("SHARED_SECRET: ");
+                Serial.println(_incomingRadioPacket.SHARED_SECRET);
+                Serial.print("rotaryPosition: ");
+                Serial.println(_incomingRadioPacket.rotaryPosition);
+                Serial.print("animationId: ");
+                Serial.println(_incomingRadioPacket.animationId);
                 Serial.print("senderId: ");
                 Serial.println(_incomingRadioPacket.senderId);
             }
@@ -59,7 +60,7 @@ private:
 
     void checkRadioSend()
     {
-        // Serial.println("--- Sending Data");
+        if (RADIODEBUG) { Serial.println("--- Sending Data"); }
         _outboundRadioPacket.rotaryPosition = knob.get();
         _outboundRadioPacket.animationId = animation_index;
 
@@ -85,29 +86,33 @@ private:
         return false;
     }
 
-public:
+        // constructor declaration vvvvvvvvvvvv : vvvvvvvvvvv -member initializer list- vvvvvvvv
+public: //                                             vvvvv <--init named identifier (knob) with these params (knob_)
     Radio(MyKnob &knob_, int &animation_index_) : knob(knob_), animation_index(animation_index_) {}
     void setup()
     {
         _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
         _outboundRadioPacket.senderId = RADIO_ID;
-        Serial.print("Picking random radio id: ");
-        Serial.println(RADIO_ID);
+        if (RADIODEBUG) {
+            Serial.print("Picking random radio id: ");
+            Serial.println(RADIO_ID);
+        }
         pinMode(14, INPUT_PULLUP);
         if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN))
         {
             radioAlive = false;
-            Serial.println("radio fail");
+            if (RADIODEBUG) { Serial.println("radio fail"); }
         }
         else
         {
             radioAlive = true;
-            Serial.println("radio ok");
+            if (RADIODEBUG) { Serial.println("radio ok"); }
         }
     }
     void check()
     {
-        int newRotaryPosition = knob.get();
+        // int newRotaryPosition = knob.get();
+        knob.get();
         if (radioAlive)
         {
             checkRadioReceive();

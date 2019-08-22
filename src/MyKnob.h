@@ -192,13 +192,13 @@ private:
               
           } else if (thisPressIsLong) {
             cmdMode = false;
-            Serial.print("\nexiting CMDMODE... ");
+            if (KNOBDEBUG) { Serial.print("\nexiting CMDMODE... "); }
             lastPressWasShort = false;
             lastPressWasMedium = false;
             lastPressWasLong = true;
           
           } else if (thisPressIsVeryLong) {
-            Serial.print("\nVERY LONG PRESS! sleepytime ");
+            if (KNOBDEBUG) { Serial.print("\nVERY LONG PRESS! sleepytime "); }
             cmdMode = false;
             resetCombo();
             // addToCombo('s');
@@ -264,26 +264,26 @@ private:
     }
 
     void dispatch() {
-        Serial.print("\nMyKnob::dispatch() getting cmd for combo");
+        if (KNOBDEBUG) { Serial.print("\nMyKnob::dispatch() getting cmd for combo"); }
         switch (getCaseForCombo())
         {
         case 0:
-            Serial.print("\ncase 0: calling lowPowerMode()");
+            if (KNOBDEBUG) { Serial.print("\ncase 0: calling lowPowerMode()"); }
             break;
         case 1:
-            Serial.print("\ncase 1: calling strobeMode()");
+            if (KNOBDEBUG) { Serial.print("\ncase 1: calling strobeMode()"); }
             break;
         case 2:
-            Serial.print("\ncase 2: calling debugMode()");
+            if (KNOBDEBUG) { Serial.print("\ncase 2: calling debugMode()"); }
             break;
         case 3:
-            Serial.print("\ncase 3: calling sneakyStrobeMode()");
+            if (KNOBDEBUG) { Serial.print("\ncase 3: calling sneakyStrobeMode()"); }
             break;
         case 4:
-            Serial.print("\ncase 4: calling TBD() ");
+            if (KNOBDEBUG) { Serial.print("\ncase 4: calling TBD() "); }
             break;
         default:
-            Serial.println("\n\nWARN: default switch case; couldn't find fx for pattern ");
+            if (KNOBDEBUG) { Serial.println("\n\nWARN: default switch case; couldn't find fx for pattern "); }
             break;
         }
     }
@@ -301,50 +301,50 @@ private:
     };
 
     void lowPowerMode() {
-      // if(_lowPowerMode) {
-      //   Serial.println("toggling lowPowerMode OFF");
-      // } else {
-      //   Serial.println("toggling lowPowerMode ON");
-      // }
-      // _lowPowerMode = !lowPowerMode;
+    //   if(_lowPowerMode) {
+    //     if (KNOBDEBUG) { Serial.println("toggling lowPowerMode OFF"); }
+    //   } else {
+    //     if (KNOBDEBUG) { Serial.println("toggling lowPowerMode ON"); }
+    //   }
+    //   _lowPowerMode = !lowPowerMode;
     }
     void strobeMode() {
-      Serial.println("entering strobeMode()");
+        if (KNOBDEBUG) { Serial.println("entering strobeMode()"); }
     }
     void debugMode() {
-      Serial.println("entering debugMode()");
+        if (KNOBDEBUG) { Serial.println("entering debugMode()"); }
     }
     void sneakyStrobeMode() {
-      Serial.println("entering sneakyStrobeMode()");
+        if (KNOBDEBUG) { Serial.println("entering sneakyStrobeMode()"); }
     }
     /////////////////////////////////////////////////////////
 
     int getCaseForCombo() {
-        int patternMatch = -1;
-        for (int patternIdx = 0; patternIdx < 3; patternIdx++) 
-        {
-            const char *candidate = patternList[patternIdx];
-            patternMatch = patternIdx;
-            Serial.print("\ncandidate: ");
-            Serial.print(candidate);
-            for (int i = 0; i < COMBO_MAX_ITEMS - 1; i++)
-            {
-                if (comboPattern[i] != candidate[i]) patternMatch = -1;
-            }
-
-            if (patternMatch > -1) {
-                if (KNOBDEBUG) { 
-                    Serial.print("\n found it! return case #");
-                    Serial.print(patternMatch);
-                }
-                return patternMatch;
-            } else {
-                // if (KNOBDEBUG) Serial.print("\n couldnt find it - returning case #-1");
-            }
+      int patternMatch = -1;
+      for (int patternIdx = 0; patternIdx < 3; patternIdx++) {
+        const char *candidate = patternList[patternIdx];
+        patternMatch = patternIdx;
+        if (KNOBDEBUG) {
+          Serial.print("\ncandidate: ");
+          Serial.print(candidate);
         }
-        return patternMatch;
-    }
+        for (int i = 0; i < COMBO_MAX_ITEMS - 1; i++) {
+          if (comboPattern[i] != candidate[i]) patternMatch = -1;
+        }
 
+        if (patternMatch > -1) {
+          if (KNOBDEBUG) {
+            Serial.print("\n found it! return case #");
+            Serial.print(patternMatch);
+          }
+          return patternMatch;
+        } else {
+          if (KNOBDEBUG)
+            Serial.print("\n couldnt find it - returning case #-1");
+        }
+      }
+      return patternMatch;
+    }
 
     /////////////////////////////////////////////////////////
     // hashmap implementation instead of switch statement (allows string->fx() mapping)

@@ -18,30 +18,52 @@ Things you might be missing.
 - OpenOCD some USB stuff `brew install openocd` (or else `dyld: Library not loaded: /usr/local/opt/libftdi/lib/libftdi1.2.dylib`)
 
 
+
+
+
 ## SOFTWARE TODO
-#### 13 aug 18
-  
-  - [x] TODO wrap press duration logic in descriptive variables
 
-  - [x] TODO swap order of cmdMode pattern from short-med to med-short
+#### last updated 22 aug 18  
+  - [x] `config.h` `KNOBDEBUG` & `RADIODEBUG` enable/disable serial print lines
+    - [ ] debug flag that enables the above and sets `NUMLEDS` to ~10 (trade leds  for serial print strings in memory)
+  - [ ] save memory by casting `long`s to something else (`uint_16`?) i.e. in MyKnob.h
+  - [x] wrap press duration logic in descriptive variables
+  - [x] swap order of cmdMode pattern from short-med to med-short
+  - [ ] animation fx return `FastLed[]`, then main fx optionally combines overlay `led[]` before writing to strip
+  - [ ] add visual feedback (use amimationCombinator w/ strobe)
+  - [x] lowpower mode triggered by 3000 ms long press
+  - [ ] buffer rapid presses?
 
-  - [ ] TODO animation fx return `FastLed[]`, then main fx optionally combines overlay `led[]` before writing to strip
 
-  - [ ] TODO add visual feedback (use amimationCombinator w/ strobe)
+## PCB TODO
 
-  - [x] TODO lowpower mode triggered by 3000 ms long press
-
-  - [ ] TODO buffer rapid presses?
+#### last updated 22 aug 18
+  - [ ] switch 6/7 labels on silkscreen
+  - [ ] switch clock & data on silkscreen
+  - [ ] move position of version label on silkscreen so visible after wires added
+  - [ ] increase inside diameter of power holes, radio holes
+  - [ ] add holes to the corners, esp opposite radio end; use ziptie thru holes to secure cables
+  - [ ] switch radio pins layout from 1x7 to 2x8 compatibile with female ribbon cable header (we'll just solder 2 rows of 1x4 header pins to those holes then push the ribbon cable on)
 
   
 ---
 
 ## LOG
-#### 6 Jun 18
-- cory n mac join forces
-- we both fail at trying to win with vscode config + platformio.... for now
 
-#### 13 aug 18
+#### 22 aug 19
+- discovered that `NUMLEDS = 375` uses 120% of available memory
+  - removing all serial.print statements with static strings saved 406 bytes
+  - that was enough space for all animations @ 375 leds
+- measured current draw for WS2815 for each animation @ 375 leds (12.5 m)
+  - ranges between 0.8-4.25 amps @ 12v
+  - so for 25m of strip on big red max power draw ~ 100 watts
+  - see comments in `config.h` for details
+
+#### 14 aug 19
+- set `"C_Cpp.clang_format_style": "Google",` in `.vscode/settings.json` to get javascriptish formatting rules
+- added `include/printf.h`: if included, intercepts output of printf and sends to `serial.print()`. not currently used, but should be.
+
+#### 13 aug 19
 - switch push-pattern cmd dispatcher
 - FIX pcb v1.3 swapped CS<->CSM pins in `Radio.h`
   ```c
@@ -68,6 +90,10 @@ Things you might be missing.
         (*_aiIndex) += rapidPressCount;
         rapidPressCount == 0;
   ```
+
+#### 6 Jun 19
+- cory n mac join forces
+- we both fail at trying to win with vscode config + platformio.... for now
 
 ---
 

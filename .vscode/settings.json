@@ -1,0 +1,9 @@
+{
+  // instead of `.clang-format` file in project root, just use
+  // googles clang formatting default config.
+  // see: 
+  //   https://code.visualstudio.com/docs/cpp/cpp-ide#_code-formatting
+  //   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+  "C_Cpp.clang_format_style": "Google",
+  
+}
