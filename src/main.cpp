@@ -101,8 +101,15 @@ void playAnimation()
 
 void setup()
 {
-  // FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);   // IT WORKS!
+  #ifdef SCARF_WS2811
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
+  #endif
+  #ifdef SCARF_SK9822
+  FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);   // IT WORKS!
+  #endif
+  #ifdef BIGRED_WS2815
+  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);   // IT WORKS!
+  #endif
   Serial.begin(57600);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);

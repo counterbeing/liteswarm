@@ -4,13 +4,16 @@
 #define KNOBDEBUG false      // set flag to false to disable serial logging in knob
 #define RADIODEBUG false     // set flag to false to disable logging for Radio
 
+// #define SCARF_WS2811     // IC has purple dot
+#define SCARF_SK9822        // IC has purple dot
+// #define BIGRED_WS2815    // IC has purple dot
 
 ////////////////////////////////////////////////////
 // DEFAULTS
 // All that matters to a 3pin WS* strand
 #define DATAPIN 5    // default for SCARFYMCSARFACE pcb
 #define CLOCKPIN 4   // Not applicable to 4 wire APA102 type strands
-#define STRIP WS2811 // TODO figure this out - looks unused
+
 // const int NUMPIXELS = 75;
 //
 // knob defaults
@@ -21,6 +24,9 @@
 // PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
 ///////////////////////////////////////////////////
 
+#ifdef SCARF_WS2811
+const int NUMPIXELS = 75;
+#endif
 
 //////////////////////////////////////////////////
 // SK9822
@@ -28,7 +34,10 @@
 //   FastLED.addLeds<SK9822, CLOCKPIN, DATAPIN, BGR>(leds, NUMPIXELS);
 // #define DATAPIN 5 // mac's SK9822
 // #define CLOCKPIN 4 // mac's SK9822
-//
+#ifdef SCARF_SK9822
+const int NUMPIXELS = 75;
+#endif
+
 // mac's protoboard
 // #define DATAPIN 5 // mac's protoboard
 // #define CLOCKPIN 7 // mac protoboard
@@ -42,7 +51,9 @@
 //   connect strip data to controller datapin (strip green wire to controller green wire)
 // 
 // #define CLOCKPIN 5
+#ifdef BIGRED_WS2815
 const int NUMPIXELS = 375;
+#endif
 //////////////////////////////////////////////////
 
 #endif
