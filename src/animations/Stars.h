@@ -30,7 +30,7 @@ private:
 
         if (nonBlockDelay(delay))
         {
-            Serial.println(lastPosition);
+            if (KNOBDEBUG) { Serial.println(lastPosition); }
             lastPosition++;
             if (lastPosition >= (stripeLength * 2))
             {
