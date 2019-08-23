@@ -24,11 +24,11 @@ Things you might be missing.
 ## SOFTWARE TODO
 
 #### last updated 22 aug 18
-  - [ ] Ensure radio is muted for first second or so of operation. This will ensure that a newly booted radio doesn't alter the group's animation sequence.
   - [ ] add visual feedback (use amimationCombinator w/ strobe)
   - [ ] buffer rapid presses?
   - [ ] debug flag that enables the above and sets `NUMLEDS` to ~10 (trade leds  for serial print strings in memory)
   - [ ] save memory by casting `long`s to something else (`uint_16`?) i.e. in MyKnob.h
+  - [x] Ensure radio is muted for first second or so of operation. This will ensure that a newly booted radio doesn't alter the group's animation sequence.
   - [x] Ensure that non-matching packet secrets ignore packet.
   - [x] `config.h` `KNOB_DEBUG` & `RADIO_DEBUG` enable/disable serial print lines
   - [x] add `ifdefs` to `config.h` to set options for ws2811, ws2815, sk9822

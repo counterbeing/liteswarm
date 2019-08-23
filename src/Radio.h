@@ -58,6 +58,11 @@ class Radio {
   }
 
   void checkRadioSend() {
+    // Stay silent for the first moment in order to try to join a group rather
+    // than telling all others to change.
+    if (millis() < 1500) {
+      return;
+    }
     if (RADIO_DEBUG) {
       Serial.println("--- Sending Data");
     }
