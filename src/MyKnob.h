@@ -66,7 +66,7 @@ class MyKnob {
     position = newPos;
   }
 
-// #define KNOBDEBUG true     // set in config.h
+// #define KNOB_DEBUG true     // set in config.h
 #define COMBO_MAX_ITEMS 5  // recognize combo sequences of up to 5 presses
   const unsigned int shortPress = 200;
   const unsigned int mediumPress = 500;
@@ -135,7 +135,7 @@ class MyKnob {
       // bool lastPressWasMedium = difference < longPress && difference >
       // shortPress; bool lastPressWasLong   = difference >= longPress;
 
-      if (KNOBDEBUG) {
+      if (KNOB_DEBUG) {
         Serial.print("\ncmdMode: ");
         Serial.print(cmdMode ? "TRUE" : "FALSE");
         Serial.print("\tcomboLength: ");
@@ -174,7 +174,7 @@ class MyKnob {
         if (!cmdMode && lastPressWasMedium) {
           if (stillTimeToCombo) {
             cmdMode = true;
-            if (KNOBDEBUG) {
+            if (KNOB_DEBUG) {
               Serial.print("\nCOMBOed! (med->short) CMDMODE now ");
               Serial.print(cmdMode ? "TRUE" : "FALSE");
             }
@@ -198,7 +198,7 @@ class MyKnob {
 
       } else if (thisPressIsLong) {
         cmdMode = false;
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\nexiting CMDMODE... ");
         }
         lastPressWasShort = false;
@@ -206,7 +206,7 @@ class MyKnob {
         lastPressWasLong = true;
 
       } else if (thisPressIsVeryLong) {
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\nVERY LONG PRESS! sleepytime ");
         }
         cmdMode = false;
@@ -224,7 +224,7 @@ class MyKnob {
       lastPressTime = currentPressTime;
       holdingSince = 0;
 
-      if (KNOBDEBUG) {
+      if (KNOB_DEBUG) {
         Serial.print("\nheld: ");
         Serial.print(holdTime);
         Serial.print(" ms\tdifference: ");
@@ -248,7 +248,7 @@ class MyKnob {
   }
 
   void resetCombo() {
-    if (KNOBDEBUG)
+    if (KNOB_DEBUG)
       Serial.println(
           "\n================= resetting combopattern =================");
     comboLength = 0;
@@ -276,37 +276,37 @@ class MyKnob {
   }
 
   void dispatch() {
-    if (KNOBDEBUG) {
+    if (KNOB_DEBUG) {
       Serial.print("\nMyKnob::dispatch() getting cmd for combo");
     }
     switch (getCaseForCombo()) {
       case 0:
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\ncase 0: calling lowPowerMode()");
         }
         break;
       case 1:
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\ncase 1: calling strobeMode()");
         }
         break;
       case 2:
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\ncase 2: calling debugMode()");
         }
         break;
       case 3:
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\ncase 3: calling sneakyStrobeMode()");
         }
         break;
       case 4:
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\ncase 4: calling TBD() ");
         }
         break;
       default:
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.println(
               "\n\nWARN: default switch case; couldn't find fx for pattern ");
         }
@@ -328,24 +328,24 @@ class MyKnob {
 
   void lowPowerMode() {
     //   if(_lowPowerMode) {
-    //     if (KNOBDEBUG) { Serial.println("toggling lowPowerMode OFF"); }
+    //     if (KNOB_DEBUG) { Serial.println("toggling lowPowerMode OFF"); }
     //   } else {
-    //     if (KNOBDEBUG) { Serial.println("toggling lowPowerMode ON"); }
+    //     if (KNOB_DEBUG) { Serial.println("toggling lowPowerMode ON"); }
     //   }
     //   _lowPowerMode = !lowPowerMode;
   }
   void strobeMode() {
-    if (KNOBDEBUG) {
+    if (KNOB_DEBUG) {
       Serial.println("entering strobeMode()");
     }
   }
   void debugMode() {
-    if (KNOBDEBUG) {
+    if (KNOB_DEBUG) {
       Serial.println("entering debugMode()");
     }
   }
   void sneakyStrobeMode() {
-    if (KNOBDEBUG) {
+    if (KNOB_DEBUG) {
       Serial.println("entering sneakyStrobeMode()");
     }
   }
@@ -356,7 +356,7 @@ class MyKnob {
     for (int patternIdx = 0; patternIdx < 3; patternIdx++) {
       const char *candidate = patternList[patternIdx];
       patternMatch = patternIdx;
-      if (KNOBDEBUG) {
+      if (KNOB_DEBUG) {
         Serial.print("\ncandidate: ");
         Serial.print(candidate);
       }
@@ -365,13 +365,13 @@ class MyKnob {
       }
 
       if (patternMatch > -1) {
-        if (KNOBDEBUG) {
+        if (KNOB_DEBUG) {
           Serial.print("\n found it! return case #");
           Serial.print(patternMatch);
         }
         return patternMatch;
       } else {
-        if (KNOBDEBUG) Serial.print("\n couldnt find it - returning case #-1");
+        if (KNOB_DEBUG) Serial.print("\n couldnt find it - returning case #-1");
       }
     }
     return patternMatch;

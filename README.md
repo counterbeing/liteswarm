@@ -24,16 +24,18 @@ Things you might be missing.
 ## SOFTWARE TODO
 
 #### last updated 22 aug 18
-  - [ ] add `ifdefs` to `config.h` to set options for ws2811, ws2815, sk9822
-  - [x] `config.h` `KNOBDEBUG` & `RADIODEBUG` enable/disable serial print lines
-    - [ ] debug flag that enables the above and sets `NUMLEDS` to ~10 (trade leds  for serial print strings in memory)
-  - [ ] save memory by casting `long`s to something else (`uint_16`?) i.e. in MyKnob.h
-  - [x] wrap press duration logic in descriptive variables
-  - [x] swap order of cmdMode pattern from short-med to med-short
-  - [ ] animation fx return `FastLed[]`, then main fx optionally combines overlay `led[]` before writing to strip
+  - [ ] Ensure radio is muted for first second or so of operation. This will ensure that a newly booted radio doesn't alter the group's animation sequence.
   - [ ] add visual feedback (use amimationCombinator w/ strobe)
-  - [x] lowpower mode triggered by 3000 ms long press
   - [ ] buffer rapid presses?
+  - [ ] debug flag that enables the above and sets `NUMLEDS` to ~10 (trade leds  for serial print strings in memory)
+  - [ ] Ensure that non-matching packet secrets ignore packet.
+  - [ ] save memory by casting `long`s to something else (`uint_16`?) i.e. in MyKnob.h
+  - [x] `config.h` `KNOB_DEBUG` & `RADIO_DEBUG` enable/disable serial print lines
+  - [x] add `ifdefs` to `config.h` to set options for ws2811, ws2815, sk9822
+  - [x] lowpower mode triggered by 3000 ms long press
+  - [x] swap order of cmdMode pattern from short-med to med-short
+  - [x] wrap press duration logic in descriptive variables
+
 
 
 ## PCB TODO
@@ -96,26 +98,3 @@ Things you might be missing.
 #### 6 Jun 19
 - cory n mac join forces
 - we both fail at trying to win with vscode config + platformio.... for now
-
----
-
-## OTHER NOTES
-
-Super tall tail for big red
-- material?
-
-Homing system for big red
-- [like this maybe](http://www.migratoryconnectivityproject.org/vhf-radios/)
-- audio / visual 
-- TODO CORY: beep... beep... beep... beep beep beep BEEEEEEP homing missile
-    - thoughts: zigbee? wifi signal strength dongle? bluetooth beacon 
-- TODO MAC: tubing - bilge pump tubing 
-
-wiring: TODO MAC
-- amplify logic line 
-- figure out ideal gauge power wires
-TEST: 
-- 2m, then 5m
-- try injencting power at 0, 2.5, 5m
-- make better power connectors using ground power supply (ATX)
-- then switch to lithium battery + buck converter

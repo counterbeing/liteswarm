@@ -52,7 +52,7 @@ void playAnimation() {
     // never follow one animation function immediately with itself in the the
     // next case
 
-    if (KNOBDEBUG) {
+    if (KNOB_DEBUG) {
       Serial.print("Animation Index: ");
       Serial.println(animation_index);
     }

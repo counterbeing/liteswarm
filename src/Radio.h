@@ -35,7 +35,7 @@ class Radio {
   void checkRadioReceive() {
     while (_radio.hasData()) {
       _radio.readData(&_incomingRadioPacket);
-      if (RADIODEBUG) {
+      if (RADIO_DEBUG) {
         Serial.println("------INCOMING---------");
         Serial.print("SHARED_SECRET: ");
         Serial.println(_incomingRadioPacket.SHARED_SECRET);
@@ -55,7 +55,7 @@ class Radio {
   }
 
   void checkRadioSend() {
-    if (RADIODEBUG) {
+    if (RADIO_DEBUG) {
       Serial.println("--- Sending Data");
     }
     _outboundRadioPacket.rotaryPosition = knob.get();
@@ -91,19 +91,19 @@ class Radio {
   void setup() {
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
-    if (RADIODEBUG) {
+    if (RADIO_DEBUG) {
       Serial.print("Picking random radio id: ");
       Serial.println(RADIO_ID);
     }
     pinMode(14, INPUT_PULLUP);
     if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN)) {
       radioAlive = false;
-      if (RADIODEBUG) {
+      if (RADIO_DEBUG) {
         Serial.println("radio fail");
       }
     } else {
       radioAlive = true;
-      if (RADIODEBUG) {
+      if (RADIO_DEBUG) {
         Serial.println("radio ok");
       }
     }
