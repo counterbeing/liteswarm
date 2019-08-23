@@ -31,7 +31,7 @@ class Race : public Animation {
       leds[head] = CHSV(hue++, 255, 150);
       head = remapInRange(++head);
       leds[head] = CHSV(hue++, 255, 255);
-      FastLED.show();
+      
     }
   }
 

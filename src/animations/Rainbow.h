@@ -17,7 +17,7 @@ class Rainbow : public Animation {
   void loop() {
     int offset = knob.confine();
     fill_rainbow(leds, NUMPIXELS, offset, 5);
-    FastLED.show();
+    
   }
 
  public:

@@ -22,7 +22,7 @@ class Stars : public Animation {
     int stripeLength = 7;
 
     if (nonBlockDelay(delay)) {
-      if (KNOBDEBUG) {
+      if (ANIMDEBUG) {
         Serial.println(lastPosition);
       }
       lastPosition++;
@@ -36,7 +36,7 @@ class Stars : public Animation {
         }
       }
 
-      FastLED.show();
+      
     }
   }
 

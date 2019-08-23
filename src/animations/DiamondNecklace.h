@@ -24,7 +24,7 @@ class DiamondNecklace : public Animation {
           leds[i] = CRGB::White;
         }
       }
-      FastLED.show();
+      
     }
   }
 

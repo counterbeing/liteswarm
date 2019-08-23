@@ -93,6 +93,7 @@ void playAnimation() {
     previous_animation_index = animation_index;
   }
   current_animation->run();
+  FastLED.show();
 }
 
 void setup() {

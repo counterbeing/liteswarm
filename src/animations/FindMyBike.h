@@ -21,7 +21,7 @@ class FindMyBike : public Animation {
     if (nonBlockDelay(3000)) {
       fill_solid(leds, NUMPIXELS, CRGB::White);
     }
-    FastLED.show();
+    
   }
 
  public:

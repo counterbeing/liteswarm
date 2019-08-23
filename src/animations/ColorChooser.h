@@ -18,7 +18,7 @@ class ColorChooser : public Animation {
   void loop() {
     int color = knob.confine();
     fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
-    FastLED.show();
+    
   }
 
  public:

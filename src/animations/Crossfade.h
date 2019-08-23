@@ -17,7 +17,8 @@ class Crossfade : public Animation {
     int dlay = knob.confine();
     static uint8_t hue = 0;
     if (nonBlockDelay(dlay)) {
-      FastLED.showColor(CHSV(hue++, 255, 255));
+      // FastLED.showColor(CHSV(hue++, 255, 255));
+      fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
     }
   }
 

@@ -33,7 +33,7 @@ class FuckMyEyes : public Animation {
           break;
       }
     }
-    FastLED.show();
+    
   }
 
  public:

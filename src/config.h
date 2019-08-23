@@ -1,11 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define KNOBDEBUG false   // set flag to false to disable serial logging in knob
+#define KNOBDEBUG true   // set flag to false to disable serial logging in knob
 #define RADIODEBUG false  // set flag to false to disable logging for Radio
+#define ANIMDEBUG false 
 
-// #define SCARF_WS2811     // IC has purple dot
-#define SCARF_SK9822  // IC has purple dot
+#define SCARF_WS2811     // IC has pink dot
+// #define SCARF_SK9822  // IC has green dot
 // #define BIGRED_WS2815    // IC has purple dot
 
 ////////////////////////////////////////////////////

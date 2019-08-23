@@ -19,7 +19,7 @@ class Dimmer : public Animation {
   void loop() {
     int brightness = knob.confine();
     fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness));
-    FastLED.show();
+    
   }
 
  public:
