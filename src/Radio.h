@@ -35,6 +35,9 @@ class Radio {
   void checkRadioReceive() {
     while (_radio.hasData()) {
       _radio.readData(&_incomingRadioPacket);
+      if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
+        return;
+      }
       if (RADIO_DEBUG) {
         Serial.println("------INCOMING---------");
         Serial.print("SHARED_SECRET: ");
