@@ -4,7 +4,7 @@ class Dimmer : public Animation {
  private:
   int initialPosition = 100;
   int start = 10;
-  int finish = 255;
+  int finish = 180;
   bool initialized = false;
   int head = 0;
   bool loopRotary = false;
