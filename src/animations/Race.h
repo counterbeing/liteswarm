@@ -36,6 +36,6 @@ class Race : public Animation {
   }
 
  public:
-  Race(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+  Race(MyKnob &knob_, CRGB leds_[], AnimationVariables &aniVars_)
       : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

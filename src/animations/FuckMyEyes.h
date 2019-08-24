@@ -37,6 +37,6 @@ class FuckMyEyes : public Animation {
   }
 
  public:
-  FuckMyEyes(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+  FuckMyEyes(MyKnob &knob_, CRGB leds_[], AnimationVariables &aniVars_)
       : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

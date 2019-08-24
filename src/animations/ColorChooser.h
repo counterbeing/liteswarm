@@ -22,6 +22,6 @@ class ColorChooser : public Animation {
   }
 
  public:
-  ColorChooser(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+  ColorChooser(MyKnob &knob_, CRGB leds_[], AnimationVariables &aniVars_)
       : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

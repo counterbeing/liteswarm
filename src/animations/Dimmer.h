@@ -23,6 +23,6 @@ class Dimmer : public Animation {
   }
 
  public:
-  Dimmer(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+  Dimmer(MyKnob &knob_, CRGB leds_[], AnimationVariables &aniVars_)
       : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

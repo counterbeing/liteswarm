@@ -40,6 +40,6 @@ class Stars : public Animation {
   }
 
  public:
-  Stars(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+  Stars(MyKnob &knob_, CRGB leds_[], AnimationVariables &aniVars_)
       : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

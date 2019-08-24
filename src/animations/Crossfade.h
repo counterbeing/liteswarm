@@ -28,6 +28,6 @@ class Crossfade : public Animation {
     knob.setDefaults(initialPosition, start, finish, loopRotary);
   };
 
-  Crossfade(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+  Crossfade(MyKnob &knob_, CRGB leds_[], AnimationVariables &aniVars_)
       : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

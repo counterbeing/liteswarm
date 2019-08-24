@@ -21,6 +21,6 @@ class Rainbow : public Animation {
   }
 
  public:
-  Rainbow(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+  Rainbow(MyKnob &knob_, CRGB leds_[], AnimationVariables &aniVars_)
       : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };
