@@ -180,6 +180,7 @@ class MyKnob {
             cmdMode = true;
           }
         } else if (!cmdMode) {
+          Serial.println("HELLO");
           manualChange = true;
           (*_aiIndex)++;
           ;
@@ -435,7 +436,6 @@ class MyKnob {
   void setPosition(int newPosition) {
     position = newPosition;
     aniVars.var1 = newPosition;
-    Serial.println(aniVars.var1);
   }
   // Sets the value for the rotary encoder to someething reasonable for the
   // animation. It returns that value.

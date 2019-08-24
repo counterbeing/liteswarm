@@ -17,7 +17,6 @@ class Crossfade : public Animation {
   void loop() {
     knob.confine();
     static uint8_t hue = 0;
-    Serial.println(aniVars.var1);
     if (nonBlockDelay(aniVars.var1)) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
     }

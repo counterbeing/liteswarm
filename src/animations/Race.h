@@ -25,7 +25,7 @@ class Race : public Animation {
   // a.(b++).
   void loop() {
     int dlay = knob.confine();
-    if (nonBlockDelay(dlay)) {
+    if (nonBlockDelay(aniVars.var1)) {
       static uint8_t hue = 0;
       head = remapInRange(++head);
       leds[head] = CRGB::Black;

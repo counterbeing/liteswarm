@@ -18,7 +18,7 @@ class FuckMyEyes : public Animation {
 
   void loop() {
     int dlay = knob.confine();
-    if (nonBlockDelay(dlay)) {
+    if (nonBlockDelay(aniVars.var1)) {
       switch (lastColor) {
         case 0:
           fill_solid(leds, NUMPIXELS, CRGB::Red);

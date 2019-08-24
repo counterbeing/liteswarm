@@ -16,6 +16,7 @@ class Stripes : public Animation {
   void setup() {
     randomSeed(analogRead(10));
     int randNumber = random(1);
+    Serial.println(randNumber);
     switch (randNumber) {
       case 0:
         Serial.println("Changing stripe length");
