@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #define FASTLED_INTERNAL
 #include <Encoder.h>
+#include "State.h"
 #include <MyKnob.h>
 #include <SPI.h>
 #include "FastLED.h"
@@ -24,23 +25,27 @@ uint8_t rotary2 = 3;
 int buttonPin = A0;
 bool offMode = false;
 
+AnimationVariables aniVars = {0, 0, 0};
+
+
 CRGB leds[NUMPIXELS];
 int feedbackPattern = -1;
-MyKnob knob(rotary1, rotary2, offMode, feedbackPattern);
+MyKnob knob(rotary1, rotary2, offMode, feedbackPattern, aniVars);
+
 
 // Load animations...
-Crossfade crossfade(knob, leds);
-ColorChooser color_chooser(knob, leds);
-Race race(knob, leds);
-Stars stars(knob, leds);
-Rainbow rainbow(knob, leds);
-FuckMyEyes fuck_my_eyes(knob, leds);
-Stripes stripes(knob, leds);
-DiamondNecklace diamond_necklace(knob, leds);
-Dimmer dimmer(knob, leds);
+Crossfade crossfade(knob, leds, aniVars);
+ColorChooser color_chooser(knob, leds, aniVars);
+Race race(knob, leds, aniVars);
+Stars stars(knob, leds, aniVars);
+Rainbow rainbow(knob, leds, aniVars);
+FuckMyEyes fuck_my_eyes(knob, leds, aniVars);
+Stripes stripes(knob, leds, aniVars);
+DiamondNecklace diamond_necklace(knob, leds, aniVars);
+Dimmer dimmer(knob, leds, aniVars);
 
 int animation_index = 0;
-Radio radio(knob, animation_index);
+Radio radio(knob, animation_index, aniVars);
 
 // Animation *current_animation = &rainbow;
 Animation *current_animation = &crossfade;

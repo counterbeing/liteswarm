@@ -10,6 +10,7 @@ class FuckMyEyes : public Animation {
   MyKnob &knob;
   CRGB *leds;
   int lastColor = 0;
+  AnimationVariables &aniVars;
 
   void setup() {
     knob.setDefaults(initialPosition, start, finish, loopRotary);
@@ -33,9 +34,9 @@ class FuckMyEyes : public Animation {
           break;
       }
     }
-    
   }
 
  public:
-  FuckMyEyes(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  FuckMyEyes(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+      : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

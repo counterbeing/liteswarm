@@ -9,6 +9,7 @@ class Rainbow : public Animation {
   bool loopRotary = true;
   MyKnob &knob;
   CRGB *leds;
+  AnimationVariables &aniVars;
 
   void setup() {
     knob.setDefaults(initialPosition, start, finish, loopRotary);
@@ -17,9 +18,9 @@ class Rainbow : public Animation {
   void loop() {
     int offset = knob.confine();
     fill_rainbow(leds, NUMPIXELS, offset, 5);
-    
   }
 
  public:
-  Rainbow(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Rainbow(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+      : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

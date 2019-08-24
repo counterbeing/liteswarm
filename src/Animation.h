@@ -12,6 +12,7 @@ class Animation {
   long previousMillis = 0;
   bool initialized = false;
 
+
   int remapInRange(int index) {
     if (index < 0) return NUMPIXELS;
     if (index > NUMPIXELS) return 0;

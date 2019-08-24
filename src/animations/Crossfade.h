@@ -11,13 +11,14 @@ class Crossfade : public Animation {
   int head = 0;
   bool loopRotary = false;
   MyKnob &knob;
+  AnimationVariables &aniVars;
   CRGB *leds;
 
   void loop() {
-    int dlay = knob.confine();
+    knob.confine();
     static uint8_t hue = 0;
-    if (nonBlockDelay(dlay)) {
-      // FastLED.showColor(CHSV(hue++, 255, 255));
+    Serial.println(aniVars.var1);
+    if (nonBlockDelay(aniVars.var1)) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
     }
   }
@@ -27,5 +28,6 @@ class Crossfade : public Animation {
     knob.setDefaults(initialPosition, start, finish, loopRotary);
   };
 
-  Crossfade(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Crossfade(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+      : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

@@ -10,6 +10,7 @@ class Race : public Animation {
   bool loopRotary = false;
   MyKnob &knob;
   CRGB *leds;
+  AnimationVariables &aniVars;
 
   void setup() {
     knob.setDefaults(initialPosition, start, finish, loopRotary);
@@ -31,10 +32,10 @@ class Race : public Animation {
       leds[head] = CHSV(hue++, 255, 150);
       head = remapInRange(++head);
       leds[head] = CHSV(hue++, 255, 255);
-      
     }
   }
 
  public:
-  Race(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Race(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+      : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

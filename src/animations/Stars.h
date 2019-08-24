@@ -11,6 +11,7 @@ class Stars : public Animation {
   int lastPosition = 0;
   MyKnob &knob;
   CRGB *leds;
+  AnimationVariables &aniVars;
 
   void setup() {
     knob.setDefaults(initialPosition, start, finish, loopRotary);
@@ -35,11 +36,10 @@ class Stars : public Animation {
           leds[dot + band] = CRGB::Coral;
         }
       }
-
-      
     }
   }
 
  public:
-  Stars(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Stars(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+      : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

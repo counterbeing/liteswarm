@@ -11,9 +11,21 @@ class Stripes : public Animation {
   int lastPosition = 0;
   MyKnob &knob;
   CRGB *leds;
+  AnimationVariables &aniVars;
 
   void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
+    randomSeed(analogRead(10));
+    int randNumber = random(1);
+    switch (randNumber) {
+      case 0:
+        Serial.println("Changing stripe length");
+        knob.setDefaults(4, 1, 20, false);
+        break;
+      case 1:
+        Serial.println("Changing speed");
+        knob.setDefaults(initialPosition, start, finish, loopRotary);
+        break;
+    }
   };
 
   void loop() {
@@ -35,11 +47,11 @@ class Stripes : public Animation {
           leds[dot + band] = CRGB::Purple;
         }
       }
-
-      
     }
   }
 
  public:
-  Stripes(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
-};
+  Stripes(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+      : knob(knob_), leds(leds_), aniVars(aniVars_) {}
+}
+;

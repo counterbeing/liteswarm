@@ -10,17 +10,18 @@ class ColorChooser : public Animation {
   bool loopRotary = true;
   MyKnob &knob;
   CRGB *leds;
+  AnimationVariables &aniVars;
 
   void setup() {
     knob.setDefaults(initialPosition, start, finish, loopRotary);
   };
 
   void loop() {
-    int color = knob.confine();
-    fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
-    
+    knob.confine();
+    fill_solid(leds, NUMPIXELS, CHSV(aniVars.var1, 255, 255));
   }
 
  public:
-  ColorChooser(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  ColorChooser(MyKnob &knob_, CRGB leds_[], AnimationVariables aniVars_)
+      : knob(knob_), leds(leds_), aniVars(aniVars_) {}
 };

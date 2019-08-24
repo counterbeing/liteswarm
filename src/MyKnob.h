@@ -1,7 +1,9 @@
+#include "State.h"
 #include <Arduino.h>
 #include <Bounce2.h>
 #include <Encoder.h>
 #include "config.h"
+
 
 #ifndef MyKnob_H
 #define MyKnob_H
@@ -45,9 +47,11 @@ class MyKnob {
   //      holdingSince = 0
   //   lastButtonState = 1
 
+  AnimationVariables &aniVars;
   int pinA;
   int pinB;
   int position;
+  int variableSelector = 0;
   int start = 0;
   int finish = 10;
   int buttonPressCount = 0;
@@ -60,11 +64,9 @@ class MyKnob {
   int &feedbackPattern;
   void checkRotary() {
     long newPos = encoder_knob.read();
-    if (newPos == position) {
-      return;
-    }
+    if (newPos == aniVars.var1) return;
     manualChange = true;
-    position = newPos;
+    setPosition(newPos);
   }
 
 // #define KNOB_DEBUG true     // set in config.h
@@ -399,8 +401,11 @@ class MyKnob {
   /////////////////////////////////////////////////////////
 
  public:
-  MyKnob(uint8_t a, uint8_t b, bool &offMode_, int &feedbackPattern_)
-      : offMode(offMode_), feedbackPattern(feedbackPattern_) {
+  MyKnob(uint8_t a, uint8_t b, bool &offMode_, int &feedbackPattern_,
+         AnimationVariables &aniVars_)
+      : offMode(offMode_),
+        feedbackPattern(feedbackPattern_),
+        aniVars(aniVars_) {
     pinA = a;
     pinB = b;
     // Encoder knob(pinA, pinB);
@@ -420,29 +425,34 @@ class MyKnob {
   // Set these variables once so they don't need to be set repeatedly
   void setDefaults(int position_, int start_, int finish_,
                    bool loopRotary_ = false) {
-    position = position_;
-    encoder_knob.write(position);
+    setPosition(position_);
+    encoder_knob.write(position_);
     start = start_;
     finish = finish_;
     loopRotary = loopRotary_;
   }
 
+  void setPosition(int newPosition) {
+    position = newPosition;
+    aniVars.var1 = newPosition;
+    Serial.println(aniVars.var1);
+  }
   // Sets the value for the rotary encoder to someething reasonable for the
   // animation. It returns that value.
   int confine() {
     if (position < start) {
       if (loopRotary) {
-        position = finish;
+        setPosition(finish);
       } else {
-        position = start;
+        setPosition(start);
       }
       encoder_knob.write(position);
     }
     if (position > finish) {
       if (loopRotary) {
-        position = start;
+        setPosition(start);
       } else {
-        position = finish;
+        setPosition(finish);
       }
       encoder_knob.write(position);
     }
