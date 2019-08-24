@@ -57,6 +57,7 @@ class MyKnob {
   bool manualChange = false;
   int lastButtonState = 1;
   bool &offMode;
+  int &feedbackPattern;
   void checkRotary() {
     long newPos = encoder_knob.read();
     if (newPos == position) {
@@ -173,11 +174,8 @@ class MyKnob {
 
         if (!cmdMode && lastPressWasMedium) {
           if (stillTimeToCombo) {
+            feedbackPattern = 1;
             cmdMode = true;
-            if (KNOB_DEBUG) {
-              Serial.print("\nCOMBOed! (med->short) CMDMODE now ");
-              Serial.print(cmdMode ? "TRUE" : "FALSE");
-            }
           }
         } else if (!cmdMode) {
           manualChange = true;
@@ -401,7 +399,8 @@ class MyKnob {
   /////////////////////////////////////////////////////////
 
  public:
-  MyKnob(uint8_t a, uint8_t b, bool &offMode_) : offMode(offMode_) {
+  MyKnob(uint8_t a, uint8_t b, bool &offMode_, int &feedbackPattern_)
+      : offMode(offMode_), feedbackPattern(feedbackPattern_) {
     pinA = a;
     pinB = b;
     // Encoder knob(pinA, pinB);

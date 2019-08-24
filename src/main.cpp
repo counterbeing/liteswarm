@@ -25,7 +25,8 @@ int buttonPin = A0;
 bool offMode = false;
 
 CRGB leds[NUMPIXELS];
-MyKnob knob(rotary1, rotary2, offMode);
+int feedbackPattern = -1;
+MyKnob knob(rotary1, rotary2, offMode, feedbackPattern);
 
 // Load animations...
 Crossfade crossfade(knob, leds);
@@ -45,6 +46,30 @@ Radio radio(knob, animation_index);
 Animation *current_animation = &crossfade;
 int previous_animation_index = -1;
 
+int feedbackLength = 800;
+long feedbackEnd = (millis() + feedbackLength);
+
+void runAdjustments() {
+  if (feedbackPattern < 0) {
+    return;
+  }
+  if (feedbackPattern > 0) {
+    // Serial.println("STARTING FEEBACK");
+    feedbackEnd = (millis() + feedbackLength);
+  }
+  feedbackPattern = 0;
+
+  int currentLapse = feedbackEnd - millis();
+  if (currentLapse < 0) {
+    feedbackPattern = -1;
+  }
+
+  if ((currentLapse / 100) % 2 == 0) {
+    fill_solid(leds, NUMPIXELS, CRGB::Blue);
+  } else {
+    fill_solid(leds, NUMPIXELS, CRGB::Green);
+  }
+}
 void playAnimation() {
   if (animation_index != previous_animation_index) {
     if (animation_index > 8) animation_index = 0;
@@ -93,6 +118,9 @@ void playAnimation() {
     previous_animation_index = animation_index;
   }
   current_animation->run();
+
+  runAdjustments();
+
   FastLED.show();
 }
 
