@@ -64,10 +64,24 @@ void runAdjustments() {
     feedbackPattern = -1;
   }
 
+  CRGB color1;
+  CRGB color2;
+
+  switch (feedbackPattern) {
+    case 0:
+      color1 = CRGB::Blue;
+      color2 = CRGB::Green;
+      break;
+    case 1:
+      color1 = CRGB::Black;
+      color2 = CRGB::Red;
+      break;
+  }
+
   if ((currentLapse / 100) % 2 == 0) {
-    fill_solid(leds, NUMPIXELS, CRGB::Blue);
+    fill_solid(leds, NUMPIXELS, color1);
   } else {
-    fill_solid(leds, NUMPIXELS, CRGB::Green);
+    fill_solid(leds, NUMPIXELS, color2);
   }
 }
 void playAnimation() {
@@ -129,11 +143,15 @@ void setup() {
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
 #endif
 #ifdef SCARF_SK9822
-  FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds,
-                                                  NUMPIXELS);  // IT WORKS!
+  FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
 #endif
+
+#ifdef SCARF_DOTSTAR
+  FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
+#endif
+
 #ifdef BIGRED_WS2815
-  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);  // IT WORKS!
+  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
 #endif
   Serial.begin(57600);
 
