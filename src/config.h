@@ -3,11 +3,11 @@
   
 #define KNOB_DEBUG false   // set flag to false to disable serial logging in knob
 #define RADIO_DEBUG false  // set flag to false to disable logging for Radio
-#define ANIM_DEBUG false 
+#define ANIM_DEBUG true 
 
 // #define SCARF_DOTSTAR
-#define SCARF_WS2811     // IC has pink dot
-// #define SCARF_SK9822  // IC has green dot
+// #define SCARF_WS2811     // IC has pink dot
+#define SCARF_SK9822  // IC has green dot
 // #define BIGRED_WS2815    // IC has purple dot
 
 ////////////////////////////////////////////////////

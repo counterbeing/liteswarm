@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #define FASTLED_INTERNAL
 #include <Encoder.h>
-#include "State.h"
 #include <MyKnob.h>
 #include <SPI.h>
 #include "FastLED.h"
 #include "Radio.h"
+#include "State.h"
 #include "config.h"
 
 #include "animations/ColorChooser.h"
@@ -27,11 +27,9 @@ bool offMode = false;
 
 AnimationVariables aniVars = {0, 0, 0};
 
-
 CRGB leds[NUMPIXELS];
 int feedbackPattern = -1;
 MyKnob knob(rotary1, rotary2, offMode, feedbackPattern, aniVars);
-
 
 // Load animations...
 Crossfade crossfade(knob, leds, aniVars);
@@ -91,7 +89,7 @@ void runAdjustments() {
 }
 void playAnimation() {
   if (animation_index != previous_animation_index) {
-    if (animation_index > 8) animation_index = 0;
+    if (animation_index > 2) animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
     // next case
@@ -103,7 +101,8 @@ void playAnimation() {
 
     switch (animation_index) {
       case 0:
-        current_animation = &crossfade;
+        current_animation = &stripes;
+
         break;
       case 1:
         current_animation = &color_chooser;
@@ -121,7 +120,8 @@ void playAnimation() {
         current_animation = &fuck_my_eyes;
         break;
       case 6:
-        current_animation = &stripes;
+        current_animation = &crossfade;
+
         break;
       case 7:
         current_animation = &diamond_necklace;

@@ -1,9 +1,8 @@
-#include "State.h"
 #include <Arduino.h>
 #include <Bounce2.h>
 #include <Encoder.h>
+#include "State.h"
 #include "config.h"
-
 
 #ifndef MyKnob_H
 #define MyKnob_H
@@ -434,8 +433,12 @@ class MyKnob {
   }
 
   void setPosition(int newPosition) {
+    if (aniVars.activeVar == 1) {
+      aniVars.var1 = newPosition;
+    } else {
+      aniVars.var2 = newPosition;
+    }
     position = newPosition;
-    aniVars.var1 = newPosition;
   }
   // Sets the value for the rotary encoder to someething reasonable for the
   // animation. It returns that value.
