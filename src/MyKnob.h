@@ -175,7 +175,8 @@ class MyKnob {
         if (!cmdMode && lastPressWasMedium) {
           if (stillTimeToCombo) {
             feedbackPattern = 1;
-            cmdMode = true;
+            // cmdMode = true;
+            cmdMode = false;  // TODO undo this quick hack to disable cmdmode for bar demo 4 sep 19
           }
         } else if (!cmdMode) {
           manualChange = true;
@@ -241,7 +242,7 @@ class MyKnob {
     bool butItsTooLate = millis() - lastPressTime > comboInterval;
 
     if (tooManyCombos || (stillTryingToCombo && butItsTooLate)) {
-      dispatchAndResetCombo();
+      // dispatchAndResetCombo(); // TODO undo this quick hack to disable cmdmode for bar demo 4 sep 19
     }
   }
 

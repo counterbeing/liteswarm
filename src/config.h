@@ -7,8 +7,8 @@
 
 // #define SCARF_DOTSTAR
 // #define SCARF_WS2811     // IC has pink dot
-// #define SCARF_SK9822  // IC has green dot
-#define BIGRED_WS2815    // IC has purple dot?
+#define SCARF_SK9822  // IC has green dot
+// #define BIGRED_WS2815    // IC has purple dot?
 
 ////////////////////////////////////////////////////
 // DEFAULTS
@@ -31,11 +31,13 @@
 const int NUMPIXELS = 75;
 #endif
 
+
 //////////////////////////////////////////////////
 // SK9822
 #ifdef SCARF_SK9822
 const int NUMPIXELS = 75;
 #endif
+
 
 //////////////////////////////////////////////////
 // DOTSTAR
@@ -43,13 +45,9 @@ const int NUMPIXELS = 75;
 const int NUMPIXELS = 75;
 #endif
 
-// mac's protoboard
-// #define DATAPIN 5 // mac's protoboard
-// #define CLOCKPIN 7 // mac protoboard
-//////////////////////////////////////////////////
 
 //////////////////////////////////////////////////
-// 12v WS2815 strip
+// BIGRED 12v WS2815 strip
 //   provide 12v via strip's power barrel-connector plugs
 //   connect strip ground to controller ground (strip blue wire to controller
 //   black wire) connect strip data to controller datapin (strip green wire to
@@ -59,7 +57,15 @@ const int NUMPIXELS = 75;
 #ifdef BIGRED_WS2815
 const int NUMPIXELS = 375;
 #endif
+
+
 //////////////////////////////////////////////////
+// mac's protoboard
+// #define DATAPIN 5 // mac's protoboard
+// #define CLOCKPIN 7 // mac protoboard
+//////////////////////////////////////////////////
+
+
 
 #endif
 
