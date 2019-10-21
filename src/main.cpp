@@ -12,12 +12,13 @@
 #include "animations/DiamondNecklace.h"
 #include "animations/Dimmer.h"
 #include "animations/FuckMyEyes.h"
+#include "animations/LightningButt.h"
 #include "animations/Race.h"
 #include "animations/Rainbow.h"
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
 
-// Pins for the rotary
+// Pins for the rotariy
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 
@@ -35,6 +36,7 @@ Race race(knob, leds);
 Stars stars(knob, leds);
 Rainbow rainbow(knob, leds);
 FuckMyEyes fuck_my_eyes(knob, leds);
+LightningButt lightning_butt(knob, leds);
 Stripes stripes(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
@@ -98,7 +100,7 @@ void playAnimation() {
 
     switch (animation_index) {
       case 0:
-        current_animation = &crossfade;
+        current_animation = &lightning_butt;
         break;
       case 1:
         current_animation = &color_chooser;
