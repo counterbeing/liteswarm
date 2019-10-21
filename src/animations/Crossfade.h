@@ -1,4 +1,3 @@
-#include <MyKnob.h>
 #include "../Animation.h"
 #include "FastLED.h"
 
