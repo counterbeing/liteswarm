@@ -1,4 +1,4 @@
-#include "Animation.h"
+#include "../Animation.h"
 
 class Stripes : public Animation {
  private:

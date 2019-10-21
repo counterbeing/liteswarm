@@ -103,27 +103,30 @@ void playAnimation() {
         current_animation = &lightning_butt;
         break;
       case 1:
-        current_animation = &color_chooser;
+        current_animation = &crossfade;
         break;
       case 2:
-        current_animation = &race;
+        current_animation = &color_chooser;
         break;
       case 3:
-        current_animation = &stars;
+        current_animation = &race;
         break;
       case 4:
-        current_animation = &rainbow;
+        current_animation = &stars;
         break;
       case 5:
-        current_animation = &fuck_my_eyes;
+        current_animation = &rainbow;
         break;
       case 6:
-        current_animation = &stripes;
+        current_animation = &fuck_my_eyes;
         break;
       case 7:
-        current_animation = &diamond_necklace;
+        current_animation = &stripes;
         break;
       case 8:
+        current_animation = &diamond_necklace;
+        break;
+      case 9:
         current_animation = &dimmer;
         break;
       default:

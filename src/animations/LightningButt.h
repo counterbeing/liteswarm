@@ -1,4 +1,4 @@
-#include "Animation.h"
+#include "../Animation.h"
 
 class LightningButt : public Animation {
  private:
@@ -22,14 +22,12 @@ class LightningButt : public Animation {
       lastChangeTime = millis();
     }
     int brightness = knob.confine();
-    int timeSinceLastChange = millis() - lastChangeTime;
     fill_solid(leds, NUMPIXELS, CHSV(90, 255, (brightness * 2)));
-
-
+    int timeSinceLastChange = millis() - lastChangeTime;
     if(timeSinceLastChange > 200) {
-    if (nonBlockDelay(10)) {
-      knob.set(brightness - 1);
-    }
+      if (nonBlockDelay(10)) {
+        knob.set(brightness - 1);
+      }
     }
   }
 

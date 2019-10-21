@@ -1,4 +1,4 @@
-#include "Animation.h"
+#include "../Animation.h"
 
 class FuckMyEyes : public Animation {
  private:
