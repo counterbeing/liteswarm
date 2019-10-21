@@ -1,4 +1,5 @@
 #include <Arduino.h>
+
 #include <Bounce2.h>
 #include <Encoder.h>
 #include "config.h"
@@ -47,7 +48,7 @@ class MyKnob {
 
   int pinA;
   int pinB;
-  int position;
+  int32_t position;
   int start = 0;
   int finish = 10;
   int buttonPressCount = 0;
@@ -59,7 +60,7 @@ class MyKnob {
   bool &offMode;
   int &feedbackPattern;
   void checkRotary() {
-    long newPos = encoder_knob.read();
+    int32_t newPos = encoder_knob.read();
     if (newPos == position) return;
     manualChange = true;
     position = newPos;
