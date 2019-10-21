@@ -60,9 +60,7 @@ class MyKnob {
   int &feedbackPattern;
   void checkRotary() {
     long newPos = encoder_knob.read();
-    if (newPos == position) {
-      return;
-    }
+    if (newPos == position) return;
     manualChange = true;
     position = newPos;
   }
@@ -409,7 +407,10 @@ class MyKnob {
     Serial.print("\n\noffMode_: ");
     Serial.print(offMode);
   }
-  void set(int position) { encoder_knob.write(position); }
+  void set(int _position) { 
+    encoder_knob.write(_position); 
+    position = _position;
+  }
   uint32_t get() { return encoder_knob.read(); }
   void check(int *_animationIndex) {
     manualChange = false;

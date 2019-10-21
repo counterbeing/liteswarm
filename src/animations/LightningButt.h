@@ -2,23 +2,34 @@
 
 class LightningButt : public Animation {
  private:
-  int initialPosition = 0;
+  int initialPosition = 127;
   int start = 0;
-  int finish = 300;
+  int finish = 127;
   bool initialized = false;
   bool loopRotary = false;
   MyKnob &knob;
   CRGB *leds;
-  int lastColor = 0;
+  int lastBrightness = 0;
+  long lastChangeTime;
 
   void setup() {
+    lastChangeTime = millis();
     knob.setDefaults(initialPosition, start, finish, loopRotary);
   };
 
   void loop() {
-    int dlay = knob.confine();
-    if (nonBlockDelay(dlay)) {
-      fill_solid(leds, NUMPIXELS, CRGB::LawnGreen);
+    if(knob.manuallyChanged()) {
+      lastChangeTime = millis();
+    }
+    int brightness = knob.confine();
+    int timeSinceLastChange = millis() - lastChangeTime;
+    fill_solid(leds, NUMPIXELS, CHSV(90, 255, (brightness * 2)));
+
+
+    if(timeSinceLastChange > 200) {
+    if (nonBlockDelay(10)) {
+      knob.set(brightness - 1);
+    }
     }
   }
 
