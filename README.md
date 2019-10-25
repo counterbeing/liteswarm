@@ -1,3 +1,7 @@
+<p align="center">
+<img src='./docs/liteswarm.png'>
+</p>
+
 ## Swarming LEDs for LED Fun
 This project can be be applied to many projects. Our prototype has been in scarves. These can also go in all sorts of other places:
 
