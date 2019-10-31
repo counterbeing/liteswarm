@@ -11,6 +11,8 @@ class LightningButt : public Animation {
   CRGB *leds;
   int lastBrightness = 0;
   long lastChangeTime;
+  long lastManualChangeTime;
+  int automaticInterval = 10000;
 
   void setup() {
     lastChangeTime = millis();
@@ -18,16 +20,27 @@ class LightningButt : public Animation {
   };
 
   void loop() {
-    if(knob.manuallyChanged()) {
+    int brightness = knob.confine();
+    if(knob.manuallyChanged()|| (lastBrightness == 0 && brightness > 0)) {
       lastChangeTime = millis();
     }
-    int brightness = knob.confine();
+    if(knob.manuallyChanged()) {
+      lastManualChangeTime = millis();
+    }
+    lastBrightness = brightness;
     fill_solid(leds, NUMPIXELS, CHSV(90, 255, (brightness * 2)));
     int timeSinceLastChange = millis() - lastChangeTime;
+    Serial.println(timeSinceLastChange);
     if(timeSinceLastChange > 200) {
       if (nonBlockDelay(10)) {
         knob.set(brightness - 1);
       }
+    }
+    if(timeSinceLastChange > automaticInterval) {
+      automaticInterval = random(4000, 20000);
+      lastChangeTime = millis();
+      knob.fakeManualChange();
+      knob.set(255);
     }
   }
 

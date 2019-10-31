@@ -173,6 +173,6 @@ void loop() {
     FastLED.show();
     return;
   }
-  radio.check();
   playAnimation();
+  radio.check();
 }

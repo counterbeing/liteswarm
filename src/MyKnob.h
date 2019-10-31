@@ -412,6 +412,9 @@ class MyKnob {
     encoder_knob.write(_position); 
     position = _position;
   }
+  void fakeManualChange() {
+    manualChange = true;
+  }
   uint32_t get() { return encoder_knob.read(); }
   void check(int *_animationIndex) {
     manualChange = false;

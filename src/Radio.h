@@ -121,7 +121,7 @@ class Radio {
     knob.get();
     if (radioAlive) {
       checkRadioReceive();
-      if (knob.manuallyChanged() || runAfterInterval(1000)) {
+      if (knob.manuallyChanged()) {
         checkRadioSend();
       }
     }
