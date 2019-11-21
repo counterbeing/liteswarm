@@ -23,7 +23,7 @@ class Stripes : public Animation {
 
     if (nonBlockDelay(delay)) {
       if (ANIM_DEBUG) {
-        Serial.println(lastPosition);
+        // Serial.println(lastPosition);
       }
       lastPosition++;
       if (lastPosition >= (stripeLength * 2)) {

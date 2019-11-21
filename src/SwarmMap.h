@@ -6,6 +6,7 @@
 // - https://github.com/muwerk/ustd
 // - another implementation https://attractivechaos.wordpress.com/2009/09/29/khash-h/
 //
+// posted the following on `ustd` issue tracker: https://github.com/muwerk/ustd/issues/2:
 //
 // vscode c/c++ intellisense is/was throwing errors claiming it cant find deps 
 // included by `ustd` package... but the include preprocessor directives causing 
@@ -34,6 +35,8 @@
 //    https://docs.microsoft.com/en-us/cpp/preprocessor/preprocessor-directives?view=vs-2019
 //    https://clang.llvm.org/docs/JSONCompilationDatabase.html
 //    http://gcc.gnu.org/onlinedocs/gcc-4.4.2/gcc/Preprocessor-Options.html#Preprocessor-Options
+//    https://github.com/Microsoft/vscode-cpptools/issues?q=include++squiggle
+//    https://github.com/microsoft/vscode-cpptools/issues/899
 //
 // the following seems to save intellisense
 // https://gcc.gnu.org/onlinedocs/gcc-2.95.3/cpp_1.html#SEC18
@@ -93,5 +96,36 @@ ustd::map<int, float> mayMap = ustd::map<int,float>(5, 5, 0, false);
 
 #include <platform.h>
 #include <map.h>
+#include <printf.h> // local printf wrapper that sends to serial
 
-ustd::map<int, float> mayMap = ustd::map<int,float>(5, 5, 0, false);
+
+/////////////////////////////////////////////////
+//  test function
+//
+//  constructor params: 
+//    ustd::map(unsigned int startSize=ARRAY_INIT_SIZE, unsigned int maxSize=ARRAY_MAX_SIZE, unsigned int incSize=ARRAY_INC_SIZE, bool shrink=true)
+//    https://muwerk.github.io/ustd/docs/classustd_1_1map.html#a1b0670916b74ab7628fb3da556589d98 
+
+ustd::map<int, uint8_t> mp = ustd::map<int,uint8_t>(10, 20, 1, false);
+
+// https://github.com/muwerk/ustd/blob/master/Examples/mac-linux/ustd-test.cpp
+static int MapTest() {
+  for (int i = 0; i < 20; i++) {
+    printf("%d ", i);
+    mp[i] = i*random()*7;
+    printf(" - ");
+    printfn("%d ", mp[i]);
+  }
+  printfn("mp len: %d\n", mp.length());
+
+  bool merr = false;
+  for (int i = 0; i < mp.length(); i++) {
+    // if (mp.keys[i] != i || i != mp.values[i]) {
+    //   printfn("Maps err at %d: %d<->%d\n", i, mp.keys[i], mp.values[i]);
+    //   merr = true;
+    // }
+  }
+
+  printfn("Done ustd.");
+  return 0;
+}

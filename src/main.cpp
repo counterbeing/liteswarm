@@ -18,6 +18,8 @@
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
 
+#include "SwarmMap.h"
+
 // Pins for the rotariy
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
@@ -163,6 +165,8 @@ void setup() {
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);
   radio.setup();
+
+  MapTest();
 }
 
 void loop() {

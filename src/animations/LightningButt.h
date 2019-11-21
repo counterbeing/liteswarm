@@ -30,7 +30,7 @@ class LightningButt : public Animation {
     lastBrightness = brightness;
     fill_solid(leds, NUMPIXELS, CHSV(90, 255, (brightness * 2)));
     int timeSinceLastChange = millis() - lastChangeTime;
-    Serial.println(timeSinceLastChange);
+    // Serial.println(timeSinceLastChange);
     if(timeSinceLastChange > 200) {
       if (nonBlockDelay(10)) {
         knob.set(brightness - 1);

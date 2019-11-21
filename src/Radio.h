@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <stdint.h>
 #include "config.h"
-#include "SwarmMap.h"
+// #include "SwarmMap.h"
 
 struct RadioPacket          // Any packet up to 32 bytes can be sent.
 {                           // 0 - bit count (256 max)
