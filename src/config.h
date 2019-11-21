@@ -1,5 +1,11 @@
+// #ifndef __ATMEGA__
+// #define __ATMEGA__ 1
+// #endif
+
 #ifndef CONFIG_H
 #define CONFIG_H
+
+// #define __ATMEGA__ 1
 
 #define KNOB_DEBUG false   // set flag to false to disable serial logging in knob
 #define RADIO_DEBUG false  // set flag to false to disable logging for Radio
