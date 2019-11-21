@@ -43,3 +43,41 @@ Things you might be missing.
 - OpenOCD some USB stuff `brew install openocd` (or else `dyld: Library not loaded: /usr/local/opt/libftdi/lib/libftdi1.2.dylib`)
 
 
+
+
+
+
+
+### 2019-11-21 dev notes for scarfquest
+
+intellisense not picking up uintxx types from `/Users/100ideas/.platformio/packages/toolchain-atmelavr/avr/include/stdint.h`
+
+## dont overflow if counting packets...
+how many packets (max) could a device see per second?
+```
+(800kbps * 1 second) / 32 bytes = 3125
+(2MBps * 1 second) / 32 bytes   = 62500
+```
+
+see UINT_MAX from std::numeric_limits https://en.cppreference.com/w/cpp/types/climits
+
+atmel / arduino uint sizes
+```
+INT8_MAX   127
+UINT8_MAX  255
+INT16_MAX  32767
+UINT16_MAX 65535
+INT32_MAX  2147483647
+```
+
+## deviceId collisions
+calculate liklihook of id collisions, where n = number of devices & d = keyspace size (using birthday problem formula):
+
+1 - (d!) / ((d - n)! * d^n)
+
+n = 10 devices
+d = 256 (uint_8)
+p = 16%
+
+n = 10 devices
+d = 32768 (uint_16)

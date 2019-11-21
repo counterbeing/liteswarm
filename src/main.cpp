@@ -160,6 +160,8 @@ void setup() {
 #ifdef BIGRED_WS2815
   FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
 #endif
+  randomSeed(analogRead(0));
+  
   Serial.begin(57600);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);

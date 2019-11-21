@@ -7,10 +7,10 @@
 struct RadioPacket          // Any packet up to 32 bytes can be sent.
 {                           // 0 - bit count (256 max)
   uint8_t SHARED_SECRET;    // 8
-  uint8_t senderId;         // 16
-  int32_t rotaryPosition;   // 48
-  uint8_t animationId;      // 56
-                            // uint32_t keyframe;       //
+  uint16_t senderId;        // 24
+  int32_t rotaryPosition;   // 56
+  uint8_t animationId;      // 64
+                            // uint32_t keyframe;
                             // ... 200
 };
 
@@ -49,6 +49,10 @@ class Radio {
         Serial.println(_incomingRadioPacket.animationId);
         Serial.print("senderId: ");
         Serial.println(_incomingRadioPacket.senderId);
+      }
+      if (_incomingRadioPacket.senderId = 255) { // medallion controller
+        // disable rotary & play green pulse animation for a while
+        return;
       }
       if (stateChanged()) {
         knob.set(_incomingRadioPacket.rotaryPosition);

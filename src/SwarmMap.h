@@ -3,14 +3,14 @@
 // it compiles OK but intellisense shows errors
 //
 // lightweight map implementations:
-// - https://github.com/muwerk/ustd
+// - this one https://github.com/muwerk/ustd
 // - another implementation https://attractivechaos.wordpress.com/2009/09/29/khash-h/
 //
 // posted the following on `ustd` issue tracker: https://github.com/muwerk/ustd/issues/2:
 //
 // vscode c/c++ intellisense is/was throwing errors claiming it cant find deps 
 // included by `ustd` package... but the include preprocessor directives causing 
-// are problems conditionally dependant on __APPLE__ or __LINUX__ being defined. 
+// problems are conditionally dependant on __APPLE__ or __LINUX__ being defined. 
 // not sure why they are allowed to be by platformio since we are compiling for atmel
 // 
 // first tried to fix by setting DEFINE (-Dxxxx) and UNDEFINE (-Uxxxx) build flags
@@ -46,8 +46,6 @@
 #define __ATMEGA__
 #endif
 ///////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 // the following documentation is from `ustd/map.h`
@@ -96,7 +94,104 @@ ustd::map<int, float> mayMap = ustd::map<int,float>(5, 5, 0, false);
 
 #include <platform.h>
 #include <map.h>
+#include <array.h>
+#include <stdint.h>
 #include <printf.h> // local printf wrapper that sends to serial
+
+
+
+
+
+struct RadioStats {
+  // uint8_t id;
+  uint32_t firstSeen;
+  uint32_t lastSeen;
+  int score;
+};
+
+/////////////////////////////////////////////////
+//  SwarmMap - tracks active devices nearby over time
+//  
+// scoreThreshold * debounceWindow = minimum time (ms) before device can be considered active
+// device must transmit at elast 1 packet per timeoutWindow to remain under consieration
+//
+
+class SwarmMap {
+ private:
+  uint32_t timeoutWindow = 10000;
+  uint32_t debounceWindow = 2000;
+  int scoreThreshold = 4;
+  ustd::map<uint8_t, RadioStats> seenMap;
+  ustd::array<int> activeDevices;
+
+
+ public:
+  int activeCount;
+  SwarmMap(){
+    // trying ustd map & array in dynamic mode
+    // seenMap = ustd::map<uint8_t, RadioStats>(maxSwarmSize, maxSwarmSize + 10, 1, true);
+  }
+
+  // track device activity over time
+  void LogPacketFrom(uint8_t id) { 
+    // not in map, create new struct for it
+    if (seenMap.find(id) == -1) { 
+      seenMap[id] = (struct RadioStats){millis(), 0, 0};
+    } else {
+      // its in the map, but hasnt been active enough yet
+      // has it been longer than debounceWindow since last update? increase score //
+      if(
+        seenMap[id].lastSeen != 0 &&
+        seenMap[id].score < scoreThreshold &&
+        millis() - seenMap[id].lastSeen > debounceWindow
+      ){ 
+        seenMap[id].score++;
+      }
+      seenMap[id].lastSeen = millis();
+    }
+  }
+
+  // calc time diffs, activity counts in time windows; call in main loop
+  int SwarmSize() {
+    uint32_t now = millis();
+    int count = 0;
+    // for each id in seenMap.keys
+    int id = 1; // TEMPORARY
+
+    // hasn't been seen for 10 sec
+    if (now - seenMap[id].lastSeen > timeoutWindow){
+      seenMap.erase(id);
+    } else if (seenMap[id].score >= scoreThreshold) {
+      count++;
+    }
+    return count;
+  }
+
+  // int ActiveSwarmSize() {
+  // }
+
+};
+
+
+
+/*!
+theoretically should receive heartbeat packet from each radio ~ 1 per second
+so to be a neighbor,
+ - must have seen 1+ packet per 2 seconds
+ - for the last 10 seconds
+ - if no packet in last 4 sec, not a neighbor
+
+void UpdateStats() // calc time diffs, activity counts in time windows; call in main loop
+
+int CurrentSwarmSize()  // returns how big is active swarm
+
+// update stats for this device
+void LogPacketFrom(uint8_t deviceId) { 
+*/;
+
+
+
+
 
 
 /////////////////////////////////////////////////
@@ -106,26 +201,24 @@ ustd::map<int, float> mayMap = ustd::map<int,float>(5, 5, 0, false);
 //    ustd::map(unsigned int startSize=ARRAY_INIT_SIZE, unsigned int maxSize=ARRAY_MAX_SIZE, unsigned int incSize=ARRAY_INC_SIZE, bool shrink=true)
 //    https://muwerk.github.io/ustd/docs/classustd_1_1map.html#a1b0670916b74ab7628fb3da556589d98 
 
-ustd::map<int, uint8_t> mp = ustd::map<int,uint8_t>(10, 20, 1, false);
+// ustd::map<int, uint8_t> mp = ustd::map<int,uint8_t>(10, 20, 1, false);
+ustd::map<int, uint16_t> mp;
 
+uint16_t testsize = 33220;
 // https://github.com/muwerk/ustd/blob/master/Examples/mac-linux/ustd-test.cpp
 static int MapTest() {
+  printfn("\n\nsizeof uint_16 (bits): %d", sizeof (uint16_t)*8);
+  printfn("UINT16_MAX: %u\n", UINT16_MAX);
+  printfn("sizeof long (bits): %d", sizeof (long)*8);
+
   for (int i = 0; i < 20; i++) {
     printf("%d ", i);
-    mp[i] = i*random()*7;
+    // mp[i] = i*random()*7;
+    mp[i] = random(10,65532);
     printf(" - ");
-    printfn("%d ", mp[i]);
+    printfn("%u", mp[i]);
   }
   printfn("mp len: %d\n", mp.length());
-
-  bool merr = false;
-  for (int i = 0; i < mp.length(); i++) {
-    // if (mp.keys[i] != i || i != mp.values[i]) {
-    //   printfn("Maps err at %d: %d<->%d\n", i, mp.keys[i], mp.values[i]);
-    //   merr = true;
-    // }
-  }
-
   printfn("Done ustd.");
   return 0;
 }
