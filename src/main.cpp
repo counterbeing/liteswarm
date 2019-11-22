@@ -4,6 +4,9 @@
 #include <MyKnob.h>
 #include <SPI.h>
 #include "FastLED.h"
+
+#include "SwarmMap.h"
+
 #include "Radio.h"
 #include "config.h"
 
@@ -17,8 +20,6 @@
 #include "animations/Rainbow.h"
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
-
-#include "SwarmMap.h"
 
 // Pins for the rotariy
 uint8_t rotary1 = 2;
@@ -43,8 +44,11 @@ Stripes stripes(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
 
+SwarmMap swarmMap;
+
 int animation_index = 0;
 Radio radio(knob, animation_index);
+
 
 // Animation *current_animation = &rainbow;
 Animation *current_animation = &crossfade;
@@ -161,14 +165,12 @@ void setup() {
   FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
 #endif
   randomSeed(analogRead(0));
-  
+
   Serial.begin(57600);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);
   radio.setup();
-
-  MapTest();
 }
 
 void loop() {
@@ -179,6 +181,8 @@ void loop() {
     FastLED.show();
     return;
   }
+  // printf("swarmSize: %d", swarmMap.getSwarmSize()); 
+  swarmMap.getSwarmSize();
   playAnimation();
   radio.check();
 }

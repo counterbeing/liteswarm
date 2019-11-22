@@ -94,13 +94,8 @@ ustd::map<int, float> mayMap = ustd::map<int,float>(5, 5, 0, false);
 
 #include <platform.h>
 #include <map.h>
-#include <array.h>
 #include <stdint.h>
 #include <printf.h> // local printf wrapper that sends to serial
-
-
-
-
 
 struct RadioStats {
   // uint8_t id;
@@ -121,19 +116,27 @@ class SwarmMap {
   uint32_t timeoutWindow = 10000;
   uint32_t debounceWindow = 2000;
   int scoreThreshold = 4;
-  ustd::map<uint8_t, RadioStats> seenMap;
-  ustd::array<int> activeDevices;
+  ustd::map<uint16_t, RadioStats> seenMap;
 
+  uint32_t lastIntervalTime = millis();
 
- public:
-  int activeCount;
-  SwarmMap(){
-    // trying ustd map & array in dynamic mode
-    // seenMap = ustd::map<uint8_t, RadioStats>(maxSwarmSize, maxSwarmSize + 10, 1, true);
+  bool runAfterInterval(int interval) {
+    long nextRunTime = lastIntervalTime + interval;
+    long current = millis();
+    if (current > nextRunTime) {
+      lastIntervalTime = current;
+      return true;
+    }
+    return false;
   }
 
+ public:
+  SwarmMap(){
+    printfn("SwarmMap initialized");
+  }
+    
   // track device activity over time
-  void LogPacketFrom(uint8_t id) { 
+  void logPacketFrom(uint8_t id) { 
     // not in map, create new struct for it
     if (seenMap.find(id) == -1) { 
       seenMap[id] = (struct RadioStats){millis(), 0, 0};
@@ -152,46 +155,28 @@ class SwarmMap {
   }
 
   // calc time diffs, activity counts in time windows; call in main loop
-  int SwarmSize() {
+  int getSwarmSize() {
     uint32_t now = millis();
     int count = 0;
-    // for each id in seenMap.keys
-    int id = 1; // TEMPORARY
-
-    // hasn't been seen for 10 sec
-    if (now - seenMap[id].lastSeen > timeoutWindow){
-      seenMap.erase(id);
-    } else if (seenMap[id].score >= scoreThreshold) {
-      count++;
+    
+    for (unsigned int i = 0; i < seenMap.length(); i++) {
+      // hasn't been seen for 10 sec
+      if (now - seenMap[seenMap.keys[i]].lastSeen > timeoutWindow){
+        seenMap.erase(seenMap.keys[i]);
+      } else if (seenMap[seenMap.keys[i]].score >= scoreThreshold) {
+        count++;
+      }
+    }
+    if (RADIO_DEBUG){
+      if(runAfterInterval(debounceWindow)){
+        printf("\n\nSwarmMap size: %d", seenMap.length());
+        printfn("\tactive: %d\n\n", count);
+      }
     }
     return count;
   }
 
-  // int ActiveSwarmSize() {
-  // }
-
 };
-
-
-
-/*!
-theoretically should receive heartbeat packet from each radio ~ 1 per second
-so to be a neighbor,
- - must have seen 1+ packet per 2 seconds
- - for the last 10 seconds
- - if no packet in last 4 sec, not a neighbor
-
-void UpdateStats() // calc time diffs, activity counts in time windows; call in main loop
-
-int CurrentSwarmSize()  // returns how big is active swarm
-
-// update stats for this device
-void LogPacketFrom(uint8_t deviceId) { 
-*/;
-
-
-
-
 
 
 /////////////////////////////////////////////////
@@ -201,24 +186,24 @@ void LogPacketFrom(uint8_t deviceId) {
 //    ustd::map(unsigned int startSize=ARRAY_INIT_SIZE, unsigned int maxSize=ARRAY_MAX_SIZE, unsigned int incSize=ARRAY_INC_SIZE, bool shrink=true)
 //    https://muwerk.github.io/ustd/docs/classustd_1_1map.html#a1b0670916b74ab7628fb3da556589d98 
 
-// ustd::map<int, uint8_t> mp = ustd::map<int,uint8_t>(10, 20, 1, false);
-ustd::map<int, uint16_t> mp;
 
-uint16_t testsize = 33220;
-// https://github.com/muwerk/ustd/blob/master/Examples/mac-linux/ustd-test.cpp
-static int MapTest() {
-  printfn("\n\nsizeof uint_16 (bits): %d", sizeof (uint16_t)*8);
-  printfn("UINT16_MAX: %u\n", UINT16_MAX);
-  printfn("sizeof long (bits): %d", sizeof (long)*8);
+// ustd::map<int, uint16_t> mp;
 
-  for (int i = 0; i < 20; i++) {
-    printf("%d ", i);
-    // mp[i] = i*random()*7;
-    mp[i] = random(10,65532);
-    printf(" - ");
-    printfn("%u", mp[i]);
-  }
-  printfn("mp len: %d\n", mp.length());
-  printfn("Done ustd.");
-  return 0;
-}
+// uint16_t testsize = 33220;
+// // https://github.com/muwerk/ustd/blob/master/Examples/mac-linux/ustd-test.cpp
+// static int MapTest() {
+//   printfn("\n\nsizeof uint_16 (bits): %d", sizeof (uint16_t)*8);
+//   printfn("UINT16_MAX: %u\n", UINT16_MAX);
+//   printfn("sizeof long (bits): %d", sizeof (long)*8);
+
+//   for (int i = 0; i < 20; i++) {
+//     printf("%d ", i);
+//     // mp[i] = i*random()*7;
+//     mp[i] = random(10,65532);
+//     printf(" - ");
+//     printfn("%u", mp[i]);
+//   }
+//   printfn("mp len: %d\n", mp.length());
+//   printfn("Done ustd.");
+//   return 0;
+// }

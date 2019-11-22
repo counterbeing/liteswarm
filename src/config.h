@@ -8,13 +8,14 @@
 // #define __ATMEGA__ 1
 
 #define KNOB_DEBUG false   // set flag to false to disable serial logging in knob
-#define RADIO_DEBUG false  // set flag to false to disable logging for Radio
+#define RADIO_DEBUG true  // set flag to false to disable logging for Radio
 #define ANIM_DEBUG false 
 
 // #define SCARF_DOTSTAR
-#define SCARF_WS2811     // IC has pink dot
-// #define SCARF_SK9822  // IC has green dot
+// #define SCARF_WS2811     // IC has pink dot
+#define SCARF_SK9822  // IC has green dot
 // #define BIGRED_WS2815    // IC has purple dot?
+// #define MAKEFUN     // IC has pink dot
 
 ////////////////////////////////////////////////////
 // DEFAULTS
@@ -28,13 +29,15 @@
 // buttonPin = A0
 // rotary1 = 2
 // rotary2 = 3
-// PIN_RADIO_CE = 6; // will be 6 on PCBs, was 9
-// PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
+// define PIN_RADIO_CE = 7;
+// define PIN_RADIO_CSN = 6; 
 
 //////////////////////////////////////////////////
 // WS2811
 #ifdef SCARF_WS2811
 const int NUMPIXELS = 75;
+// #define PIN_RADIO_CE = 7;
+// #define PIN_RADIO_CSN = 6
 #endif
 
 
@@ -42,6 +45,7 @@ const int NUMPIXELS = 75;
 // SK9822
 #ifdef SCARF_SK9822
 const int NUMPIXELS = 75;
+
 #endif
 
 
@@ -66,12 +70,21 @@ const int NUMPIXELS = 375;
 
 
 //////////////////////////////////////////////////
+// makefun nano + NRf24L01 board AKA "keywish-nano-plus"
+// https://github.com/keywish/keywish-nano-plus/tree/master/RF-Nano
+// 
+// PIN_RADIO_CE = 10;   // 7 on PCBs 1.3, was 6 on 1.1
+// PIN_RADIO_CSN = 9;  // 6 on PCBs 1.3, was 7 on 1.1
+#ifdef MAKEFUN
+const int NUMPIXELS = 75;
+// const static uint8_t PIN_RADIO_CE = 10; // mac makefun
+// const static uint8_t PIN_RADIO_CSN = 9; // mac makefun
+#endif
+
+//////////////////////////////////////////////////
 // mac's protoboard
 // #define DATAPIN 5 // mac's protoboard
 // #define CLOCKPIN 7 // mac protoboard
-//////////////////////////////////////////////////
-
-
 
 #endif
 

@@ -2,7 +2,6 @@
 #include <SPI.h>
 #include <stdint.h>
 #include "config.h"
-// #include "SwarmMap.h"
 
 struct RadioPacket          // Any packet up to 32 bytes can be sent.
 {                           // 0 - bit count (256 max)
@@ -22,13 +21,16 @@ class Radio {
   bool radioAlive = false;
   MyKnob &knob;
   int &animation_index;
+  // SwarmMap &swarmMap;
   const static uint8_t SHARED_RADIO_ID = 1;
   const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
   const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
   // const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
   // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
+  // const static uint8_t PIN_RADIO_CE = 10; // mac makefun
+  // const static uint8_t PIN_RADIO_CSN = 9; // mac makefun
   const static uint8_t SHARED_SECRET = 42;
-  uint8_t RADIO_ID = random();
+  uint16_t RADIO_ID = random(1024,65532);
   int previousAnimationIndex;
   int previousRotaryPosition = -1;
   long lastIntervalTime = millis();
@@ -39,6 +41,7 @@ class Radio {
       if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
         return;
       }
+      // logPacketFrom(_incomingRadioPacket.senderId)
       if (RADIO_DEBUG) {
         Serial.println("------INCOMING---------");
         Serial.print("SHARED_SECRET: ");
@@ -101,6 +104,8 @@ class Radio {
           //                                             these params (knob_)
   Radio(MyKnob &knob_, int &animation_index_)
       : knob(knob_), animation_index(animation_index_) {}
+  // Radio(MyKnob &knob_, int &animation_index_, SwarmMap &swarmMap_)
+  //     : knob(knob_), animation_index(animation_index_), swarmMap(swarmMap_) {}
   void setup() {
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
