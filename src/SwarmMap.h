@@ -123,12 +123,12 @@ class SwarmMap {
   uint32_t timeoutWindow = 10000;
   uint32_t debounceWindow = 2000;
   int scoreThreshold = 4;
-  // ustd::map<uint16_t, struct RadioStats> seenMap;
-  ustd::map<long, RadioStats> seenMap;
+  uint32_t lastIntervalTime = millis();
+  // ustd::map<long, RadioStats> seenMap;
   // static versions
   // ustd::map<uint16_t, struct RadioStats> seenMap;
-  ustd::array<uint16_t> ids;
-  uint32_t lastIntervalTime = millis();
+  ustd::map<uint16_t, RadioStats> seenMap;
+  uint16_t ids [20];
 
   bool runAfterInterval(int interval) {
     long nextRunTime = lastIntervalTime + interval;
@@ -143,8 +143,6 @@ class SwarmMap {
  public:
   SwarmMap(){
     printfn("SwarmMap initialized");
-    // ids.add(0);
-    // seenMap = ustd::map<uint16_t, RadioStats>(5, 10, 0, true);
   }
     
   // track device activity over time
@@ -154,11 +152,8 @@ class SwarmMap {
       printfn("\n+++logPacketFrom %d", id);
     }
     if (seenMap.find(id) == -1) { 
-      // seenMap[id] = (struct RadioStats){millis(), millis(), 0};
-      // seenMap[id] = RadioStats millis(), millis(), 0};
       RadioStats _stat = {millis(), millis(), 0};
       seenMap[id] = _stat;
-      // ids.add(id);
       printfn("\ncreate RadioStat struct %u", seenMap[id].firstSeen);
     } else {
       // its in the map, but hasnt been active enough yet
@@ -166,10 +161,11 @@ class SwarmMap {
       if(
         (seenMap[id].lastSeen != 0) &&
         (seenMap[id].score < scoreThreshold) &&
-        ((millis() - seenMap[id].lastSeen) > debounceWindow)
-      ){ 
-        seenMap[id].score += 1;
-        printfn("increase score for %d to %d", id, seenMap[id].score);
+        ((millis() - seenMap[id].firstSeen) > debounceWindow)
+        ){ 
+          seenMap[id].score += 1;
+          printfn("increase score for %d to %d", id, seenMap[id].score);
+          seenMap[id].firstSeen = millis();
       }
       seenMap[id].lastSeen = millis();
     }
@@ -178,7 +174,7 @@ class SwarmMap {
   // calc time diffs, activity counts in time windows; call in main loop
   int getSwarmSize() {
     int count = 0;
-    // if(seenMap.length() > 0) {
+    // if(seenMap.length() > 0) {  // these don't work bc they return allocated size of array not # of elemenets
     // if(!seenMap.isEmpty()) {
     if(seenMap.keys.length() > 0) {
       for (int i = 0; i < seenMap.keys.length(); i++) {
@@ -197,9 +193,14 @@ class SwarmMap {
           Serial.print(". new seenMap.length() ");
           Serial.print(seenMap.length());
 
-          ids.erase(eraseStatus);
+          ids[i] = false;
           Serial.print(". new ids.length() ");
-          Serial.print(ids.length());
+          int activeIds = 0;
+          for (int k = 0; k < 20; k++) {
+            if (ids[k]) activeIds++;
+          }
+          Serial.print(activeIds);
+          
 
           Serial.print("\tseenMap.keys: ");
           for (int j = 0; j < seenMap.keys.length(); j++) {
@@ -207,11 +208,11 @@ class SwarmMap {
             Serial.print(", ");
           }
           Serial.print("\n");
-        } else if (seenMap[seenMap.keys[i]].score >= scoreThreshold) {
+        } else if (seenMap[seenMap.keys[i]].score >= scoreThreshold && runAfterInterval(debounceWindow)) {
           Serial.print("counted ");
           Serial.print(seenMap.keys[i]);
           Serial.print(", last seen ");
-          Serial.println(seenMap[seenMap.keys[i]].lastSeen);
+          Serial.println(millis() - seenMap[seenMap.keys[i]].lastSeen);
           count++;
         }
       }
@@ -221,24 +222,31 @@ class SwarmMap {
         
         for (int j = 0; j < seenMap.keys.length(); j++) {
 
-        uint16_t _id = seenMap.keys[j];
-        
-        Serial.print("\nid: ");
-        Serial.print(_id);
-        // Serial.print("\tmillis() - seenMap[");
-        // Serial.print(_id);
-        // Serial.print("].lastSeen: ");
-        Serial.print("\tseen ago: ");
-        Serial.print(millis() - seenMap[_id].lastSeen);
-        
-        Serial.print("\terase?: ");
-        Serial.print((millis() - seenMap[_id].lastSeen) > timeoutWindow);
+          uint16_t _id = seenMap.keys[j];
+          
+          Serial.print("\nid: ");
+          Serial.print(_id);
+          // Serial.print("\tmillis() - seenMap[");
+          // Serial.print(_id);
+          // Serial.print("].lastSeen: ");
+          Serial.print("\tseen ago: ");
+          Serial.print(millis() - seenMap[_id].lastSeen);
+          
+          Serial.print("\terase?: ");
+          Serial.print((millis() - seenMap[_id].lastSeen) > timeoutWindow);
 
-        // Serial.print("  now: ");
-        // Serial.print(millis());
-        // Serial.print("  timeoutWindow: ");
-        // Serial.print(timeoutWindow);
-        Serial.print("\n====================\n\n");
+          Serial.print("\tscore++?: ");
+          Serial.print((millis() - seenMap[_id].lastSeen) > debounceWindow);
+
+          Serial.print("\tscore?: ");
+          Serial.print(seenMap[_id].score);
+          
+
+          // Serial.print("  now: ");
+          // Serial.print(millis());
+          // Serial.print("  timeoutWindow: ");
+          // Serial.print(timeoutWindow);
+          Serial.print("\n====================\n\n");
         
         
         }

@@ -104,36 +104,36 @@ void playAnimation() {
       Serial.println(animation_index);
     }
 
-    switch (animation_index) {
+ switch (animation_index) {
       case 0:
-        current_animation = &lightning_butt;
-        break;
-      case 1:
         current_animation = &crossfade;
         break;
-      case 2:
+      case 1:
         current_animation = &color_chooser;
         break;
-      case 3:
+      case 2:
         current_animation = &race;
         break;
-      case 4:
+      case 3:
         current_animation = &stars;
         break;
-      case 5:
+      case 4:
         current_animation = &rainbow;
         break;
-      case 6:
+      case 5:
         current_animation = &fuck_my_eyes;
         break;
-      case 7:
+      case 6:
         current_animation = &stripes;
         break;
-      case 8:
+      case 7:
         current_animation = &diamond_necklace;
         break;
-      case 9:
+      case 8:
         current_animation = &dimmer;
+        break;
+      case 9:
+        current_animation = &lightning_butt;
         break;
       default:
         // Serial.println("\n\nWARN: default animation switch case");
@@ -182,7 +182,8 @@ void loop() {
     return;
   }
   // printf("swarmSize: %d", swarmMap.getSwarmSize()); 
+ 
+  radio.check(); 
+  playAnimation(); 
   swarmMap.getSwarmSize();
-  playAnimation();
-  radio.check();
 }

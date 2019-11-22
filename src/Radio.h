@@ -41,7 +41,7 @@ class Radio {
       if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
         if (RADIO_DEBUG) {
           Serial.print("got a packet with incorrect SHARED_SECRET: ");
-          Serial.println(_incomingRadioPacket.SHARED_SECRET)
+          Serial.println(_incomingRadioPacket.SHARED_SECRET);
         }
         return;
       }
