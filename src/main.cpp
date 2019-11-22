@@ -47,7 +47,7 @@ Dimmer dimmer(knob, leds);
 SwarmMap swarmMap;
 
 int animation_index = 0;
-Radio radio(knob, animation_index);
+Radio radio(knob, animation_index, swarmMap);
 
 
 // Animation *current_animation = &rainbow;

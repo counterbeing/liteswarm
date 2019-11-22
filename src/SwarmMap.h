@@ -93,16 +93,23 @@ ustd::map<int, float> mayMap = ustd::map<int,float>(5, 5, 0, false);
 
 
 #include <platform.h>
+#include <array.h>
 #include <map.h>
 #include <stdint.h>
 #include <printf.h> // local printf wrapper that sends to serial
 
-struct RadioStats {
-  // uint8_t id;
+// struct RadioStats {
+//   // uint8_t id;
+//   uint32_t firstSeen;
+//   uint32_t lastSeen;
+//   int score;
+// };
+
+typedef struct {
   uint32_t firstSeen;
   uint32_t lastSeen;
   int score;
-};
+} RadioStats;
 
 /////////////////////////////////////////////////
 //  SwarmMap - tracks active devices nearby over time
@@ -116,8 +123,11 @@ class SwarmMap {
   uint32_t timeoutWindow = 10000;
   uint32_t debounceWindow = 2000;
   int scoreThreshold = 4;
-  ustd::map<uint16_t, RadioStats> seenMap;
-
+  // ustd::map<uint16_t, struct RadioStats> seenMap;
+  ustd::map<long, RadioStats> seenMap;
+  // static versions
+  // ustd::map<uint16_t, struct RadioStats> seenMap;
+  ustd::array<uint16_t> ids;
   uint32_t lastIntervalTime = millis();
 
   bool runAfterInterval(int interval) {
@@ -133,22 +143,33 @@ class SwarmMap {
  public:
   SwarmMap(){
     printfn("SwarmMap initialized");
+    // ids.add(0);
+    // seenMap = ustd::map<uint16_t, RadioStats>(5, 10, 0, true);
   }
     
   // track device activity over time
   void logPacketFrom(uint8_t id) { 
     // not in map, create new struct for it
+    if (RADIO_DEBUG){
+      printfn("\n+++logPacketFrom %d", id);
+    }
     if (seenMap.find(id) == -1) { 
-      seenMap[id] = (struct RadioStats){millis(), 0, 0};
+      // seenMap[id] = (struct RadioStats){millis(), millis(), 0};
+      // seenMap[id] = RadioStats millis(), millis(), 0};
+      RadioStats _stat = {millis(), millis(), 0};
+      seenMap[id] = _stat;
+      // ids.add(id);
+      printfn("\ncreate RadioStat struct %u", seenMap[id].firstSeen);
     } else {
       // its in the map, but hasnt been active enough yet
       // has it been longer than debounceWindow since last update? increase score //
       if(
-        seenMap[id].lastSeen != 0 &&
-        seenMap[id].score < scoreThreshold &&
-        millis() - seenMap[id].lastSeen > debounceWindow
+        (seenMap[id].lastSeen != 0) &&
+        (seenMap[id].score < scoreThreshold) &&
+        ((millis() - seenMap[id].lastSeen) > debounceWindow)
       ){ 
-        seenMap[id].score++;
+        seenMap[id].score += 1;
+        printfn("increase score for %d to %d", id, seenMap[id].score);
       }
       seenMap[id].lastSeen = millis();
     }
@@ -156,21 +177,71 @@ class SwarmMap {
 
   // calc time diffs, activity counts in time windows; call in main loop
   int getSwarmSize() {
-    uint32_t now = millis();
     int count = 0;
-    
-    for (unsigned int i = 0; i < seenMap.length(); i++) {
-      // hasn't been seen for 10 sec
-      if (now - seenMap[seenMap.keys[i]].lastSeen > timeoutWindow){
-        seenMap.erase(seenMap.keys[i]);
-      } else if (seenMap[seenMap.keys[i]].score >= scoreThreshold) {
-        count++;
+    // if(seenMap.length() > 0) {
+    // if(!seenMap.isEmpty()) {
+    if(seenMap.keys.length() > 0) {
+      for (int i = 0; i < seenMap.keys.length(); i++) {
+        // hasn't been seen for 10 sec
+        if ((millis() - seenMap[seenMap.keys[i]].lastSeen) > timeoutWindow){
+          Serial.print("seenMap.length() ");
+          Serial.print(seenMap.length());
+          Serial.print("; deleting seenMap[");
+          Serial.print(seenMap.keys[i]);
+          Serial.print("]\tseenMap.values[i].firstSeen ");
+          Serial.println(seenMap.values[i].firstSeen);
+          // delete seenMap.values[i];
+          int eraseStatus = seenMap.erase(seenMap.keys[i]);
+          Serial.print("erased? ");
+          Serial.print(eraseStatus);
+          Serial.print(". new seenMap.length() ");
+          Serial.print(seenMap.length());
+
+          ids.erase(eraseStatus);
+          Serial.print(". new ids.length() ");
+          Serial.print(ids.length());
+
+          Serial.print("\tseenMap.keys: ");
+          for (int j = 0; j < seenMap.keys.length(); j++) {
+            Serial.print(seenMap.keys[j]);
+            Serial.print(", ");
+          }
+          Serial.print("\n");
+        } else if (seenMap[seenMap.keys[i]].score >= scoreThreshold) {
+          Serial.print("counted ");
+          Serial.print(seenMap.keys[i]);
+          Serial.print(", last seen ");
+          Serial.println(seenMap[seenMap.keys[i]].lastSeen);
+          count++;
+        }
       }
     }
     if (RADIO_DEBUG){
-      if(runAfterInterval(debounceWindow)){
-        printf("\n\nSwarmMap size: %d", seenMap.length());
-        printfn("\tactive: %d\n\n", count);
+      if(runAfterInterval(debounceWindow) && seenMap.length() > 0){
+        
+        for (int j = 0; j < seenMap.keys.length(); j++) {
+
+        uint16_t _id = seenMap.keys[j];
+        
+        Serial.print("\nid: ");
+        Serial.print(_id);
+        // Serial.print("\tmillis() - seenMap[");
+        // Serial.print(_id);
+        // Serial.print("].lastSeen: ");
+        Serial.print("\tseen ago: ");
+        Serial.print(millis() - seenMap[_id].lastSeen);
+        
+        Serial.print("\terase?: ");
+        Serial.print((millis() - seenMap[_id].lastSeen) > timeoutWindow);
+
+        // Serial.print("  now: ");
+        // Serial.print(millis());
+        // Serial.print("  timeoutWindow: ");
+        // Serial.print(timeoutWindow);
+        Serial.print("\n====================\n\n");
+        
+        
+        }
       }
     }
     return count;
@@ -206,4 +277,18 @@ class SwarmMap {
 //   printfn("mp len: %d\n", mp.length());
 //   printfn("Done ustd.");
 //   return 0;
+// }
+
+// static void ArrTest() {
+//   ustd::array<int> intArray = ustd::array<int>(5, 5, 0, false);
+  
+//   int foo = 26;
+//   // intArray[0] = 13; // Memory for array[0] is allocated
+//   // intArray.add(3);  // the array is extended, if necessary
+//   intArray.add(foo);
+//   int p = intArray[0];
+ 
+//   printf("[0]:%d [1]:%d length=%d\n", intArray[0], intArray[1], intArray.length());
+//   intArray.erase(0);
+//   printf("[0]:%d [1]:%d length=%d\n", intArray[0], intArray[1], intArray.length());
 // }

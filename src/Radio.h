@@ -21,7 +21,7 @@ class Radio {
   bool radioAlive = false;
   MyKnob &knob;
   int &animation_index;
-  // SwarmMap &swarmMap;
+  SwarmMap &swarmMap;
   const static uint8_t SHARED_RADIO_ID = 1;
   const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
   const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
@@ -39,9 +39,13 @@ class Radio {
     while (_radio.hasData()) {
       _radio.readData(&_incomingRadioPacket);
       if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
+        if (RADIO_DEBUG) {
+          Serial.print("got a packet with incorrect SHARED_SECRET: ");
+          Serial.println(_incomingRadioPacket.SHARED_SECRET)
+        }
         return;
       }
-      // logPacketFrom(_incomingRadioPacket.senderId)
+      swarmMap.logPacketFrom(_incomingRadioPacket.senderId);
       if (RADIO_DEBUG) {
         Serial.println("------INCOMING---------");
         Serial.print("SHARED_SECRET: ");
@@ -53,7 +57,7 @@ class Radio {
         Serial.print("senderId: ");
         Serial.println(_incomingRadioPacket.senderId);
       }
-      if (_incomingRadioPacket.senderId = 255) { // medallion controller
+      if (_incomingRadioPacket.senderId == 255) { // medallion controller
         // disable rotary & play green pulse animation for a while
         return;
       }
@@ -102,10 +106,10 @@ class Radio {
  public:  //                                             vvvvv <--init named
           //                                             identifier (knob) with
           //                                             these params (knob_)
-  Radio(MyKnob &knob_, int &animation_index_)
-      : knob(knob_), animation_index(animation_index_) {}
-  // Radio(MyKnob &knob_, int &animation_index_, SwarmMap &swarmMap_)
-  //     : knob(knob_), animation_index(animation_index_), swarmMap(swarmMap_) {}
+  // Radio(MyKnob &knob_, int &animation_index_)
+  //     : knob(knob_), animation_index(animation_index_) {}
+  Radio(MyKnob &knob_, int &animation_index_, SwarmMap &swarmMap_)
+      : knob(knob_), animation_index(animation_index_), swarmMap(swarmMap_) {}
   void setup() {
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
