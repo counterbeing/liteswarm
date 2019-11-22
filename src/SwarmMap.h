@@ -98,13 +98,6 @@ ustd::map<int, float> mayMap = ustd::map<int,float>(5, 5, 0, false);
 #include <stdint.h>
 #include <printf.h> // local printf wrapper that sends to serial
 
-// struct RadioStats {
-//   // uint8_t id;
-//   uint32_t firstSeen;
-//   uint32_t lastSeen;
-//   int score;
-// };
-
 typedef struct {
   uint32_t firstSeen;
   uint32_t lastSeen;
@@ -124,11 +117,8 @@ class SwarmMap {
   uint32_t debounceWindow = 2000;
   int scoreThreshold = 4;
   uint32_t lastIntervalTime = millis();
-  // ustd::map<long, RadioStats> seenMap;
-  // static versions
-  // ustd::map<uint16_t, struct RadioStats> seenMap;
   ustd::map<uint16_t, RadioStats> seenMap;
-  uint16_t ids [20];
+  // uint16_t ids [20];
 
   bool runAfterInterval(int interval) {
     long nextRunTime = lastIntervalTime + interval;
@@ -146,7 +136,7 @@ class SwarmMap {
   }
     
   // track device activity over time
-  void logPacketFrom(uint8_t id) { 
+  void logPacketFrom(uint16_t id) { 
     // not in map, create new struct for it
     if (RADIO_DEBUG){
       printfn("\n+++logPacketFrom %d", id);
@@ -178,77 +168,51 @@ class SwarmMap {
     // if(!seenMap.isEmpty()) {
     if(seenMap.keys.length() > 0) {
       for (int i = 0; i < seenMap.keys.length(); i++) {
-        // hasn't been seen for 10 sec
+        // hasn't been seen for 10 sec, remove from map
         if ((millis() - seenMap[seenMap.keys[i]].lastSeen) > timeoutWindow){
-          Serial.print("seenMap.length() ");
-          Serial.print(seenMap.length());
-          Serial.print("; deleting seenMap[");
-          Serial.print(seenMap.keys[i]);
-          Serial.print("]\tseenMap.values[i].firstSeen ");
-          Serial.println(seenMap.values[i].firstSeen);
-          // delete seenMap.values[i];
-          int eraseStatus = seenMap.erase(seenMap.keys[i]);
-          Serial.print("erased? ");
-          Serial.print(eraseStatus);
-          Serial.print(". new seenMap.length() ");
-          Serial.print(seenMap.length());
-
-          ids[i] = false;
-          Serial.print(". new ids.length() ");
-          int activeIds = 0;
-          for (int k = 0; k < 20; k++) {
-            if (ids[k]) activeIds++;
+          uint16_t _id = seenMap.keys[i];
+          if(RADIO_DEBUG){
+            Serial.print("\nid: ");
+            Serial.print(_id);
+            Serial.print("\tseen ago: ");
+            Serial.print(millis() - seenMap[_id].lastSeen);
+            Serial.print("\terase?: ");
+            Serial.print((millis() - seenMap[_id].lastSeen) > timeoutWindow);
+            Serial.print("\tscore++?: ");
+            Serial.print((millis() - seenMap[_id].lastSeen) > debounceWindow);
+            Serial.print("\tscore?: ");
+            Serial.print(seenMap[_id].score);
+            Serial.print("\nseenMap.length() ");
+            Serial.print(seenMap.length());
+            Serial.print(";\tseenMap.keys.length() ");
+            Serial.print(seenMap.keys.length());
+            Serial.print(";\tdeleting seenMap[");
+            Serial.print(_id);
+            Serial.print("]\tseenMap.values[i].firstSeen ");
+            Serial.print(seenMap.values[i].firstSeen);
           }
-          Serial.print(activeIds);
-          
-
-          Serial.print("\tseenMap.keys: ");
-          for (int j = 0; j < seenMap.keys.length(); j++) {
-            Serial.print(seenMap.keys[j]);
-            Serial.print(", ");
+          int eraseStatus = seenMap.erase(_id);
+          if(RADIO_DEBUG){
+            Serial.print("\nerased? ");
+            Serial.print(eraseStatus);
+            Serial.print(". new seenMap.keys.length() ");
+            Serial.print(seenMap.keys.length());
+            Serial.print("\tseenMap.keys: ");
+            for (int j = 0; j < seenMap.keys.length(); j++) {
+              Serial.print(seenMap.keys[j]);
+              Serial.print(", ");
+            }
+            Serial.print("\n");
           }
-          Serial.print("\n");
-        } else if (seenMap[seenMap.keys[i]].score >= scoreThreshold && runAfterInterval(debounceWindow)) {
-          Serial.print("counted ");
-          Serial.print(seenMap.keys[i]);
-          Serial.print(", last seen ");
-          Serial.println(millis() - seenMap[seenMap.keys[i]].lastSeen);
+        // we've seen enough packets over time to be confident it is an active neighbor
+        } else if (seenMap[seenMap.keys[i]].score >= scoreThreshold) {
+          if(RADIO_DEBUG && runAfterInterval(debounceWindow)){
+            Serial.print("\nactive id: ");
+            Serial.print(seenMap.keys[i]);
+            Serial.print(", last seen ");
+            Serial.println(millis() - seenMap[seenMap.keys[i]].lastSeen);
+          }
           count++;
-        }
-      }
-    }
-    if (RADIO_DEBUG){
-      if(runAfterInterval(debounceWindow) && seenMap.length() > 0){
-        
-        for (int j = 0; j < seenMap.keys.length(); j++) {
-
-          uint16_t _id = seenMap.keys[j];
-          
-          Serial.print("\nid: ");
-          Serial.print(_id);
-          // Serial.print("\tmillis() - seenMap[");
-          // Serial.print(_id);
-          // Serial.print("].lastSeen: ");
-          Serial.print("\tseen ago: ");
-          Serial.print(millis() - seenMap[_id].lastSeen);
-          
-          Serial.print("\terase?: ");
-          Serial.print((millis() - seenMap[_id].lastSeen) > timeoutWindow);
-
-          Serial.print("\tscore++?: ");
-          Serial.print((millis() - seenMap[_id].lastSeen) > debounceWindow);
-
-          Serial.print("\tscore?: ");
-          Serial.print(seenMap[_id].score);
-          
-
-          // Serial.print("  now: ");
-          // Serial.print(millis());
-          // Serial.print("  timeoutWindow: ");
-          // Serial.print(timeoutWindow);
-          Serial.print("\n====================\n\n");
-        
-        
         }
       }
     }

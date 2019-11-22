@@ -12,7 +12,8 @@ class LightningButt : public Animation {
   int lastBrightness = 0;
   long lastChangeTime;
   long lastManualChangeTime;
-  int automaticInterval = 10000;
+  // int automaticInterval = 10000;
+  int automaticInterval = 2500;
 
   void setup() {
     lastChangeTime = millis();
@@ -37,7 +38,8 @@ class LightningButt : public Animation {
       }
     }
     if(timeSinceLastChange > automaticInterval) {
-      automaticInterval = random(4000, 20000);
+      // automaticInterval = random(4000, 20000);
+      automaticInterval = random(2000, 4000);
       lastChangeTime = millis();
       knob.fakeManualChange();
       knob.set(255);

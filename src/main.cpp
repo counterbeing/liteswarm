@@ -94,7 +94,7 @@ void runAdjustments() {
 }
 void playAnimation() {
   if (animation_index != previous_animation_index) {
-    if (animation_index > 8) animation_index = 0;
+    if (animation_index > 9) animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
     // next case

@@ -31,9 +31,11 @@ class Radio {
   // const static uint8_t PIN_RADIO_CSN = 9; // mac makefun
   const static uint8_t SHARED_SECRET = 42;
   uint16_t RADIO_ID = random(1024,65532);
+  // uint16_t RADIO_ID = 128; // medallion id
   int previousAnimationIndex;
   int previousRotaryPosition = -1;
   long lastIntervalTime = millis();
+  bool medallionIsHere = false;
 
   void checkRadioReceive() {
     while (_radio.hasData()) {
@@ -57,9 +59,12 @@ class Radio {
         Serial.print("senderId: ");
         Serial.println(_incomingRadioPacket.senderId);
       }
-      if (_incomingRadioPacket.senderId == 255) { // medallion controller
+      if (_incomingRadioPacket.senderId == 128) { // medallion controller
         // disable rotary & play green pulse animation for a while
-        return;
+        animation_index = 9;
+        medallionIsHere = true;
+        // lastIntervalTime = millis();
+        // return;
       }
       if (stateChanged()) {
         knob.set(_incomingRadioPacket.rotaryPosition);
@@ -77,6 +82,12 @@ class Radio {
     }
     if (RADIO_DEBUG) {
       Serial.println("--- Sending Data");
+    }
+    if(medallionIsHere){
+      animation_index = 9;
+      if(runAfterInterval(30000)){
+        medallionIsHere = false;
+      }
     }
     _outboundRadioPacket.rotaryPosition = knob.get();
     _outboundRadioPacket.animationId = animation_index;
@@ -135,7 +146,7 @@ class Radio {
     knob.get();
     if (radioAlive) {
       checkRadioReceive();
-      if (knob.manuallyChanged()) {
+      if (knob.manuallyChanged() || runAfterInterval(1000)) {
         checkRadioSend();
       }
     }
