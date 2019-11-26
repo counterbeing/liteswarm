@@ -57,6 +57,7 @@ class MyKnob {
   bool manualChange = false;
   int lastButtonState = 1;
   bool &offMode;
+  bool &isInStrobeMode;
   int &feedbackPattern;
   void checkRotary() {
     long newPos = encoder_knob.read();
@@ -212,7 +213,9 @@ class MyKnob {
         resetCombo();
         // addToCombo('s');
 
-        offMode = !offMode;  // now handled in press-down logic
+        // offMode = !offMode;  // now handled in press-down logic
+        isInStrobeMode = true;
+        manualChange = true;
 
         lastPressWasShort = false;
         lastPressWasMedium = false;
@@ -400,8 +403,8 @@ class MyKnob {
   /////////////////////////////////////////////////////////
 
  public:
-  MyKnob(uint8_t a, uint8_t b, bool &offMode_, int &feedbackPattern_)
-      : offMode(offMode_), feedbackPattern(feedbackPattern_) {
+  MyKnob(uint8_t a, uint8_t b, bool &offMode_, int &feedbackPattern_, bool &strobeMode_)
+      : offMode(offMode_), feedbackPattern(feedbackPattern_), isInStrobeMode(strobeMode_) {
     pinA = a;
     pinB = b;
     // Encoder knob(pinA, pinB);

@@ -16,6 +16,7 @@
 #include "animations/Rainbow.h"
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
+#include "animations/Strobe.h"
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
@@ -23,10 +24,11 @@ uint8_t rotary2 = 3;
 
 int buttonPin = A0;
 bool offMode = false;
+bool strobeMode = false;
 
 CRGB leds[NUMPIXELS];
 int feedbackPattern = -1;
-MyKnob knob(rotary1, rotary2, offMode, feedbackPattern);
+MyKnob knob(rotary1, rotary2, offMode, feedbackPattern, strobeMode);
 
 // Load animations...
 Crossfade crossfade(knob, leds);
@@ -38,9 +40,10 @@ FuckMyEyes fuck_my_eyes(knob, leds);
 Stripes stripes(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
+Strobe strobe(knob, leds);
 
 int animation_index = 0;
-Radio radio(knob, animation_index);
+Radio radio(knob, animation_index, strobeMode);
 
 // Animation *current_animation = &rainbow;
 Animation *current_animation = &crossfade;
@@ -85,7 +88,15 @@ void runAdjustments() {
   }
 }
 void playAnimation() {
-  if (animation_index != previous_animation_index) {
+  if (strobeMode) {
+    current_animation = &strobe;
+    if (strobe.is_done()) {
+      Serial.println("strobe is done");
+      strobeMode = false;
+      previous_animation_index = -1;
+    }
+  }
+  else if (animation_index != previous_animation_index) {
     if (animation_index > 8) animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
@@ -125,7 +136,9 @@ void playAnimation() {
         current_animation = &dimmer;
         break;
       default:
-        // Serial.println("\n\nWARN: default animation switch case");
+        Serial.println("\n\nWARN: default animation switch case - somebody fucked up");
+        Serial.println("setting animation_index to 0");
+        animation_index = 0;
         break;
     }
     current_animation->setup();

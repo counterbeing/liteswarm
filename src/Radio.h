@@ -9,6 +9,7 @@ struct RadioPacket          // Any packet up to 32 bytes can be sent.
   uint8_t senderId;         // 16
   uint32_t rotaryPosition;  // 48
   uint8_t animationId;      // 56
+  bool strobeMode;          // 57
                             // uint32_t keyframe;       //
                             // ... 200
 };
@@ -21,6 +22,7 @@ class Radio {
   bool radioAlive = false;
   MyKnob &knob;
   int &animation_index;
+  bool &strobeMode;
   const static uint8_t SHARED_RADIO_ID = 1;
   const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
   const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
@@ -46,12 +48,15 @@ class Radio {
         Serial.println(_incomingRadioPacket.rotaryPosition);
         Serial.print("animationId: ");
         Serial.println(_incomingRadioPacket.animationId);
+        Serial.print("strobeMode: ");
+        Serial.println(_incomingRadioPacket.strobeMode);
         Serial.print("senderId: ");
         Serial.println(_incomingRadioPacket.senderId);
       }
       if (stateChanged()) {
         knob.set(_incomingRadioPacket.rotaryPosition);
         animation_index = _incomingRadioPacket.animationId;
+        strobeMode = _incomingRadioPacket.strobeMode;
         lastIntervalTime = millis();
       }
     }
@@ -68,6 +73,7 @@ class Radio {
     }
     _outboundRadioPacket.rotaryPosition = knob.get();
     _outboundRadioPacket.animationId = animation_index;
+    _outboundRadioPacket.strobeMode = strobeMode;
 
     _radio.send(SHARED_RADIO_ID, &_outboundRadioPacket,
                 sizeof(_outboundRadioPacket), NRFLite::NO_ACK);
@@ -76,7 +82,8 @@ class Radio {
   bool stateChanged() {
     int currentRotaryPosition = knob.get();
     return !(_incomingRadioPacket.rotaryPosition == currentRotaryPosition &&
-             _incomingRadioPacket.animationId == animation_index);
+             _incomingRadioPacket.animationId == animation_index &&
+             _incomingRadioPacket.strobeMode == strobeMode);
   }
 
   bool runAfterInterval(int interval) {
@@ -94,8 +101,8 @@ class Radio {
  public:  //                                             vvvvv <--init named
           //                                             identifier (knob) with
           //                                             these params (knob_)
-  Radio(MyKnob &knob_, int &animation_index_)
-      : knob(knob_), animation_index(animation_index_) {}
+  Radio(MyKnob &knob_, int &animation_index_, bool &strobeMode_)
+      : knob(knob_), animation_index(animation_index_), strobeMode(strobeMode_) {}
   void setup() {
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;

@@ -6,7 +6,7 @@
   //   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
   "C_Cpp.clang_format_style": "Google",
   "terminal.integrated.env.osx": {
-    "PATH": "/Users/cory/.platformio/penv/bin:/Users/cory/.platformio/penv:/usr/local/sbin:/Users/cory/.nvm/versions/node/v12.1.0/bin:/Users/cory/.rbenv/shims:/Users/cory/.rbenv/bin:/usr/local/share/npm/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/opt/fzf/bin",
+    // "PATH": "/Users/cory/.platformio/penv/bin:/Users/cory/.platformio/penv:/usr/local/sbin:/Users/cory/.nvm/versions/node/v12.1.0/bin:/Users/cory/.rbenv/shims:/Users/cory/.rbenv/bin:/usr/local/share/npm/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/opt/fzf/bin",
     "PLATFORMIO_CALLER": "vscode"
   },
   
