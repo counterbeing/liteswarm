@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include <stdint.h>
 #include "config.h"
+#include "DebugLog.h"
 
 struct RadioPacket          // Any packet up to 32 bytes can be sent.
 {                           // 0 - bit count (256 max)
@@ -9,7 +10,6 @@ struct RadioPacket          // Any packet up to 32 bytes can be sent.
   uint8_t senderId;         // 16
   uint32_t rotaryPosition;  // 48
   uint8_t animationId;      // 56
-  bool strobeMode;          // 57
                             // uint32_t keyframe;       //
                             // ... 200
 };
@@ -22,7 +22,6 @@ class Radio {
   bool radioAlive = false;
   MyKnob &knob;
   int &animation_index;
-  bool &strobeMode;
   const static uint8_t SHARED_RADIO_ID = 1;
   const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
   const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
@@ -41,22 +40,15 @@ class Radio {
         return;
       }
       if (RADIO_DEBUG) {
-        Serial.println("------INCOMING---------");
-        Serial.print("SHARED_SECRET: ");
-        Serial.println(_incomingRadioPacket.SHARED_SECRET);
-        Serial.print("rotaryPosition: ");
-        Serial.println(_incomingRadioPacket.rotaryPosition);
-        Serial.print("animationId: ");
-        Serial.println(_incomingRadioPacket.animationId);
-        Serial.print("strobeMode: ");
-        Serial.println(_incomingRadioPacket.strobeMode);
-        Serial.print("senderId: ");
-        Serial.println(_incomingRadioPacket.senderId);
+        debugLog("------INCOMING---------");
+        debugLog("SHARED_SECRET:  ", _incomingRadioPacket.SHARED_SECRET);
+        debugLog("rotaryPosition: ", _incomingRadioPacket.rotaryPosition);
+        debugLog("animationId:    ", _incomingRadioPacket.animationId);
+        debugLog("senderId:       ", _incomingRadioPacket.senderId);
       }
       if (stateChanged()) {
         knob.set(_incomingRadioPacket.rotaryPosition);
         animation_index = _incomingRadioPacket.animationId;
-        strobeMode = _incomingRadioPacket.strobeMode;
         lastIntervalTime = millis();
       }
     }
@@ -69,11 +61,10 @@ class Radio {
       return;
     }
     if (RADIO_DEBUG) {
-      Serial.println("--- Sending Data");
+      debugLog("--- Sending Data");
     }
     _outboundRadioPacket.rotaryPosition = knob.get();
     _outboundRadioPacket.animationId = animation_index;
-    _outboundRadioPacket.strobeMode = strobeMode;
 
     _radio.send(SHARED_RADIO_ID, &_outboundRadioPacket,
                 sizeof(_outboundRadioPacket), NRFLite::NO_ACK);
@@ -82,8 +73,7 @@ class Radio {
   bool stateChanged() {
     int currentRotaryPosition = knob.get();
     return !(_incomingRadioPacket.rotaryPosition == currentRotaryPosition &&
-             _incomingRadioPacket.animationId == animation_index &&
-             _incomingRadioPacket.strobeMode == strobeMode);
+             _incomingRadioPacket.animationId == animation_index);
   }
 
   bool runAfterInterval(int interval) {
@@ -101,25 +91,25 @@ class Radio {
  public:  //                                             vvvvv <--init named
           //                                             identifier (knob) with
           //                                             these params (knob_)
-  Radio(MyKnob &knob_, int &animation_index_, bool &strobeMode_)
-      : knob(knob_), animation_index(animation_index_), strobeMode(strobeMode_) {}
+  Radio(MyKnob &knob_, int &animation_index_)
+      : knob(knob_), animation_index(animation_index_) {}
   void setup() {
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
     if (RADIO_DEBUG) {
-      Serial.print("Picking random radio id: ");
-      Serial.println(RADIO_ID);
+      debugLog("Picking random radio id: ");
+      debugLog(RADIO_ID);
     }
     pinMode(14, INPUT_PULLUP);
     if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN)) {
       radioAlive = false;
       if (RADIO_DEBUG) {
-        Serial.println("radio fail");
+        debugLog("radio fail");
       }
     } else {
       radioAlive = true;
       if (RADIO_DEBUG) {
-        Serial.println("radio ok");
+        debugLog("radio ok");
       }
     }
   }

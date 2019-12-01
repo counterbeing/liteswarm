@@ -6,6 +6,7 @@
 #include "FastLED.h"
 #include "Radio.h"
 #include "config.h"
+#include "DebugLog.h"
 
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
@@ -24,11 +25,10 @@ uint8_t rotary2 = 3;
 
 int buttonPin = A0;
 bool offMode = false;
-bool strobeMode = false;
 
 CRGB leds[NUMPIXELS];
 int feedbackPattern = -1;
-MyKnob knob(rotary1, rotary2, offMode, feedbackPattern, strobeMode);
+MyKnob knob(rotary1, rotary2, offMode, feedbackPattern);
 
 // Load animations...
 Crossfade crossfade(knob, leds);
@@ -42,114 +42,97 @@ DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
 Strobe strobe(knob, leds);
 
+const int NUM_ANIMATONS = 9;
+Animation* animations[NUM_ANIMATONS] = {
+    &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
+    &stripes,   &diamond_necklace, &dimmer};
+
 int animation_index = 0;
-Radio radio(knob, animation_index, strobeMode);
+Radio radio(knob, animation_index);
 
-// Animation *current_animation = &rainbow;
-Animation *current_animation = &crossfade;
-int previous_animation_index = -1;
+class BaseController {
+ private:
+   bool activate = false;
 
-int feedbackLength = 800;
-long feedbackEnd = (millis() + feedbackLength);
+ public:
+  void setAsActive() { activate = true; }
 
-void runAdjustments() {
-  if (feedbackPattern < 0) {
-    return;
-  }
-  if (feedbackPattern > 0) {
-    // Serial.println("STARTING FEEBACK");
-    feedbackEnd = (millis() + feedbackLength);
-  }
-  feedbackPattern = 0;
-
-  int currentLapse = feedbackEnd - millis();
-  if (currentLapse < 0) {
-    feedbackPattern = -1;
-  }
-
-  CRGB color1;
-  CRGB color2;
-
-  switch (feedbackPattern) {
-    case 0:
-      color1 = CRGB::Blue;
-      color2 = CRGB::Green;
-      break;
-    case 1:
-      color1 = CRGB::Black;
-      color2 = CRGB::Red;
-      break;
-  }
-
-  if ((currentLapse / 100) % 2 == 0) {
-    fill_solid(leds, NUMPIXELS, color1);
-  } else {
-    fill_solid(leds, NUMPIXELS, color2);
-  }
-}
-void playAnimation() {
-  if (strobeMode) {
-    current_animation = &strobe;
-    if (strobe.is_done()) {
-      Serial.println("strobe is done");
-      strobeMode = false;
-      previous_animation_index = -1;
+  virtual void run() {
+    if (activate) {
+      activate = false;
+      setup();
     }
+    loop();
   }
-  else if (animation_index != previous_animation_index) {
-    if (animation_index > 8) animation_index = 0;
-    // BUG CAUTION
-    // never follow one animation function immediately with itself in the the
-    // next case
 
-    if (KNOB_DEBUG) {
-      Serial.print("Animation Index: ");
-      Serial.println(animation_index);
-    }
+ protected:
+  virtual void setup() = 0;
+  virtual void loop() = 0;
+};
 
-    switch (animation_index) {
-      case 0:
-        current_animation = &crossfade;
-        break;
-      case 1:
-        current_animation = &color_chooser;
-        break;
-      case 2:
-        current_animation = &race;
-        break;
-      case 3:
-        current_animation = &stars;
-        break;
-      case 4:
-        current_animation = &rainbow;
-        break;
-      case 5:
-        current_animation = &fuck_my_eyes;
-        break;
-      case 6:
-        current_animation = &stripes;
-        break;
-      case 7:
-        current_animation = &diamond_necklace;
-        break;
-      case 8:
-        current_animation = &dimmer;
-        break;
-      default:
-        Serial.println("\n\nWARN: default animation switch case - somebody fucked up");
-        Serial.println("setting animation_index to 0");
+class OffModeController : public BaseController {
+ protected:
+  virtual void setup() {
+  }
+
+  virtual void loop() {
+      fill_solid(leds, NUMPIXELS, CRGB::Black);
+      FastLED.show();
+  }
+};
+
+class AnimationModeController : public BaseController {
+ private:
+  int previous_animation_index = -1;
+
+ protected:
+  virtual void setup() {}
+
+  virtual void loop() {
+    bool animationChanged = (animation_index != previous_animation_index);
+
+    if (animationChanged) {
+      if (animation_index >= NUM_ANIMATONS)
         animation_index = 0;
-        break;
+
+      if (KNOB_DEBUG) {
+        debugLog("");
+        debugLog("Animation Index: ", animation_index);
+      }
     }
-    current_animation->setup();
-    previous_animation_index = animation_index;
+
+    Animation *current_animation = animations[animation_index];
+
+    if (animationChanged) {
+      current_animation->setup();
+      previous_animation_index = animation_index;
+    }
+
+    current_animation->loop();
+
+    FastLED.show();
   }
-  current_animation->run();
+};
 
-  runAdjustments();
+class MasterController {
+ private:
+  OffModeController offModeController{};
+  AnimationModeController animationModeController{};
 
-  FastLED.show();
-}
+ public:
+  void loop() {
+    button_debouncer.update();
+    knob.check(&animation_index);
+    if (offMode) {
+      offModeController.run();
+    }
+    else {
+      radio.check();
+      animationModeController.run();
+    }
+  }
+
+} masterController;
 
 void setup() {
 #ifdef SCARF_WS2811
@@ -174,13 +157,5 @@ void setup() {
 }
 
 void loop() {
-  button_debouncer.update();
-  knob.check(&animation_index);
-  if (offMode) {
-    fill_solid(leds, NUMPIXELS, CRGB::Black);
-    FastLED.show();
-    return;
-  }
-  radio.check();
-  playAnimation();
+  masterController.loop();
 }

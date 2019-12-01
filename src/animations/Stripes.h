@@ -1,4 +1,5 @@
 #include "Animation.h"
+#include "DebugLog.h"
 
 class Stripes : public Animation {
  private:
@@ -6,7 +7,6 @@ class Stripes : public Animation {
   int start = 0;
   int finish = 500;
   bool initialized = false;
-  int head = 0;
   bool loopRotary = false;
   int lastPosition = 0;
   MyKnob &knob;
@@ -23,7 +23,7 @@ class Stripes : public Animation {
 
     if (nonBlockDelay(delay)) {
       if (ANIM_DEBUG) {
-        Serial.println(lastPosition);
+        debugLog("Strips::lastPosition = ", lastPosition);
       }
       lastPosition++;
       if (lastPosition >= (stripeLength * 2)) {

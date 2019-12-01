@@ -26,18 +26,10 @@ class Animation {
     }
     return false;
   }
-  virtual void loop() = 0;
 
  public:
   virtual void setup() = 0;
+  virtual void loop() = 0;
   Animation(){};
-  void run() {
-    // if (!initialized)
-    // {
-    //     setup();
-    //     initialized = true;
-    // };
-    loop();
-  }
 };
 #endif

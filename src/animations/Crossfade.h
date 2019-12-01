@@ -8,10 +8,16 @@ class Crossfade : public Animation {
   int start = 5;
   int finish = 200;
   bool initialized = false;
-  int head = 0;
   bool loopRotary = false;
   MyKnob &knob;
   CRGB *leds;
+
+ public:
+  Crossfade(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+
+  void setup() {
+    knob.setDefaults(initialPosition, start, finish, loopRotary);
+  };
 
   void loop() {
     int dlay = knob.confine();
@@ -22,10 +28,4 @@ class Crossfade : public Animation {
     }
   }
 
- public:
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
-
-  Crossfade(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
 };
