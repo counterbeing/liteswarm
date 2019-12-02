@@ -1,19 +1,27 @@
 #include "Animation.h"
+#include "MilliTimer.h"
 
 class Race : public Animation {
  private:
-  int initialPosition = 60;
-  int start = 5;
-  int finish = 400;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
-  MyKnob &knob;
+  uint8_t hue = 0;
+  uint32_t pixelIndex = 0;
+  int32_t delay = 60;
   CRGB *leds;
+  MilliTimer timer{};
+  KnobControl knobControl{5, 400, false};
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+  uint16_t nextPixelIndex() {
+    if (++pixelIndex > NUMPIXELS)
+      pixelIndex = 0;
+    return pixelIndex;
+  }
+
+ public:
+  Race(CRGB leds_[]) : leds(leds_) {}
+
+  void wakeUp() {
+    knobControl.setPosition(delay);
+  }
 
   // Associativity specification is redundant for unary operators and is only
   // shown for completeness: unary prefix operators always associate
@@ -22,19 +30,17 @@ class Race : public Animation {
   // associativity is meaningful for member access operators, even though they
   // are grouped with unary postfix operators: a.b++ is parsed (a.b)++ and not
   // a.(b++).
-  void loop() {
-    int dlay = knob.confine();
-    if (nonBlockDelay(dlay)) {
-      static uint8_t hue = 0;
-      head = remapInRange(++head);
-      leds[head] = CRGB::Black;
-      leds[head] = CHSV(hue++, 255, 150);
-      head = remapInRange(++head);
-      leds[head] = CHSV(hue++, 255, 255);
+  void update() {
+    if (knobControl.updateSettingOnChange(delay)) {
+      configChangeFlag = true;
+      if (ANIM_DEBUG) debugLog("config change: Race::delay = ", delay);
+    }
+
+    if (timer.hasElapsedWithReset(delay)) {
+      // leds[nextPixelIndex()] = CHSV(hue++, 255, 150);
+      leds[nextPixelIndex()] = CHSV(hue++, 255, 255);
       
     }
   }
 
- public:
-  Race(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
 };

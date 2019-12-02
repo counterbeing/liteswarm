@@ -1,23 +1,27 @@
 #include "Animation.h"
+#include <string.h>
 
 class Dimmer : public Animation {
  private:
-  int initialPosition = 100;
-  int start = 10;
-  int finish = 180;
-  bool loopRotary = false;
-  MyKnob& knob;
   CRGB* leds;
+  int32_t brightness = 100;
+  KnobControl knobControl{10, 180, false};
 
  public:
-  Dimmer(MyKnob& knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Dimmer(CRGB leds_[]) : leds(leds_) {}
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+  void wakeUp() {
+    knobControl.setPosition(brightness);
+  }
 
-  void loop() {
-    int brightness = knob.confine();
+
+  void update() {
+    if (knobControl.updateSettingOnChange(brightness)) {
+      configChangeFlag = true;
+      if (ANIM_DEBUG) debugLog("config change: Dimmer::brightness = ", brightness);
+    }
+
     fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness));
   }
+
 };

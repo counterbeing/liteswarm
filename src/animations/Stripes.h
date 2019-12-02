@@ -1,30 +1,31 @@
 #include "Animation.h"
 #include "DebugLog.h"
+#include "MilliTimer.h"
 
 class Stripes : public Animation {
  private:
-  int initialPosition = 180;
-  int start = 0;
-  int finish = 500;
-  bool initialized = false;
-  bool loopRotary = false;
-  int lastPosition = 0;
-  MyKnob &knob;
   CRGB *leds;
+  MilliTimer timer{};
+  int lastPosition = 0;
+  int32_t delay = 180;
+  KnobControl knobControl{0, 500, false};
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+ public:
+  Stripes(CRGB leds_[]) : leds(leds_) {}
 
-  void loop() {
-    int delay = knob.confine();
+  void wakeUp() {
+    knobControl.setPosition(delay);
+  }
+
+  void update() {
+    if (knobControl.updateSettingOnChange(delay)) {
+      configChangeFlag = true;
+      if (ANIM_DEBUG) debugLog("config change: Strips::delay = ", delay);
+    }
 
     int stripeLength = 4;
 
-    if (nonBlockDelay(delay)) {
-      if (ANIM_DEBUG) {
-        debugLog("Strips::lastPosition = ", lastPosition);
-      }
+    if (timer.hasElapsedWithReset(delay)) {
       lastPosition++;
       if (lastPosition >= (stripeLength * 2)) {
         lastPosition = 0;
@@ -36,10 +37,7 @@ class Stripes : public Animation {
         }
       }
 
-      
     }
   }
-
- public:
-  Stripes(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
-};
+}
+;

@@ -1,23 +1,28 @@
 #include "Animation.h"
+#include "MilliTimer.h"
 
 class FuckMyEyes : public Animation {
  private:
-  int initialPosition = 0;
-  int start = 0;
-  int finish = 300;
-  bool initialized = false;
-  bool loopRotary = false;
-  MyKnob &knob;
   CRGB *leds;
   int lastColor = 0;
+  MilliTimer timer{};
+  int32_t delay = 200;
+  KnobControl knobControl{0, 300, false};
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+ public:
+  FuckMyEyes(CRGB leds_[]) : leds(leds_) {}
 
-  void loop() {
-    int dlay = knob.confine();
-    if (nonBlockDelay(dlay)) {
+  void wakeUp() {
+    knobControl.setPosition(delay);
+  }
+
+  void update() {
+    if (knobControl.updateSettingOnChange(delay)) {
+      configChangeFlag = true;
+      if (ANIM_DEBUG) debugLog("config change: FuckMyEyes::delay = ", delay);
+    }
+
+    if (timer.hasElapsedWithReset(delay)) {
       switch (lastColor) {
         case 0:
           fill_solid(leds, NUMPIXELS, CRGB::Red);
@@ -35,7 +40,4 @@ class FuckMyEyes : public Animation {
     }
     
   }
-
- public:
-  FuckMyEyes(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
 };

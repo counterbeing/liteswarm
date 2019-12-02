@@ -15,51 +15,49 @@ enum ClickEvent : uint8_t { CLICK, LONG_CLICK, DOUBLE_CLICK, OTHER };
 
 class MyKnob {
  private:
+  int32_t position;
+  bool manualChange = false;
+
+ public:
+  MyKnob() {}
+  void set(int position) { encoder_knob.write(position); }
+  uint32_t get() { return encoder_knob.read(); }
+  bool manuallyChanged() { return manualChange; }
+};
+
+class ButtonControl {
+ private:
   static const unsigned int DOUBLE_CLICK_MAX_GAP = 250;  // max ms between clicks for single event
   static const unsigned int SHORT_CLICK_MAX_DURATION = 250;
-  static const unsigned int LONG_CLICK_MIN_DURATION = 2750;
+  static const unsigned int LONG_CLICK_MIN_DURATION = 1750;
   bool possibleDoubleClick = false;
   ClickEvent latestClick = ClickEvent::OTHER;
+  bool clickEventOccurredFlag = false;
+ public:
 
-  int pinA;
-  int pinB;
-  int position;
-  int start = 0;
-  int finish = 10;
-  int buttonPressCount = 0;
-  int loopRotary = false;
-  bool manualChange = false;
-  bool &offMode;
-  int &feedbackPattern;
-  void checkRotary() {
-    long newPos = encoder_knob.read();
-    if (newPos == position) {
-      return;
-    }
-    manualChange = true;
-    position = newPos;
-  }
+  bool hasClickEventOccurred() { return clickEventOccurredFlag; }
 
-  bool cmdMode = false;
+  // void checkButton(int *_aiIndex) {
+  void checkButton() {
+    clickEventOccurredFlag = false;
 
-  void checkButton(int *_aiIndex) {
     if (button_debouncer.rose()) {
       unsigned long buttonDownDuration = button_debouncer.previousDuration();
-      debugLog("button released, buttonDownDuration = ", buttonDownDuration);
+      // if (KNOB_DEBUG)
+        // debugLog("button up, down duration = ", buttonDownDuration);
       if (buttonDownDuration <= SHORT_CLICK_MAX_DURATION) {
         if (possibleDoubleClick) {
           latestClick = ClickEvent::DOUBLE_CLICK;
           possibleDoubleClick = false;
-          // return true;
           if (KNOB_DEBUG)
             debugLog("Event occurred: DOUBLE_CLICK");
-          offMode = !offMode;
+          // offMode = !offMode;
+          clickEventOccurredFlag = true;
         }
         else {
           possibleDoubleClick = true;
-          // return false;
-          if (KNOB_DEBUG)
-            debugLog("possible double click");
+          // if (KNOB_DEBUG)
+            // debugLog("possible double click");
         }
       }
       else {
@@ -68,64 +66,68 @@ class MyKnob {
           latestClick = ClickEvent::LONG_CLICK;
           if (KNOB_DEBUG)
             debugLog("Event occurred: LONG_CLICK");
-          // return true;
+          clickEventOccurredFlag = true;
         }
       }
     }
 
     else if (!button_debouncer.fell()) {  // no button state change since neither rose nor fell
-      if (possibleDoubleClick &&
-          button_debouncer.duration() > DOUBLE_CLICK_MAX_GAP) {
+      if (possibleDoubleClick && button_debouncer.duration() > DOUBLE_CLICK_MAX_GAP) {
         latestClick = ClickEvent::CLICK;
         possibleDoubleClick = false;
         if (KNOB_DEBUG)
           debugLog("Event occurred: CLICK");
-        // return true;
-        (*_aiIndex)++;
+        // (*_aiIndex)++;
+        clickEventOccurredFlag = true;
       }
     }
 
   }
 
+  ClickEvent getLatestClickEvent() {
+    return latestClick;
+  }
+};
+
+class KnobControl {
+ private:
+  int32_t minValue;
+  int32_t maxValue;
+  bool loopRotary;
+
  public:
-  MyKnob(uint8_t a, uint8_t b, bool &offMode_, int &feedbackPattern_)
-      : offMode(offMode_), feedbackPattern(feedbackPattern_) {
-    pinA = a;
-    pinB = b;
-    // Encoder knob(pinA, pinB);
-    // encoder_knob = Encoder(a, b);
-  }
-  void set(int position) { encoder_knob.write(position); }
-  uint32_t get() { return encoder_knob.read(); }
-  void check(int *_animationIndex) {
-    manualChange = false;
-    checkButton(_animationIndex);
-    checkRotary();
-  }
-  bool manuallyChanged() { return manualChange; }
+  KnobControl(int32_t minValue_, int32_t maxValue_, bool loopRotary_)
+      : minValue(minValue_), maxValue(maxValue_), loopRotary(loopRotary_) {}
 
-  // Set these variables once so they don't need to be set repeatedly
-  void setDefaults(int position_, int start_, int finish_,
-                   bool loopRotary_ = false) {
-    position = position_;
+  void setPosition(int32_t position) {
+    if (KNOB_DEBUG)
+      debugLog("KnobControl::setPosition to ", position);
     encoder_knob.write(position);
-    start = start_;
-    finish = finish_;
-    loopRotary = loopRotary_;
   }
 
-  // Sets the value for the rotary encoder to someething reasonable for the
-  // animation. It returns that value.
-  int confine() {
-    if (position < start) {
-      position = loopRotary ? finish : start;
+  int32_t getPosition() {
+    int32_t position = encoder_knob.read();
+    if (position < minValue) {
+      debugLog("KnobControl::position below min, position=", position);
+      position = loopRotary ? maxValue : minValue;
+      debugLog("KnobControl::position below min, now ", position);
       encoder_knob.write(position);
     }
-    if (position > finish) {
-      position = loopRotary ? start : finish;
+    else if (position > maxValue) {
+      position = loopRotary ? minValue : maxValue;
+      debugLog("KnobControl::getPosition() above max, set to ", position);
       encoder_knob.write(position);
     }
     return position;
+  }
+
+  bool updateSettingOnChange(int32_t &setting) {
+    int32_t newSetting = getPosition();
+    if (newSetting != setting) {
+      setting = newSetting;
+      return true;
+    }
+    return false;
   }
 };
 

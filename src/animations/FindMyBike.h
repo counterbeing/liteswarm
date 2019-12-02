@@ -1,28 +1,22 @@
 #include "Animation.h"
+#include "MilliTimer.h"
 
 class FindMyBike : public Animation {
  private:
-  int initialPosition = 0;
-  int start = 0;
-  int finish = 300;
-  bool initialized = false;
-  bool loopRotary = false;
-  MyKnob &knob;
   CRGB *leds;
-  int lastColor = 0;
+  MilliTimer timer{};
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+ public:
+  FindMyBike(CRGB leds_[]) : leds(leds_) {}
+
+  void wakeUp() {
+  }
 
   void loop() {
     FastLED.clear();
-    if (nonBlockDelay(3000)) {
+    if (timer.hasElapsedWithReset(3000)) {
       fill_solid(leds, NUMPIXELS, CRGB::White);
     }
-    
   }
 
- public:
-  FindMyBike(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
 };

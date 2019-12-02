@@ -2,24 +2,25 @@
 
 class ColorChooser : public Animation {
  private:
-  int initialPosition = 180;
-  int start = 0;
-  int finish = 255;
-  bool initialized = false;
-  bool loopRotary = true;
-  MyKnob &knob;
   CRGB *leds;
+  int32_t hue = 180;
+  KnobControl knobControl{0, 255, true};
 
  public:
-  ColorChooser(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  ColorChooser(CRGB leds_[]) : leds(leds_) {}
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+  void wakeUp() {
+    knobControl.setPosition(hue);
+    debugLog("ColorChooser::wakeUp() set position (hue) to ", hue);
+  }
 
-  void loop() {
-    int color = knob.confine();
-    fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
+  void update() {
+    if (knobControl.updateSettingOnChange(hue)) {
+      configChangeFlag = true;
+      if (ANIM_DEBUG) debugLog("config change: ColorChooser::hue = ", hue);
+    }
+
+    fill_solid(leds, NUMPIXELS, CHSV(hue, 255, 255));
   }
 
 };

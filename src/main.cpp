@@ -7,6 +7,7 @@
 #include "Radio.h"
 #include "config.h"
 #include "DebugLog.h"
+#include "MilliTimer.h"
 
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
@@ -24,55 +25,56 @@ uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 
 int buttonPin = A0;
-bool offMode = false;
 
 CRGB leds[NUMPIXELS];
-int feedbackPattern = -1;
-MyKnob knob(rotary1, rotary2, offMode, feedbackPattern);
 
 // Load animations...
-Crossfade crossfade(knob, leds);
-ColorChooser color_chooser(knob, leds);
-Race race(knob, leds);
-Stars stars(knob, leds);
-Rainbow rainbow(knob, leds);
-FuckMyEyes fuck_my_eyes(knob, leds);
-Stripes stripes(knob, leds);
-DiamondNecklace diamond_necklace(knob, leds);
-Dimmer dimmer(knob, leds);
-Strobe strobe(knob, leds);
+Crossfade crossfade(leds);
+ColorChooser color_chooser(leds);
+Race race(leds);
+Stars stars(leds);
+Rainbow rainbow(leds);
+FuckMyEyes fuck_my_eyes(leds);
+Stripes stripes(leds);
+DiamondNecklace diamond_necklace(leds);
+Dimmer dimmer(leds);
+Strobe strobe(leds);
 
 const int NUM_ANIMATONS = 9;
+// const int NUM_ANIMATONS = 2;
 Animation* animations[NUM_ANIMATONS] = {
+    // &crossfade, &color_chooser};
     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
     &stripes,   &diamond_necklace, &dimmer};
 
-int animation_index = 0;
-Radio radio(knob, animation_index);
+int old_animation_index = 0;
+MyKnob knob{};
+Radio radio(knob, old_animation_index);
 
 class BaseController {
  private:
-   bool activate = false;
+   bool activeFlag = false;
 
  public:
-  void setAsActive() { activate = true; }
+  void setAsActive() { activeFlag = true; }
 
   virtual void run() {
-    if (activate) {
-      activate = false;
-      setup();
+    if (activeFlag) {
+      activeFlag = false;
+      activate();
     }
     loop();
   }
 
  protected:
-  virtual void setup() = 0;
+  virtual void activate() = 0;
   virtual void loop() = 0;
 };
 
 class OffModeController : public BaseController {
  protected:
-  virtual void setup() {
+  virtual void activate() {
+    debugLog("OffModeController::activate()");
   }
 
   virtual void loop() {
@@ -83,51 +85,85 @@ class OffModeController : public BaseController {
 
 class AnimationModeController : public BaseController {
  private:
-  int previous_animation_index = -1;
+  uint8_t animationIndex = 0;
+  bool animationChanged = false;
+  bool configChangeFlag = false;
+
+ public:
+  bool hasConfigChanged() {
+    return configChangeFlag;
+  }
+  void nextAnimation() {
+    animationIndex++;
+    if (animationIndex == NUM_ANIMATONS) {
+      animationIndex = 0;
+    }
+    animationChanged = true;
+  }
 
  protected:
-  virtual void setup() {}
+  virtual void activate() {
+    debugLog("AnimationModeController::activate()");
+  }
 
   virtual void loop() {
-    bool animationChanged = (animation_index != previous_animation_index);
+    configChangeFlag = animationChanged;
 
     if (animationChanged) {
-      if (animation_index >= NUM_ANIMATONS)
-        animation_index = 0;
 
-      if (KNOB_DEBUG) {
-        debugLog("");
-        debugLog("Animation Index: ", animation_index);
+      if (ANIM_DEBUG) {
+        // debugLog("----------------------------------------------");
+        debugLog("Animation Index = ", animationIndex);
+        // debugLog("----------------------------------------------");
       }
     }
 
-    Animation *current_animation = animations[animation_index];
+    Animation *currentAnimation = animations[animationIndex];
 
     if (animationChanged) {
-      current_animation->setup();
-      previous_animation_index = animation_index;
+      currentAnimation->wakeUp();
     }
 
-    current_animation->loop();
+    currentAnimation->loop();
+    configChangeFlag = configChangeFlag || currentAnimation->hasConfigChanged();
 
+    animationChanged = false;
     FastLED.show();
   }
 };
+
+ButtonControl buttonControl{};
 
 class MasterController {
  private:
   OffModeController offModeController{};
   AnimationModeController animationModeController{};
+  MilliTimer radioTimer{};
+  bool offMode = false;
 
  public:
   void loop() {
     button_debouncer.update();
-    knob.check(&animation_index);
+    buttonControl.checkButton();
+    bool modeChange =
+        buttonControl.hasClickEventOccurred() &&
+        buttonControl.getLatestClickEvent() == ClickEvent::DOUBLE_CLICK;
+    if (modeChange)
+      offMode = !offMode;
+
     if (offMode) {
+      if (modeChange)
+        offModeController.setAsActive();
       offModeController.run();
     }
     else {
-      radio.check();
+      if (modeChange)
+        animationModeController.setAsActive();
+      // radio.check();  // TODO: add this back in later
+      if (buttonControl.hasClickEventOccurred() &&
+          buttonControl.getLatestClickEvent() == ClickEvent::CLICK) {
+        animationModeController.nextAnimation();
+      }
       animationModeController.run();
     }
   }

@@ -1,29 +1,31 @@
-#include <MyKnob.h>
+// #include <MyKnob.h>
 #include "Animation.h"
-#include "FastLED.h"
+// #include "FastLED.h"
+#include "MilliTimer.h"
 
 class Crossfade : public Animation {
  private:
-  int initialPosition = 40;
-  int start = 5;
-  int finish = 200;
-  bool initialized = false;
-  bool loopRotary = false;
-  MyKnob &knob;
   CRGB *leds;
+  int32_t delay = 35;
+  MilliTimer timer{};
+  KnobControl knobControl{5, 200, false};
+  uint8_t hue = 0;
 
  public:
-  Crossfade(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Crossfade(CRGB leds_[]) : leds(leds_) {}
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+  void wakeUp() {
+    knobControl.setPosition(delay);
+    debugLog("Crossfade::wakeUp() set position (delay) to ", delay);
+  }
 
-  void loop() {
-    int dlay = knob.confine();
-    static uint8_t hue = 0;
-    if (nonBlockDelay(dlay)) {
-      // FastLED.showColor(CHSV(hue++, 255, 255));
+  void update() {
+    if (knobControl.updateSettingOnChange(delay)) {
+      configChangeFlag = true;
+      if (ANIM_DEBUG) debugLog("config change: Crossfade::delay = ", delay);
+    }
+
+    if (timer.hasElapsedWithReset(delay)) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
     }
   }

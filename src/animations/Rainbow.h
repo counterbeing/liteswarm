@@ -2,24 +2,25 @@
 
 class Rainbow : public Animation {
  private:
-  int initialPosition = 1;
-  int start = 1;
-  int finish = 255;
-  bool initialized = false;
-  bool loopRotary = true;
-  MyKnob &knob;
   CRGB *leds;
+  int32_t offset = 1;
+  KnobControl knobControl{1, 255, true};
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+ public:
+  Rainbow(CRGB leds_[]) : leds(leds_) {}
 
-  void loop() {
-    int offset = knob.confine();
+  void wakeUp() {
+    knobControl.setPosition(offset);
+  }
+
+  void update() {
+    if (knobControl.updateSettingOnChange(offset)) {
+      configChangeFlag = true;
+      if (ANIM_DEBUG) debugLog("config change: Rainbow::offset = ", offset);
+    }
+
     fill_rainbow(leds, NUMPIXELS, offset, 5);
     
   }
 
- public:
-  Rainbow(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
 };

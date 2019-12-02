@@ -6,30 +6,20 @@
 
 class Animation {
  protected:
+  bool configChangeFlag = false;
   int start;
   int finish;
   int initialSetting;
-  long previousMillis = 0;
-  bool initialized = false;
 
-  int remapInRange(int index) {
-    if (index < 0) return NUMPIXELS;
-    if (index > NUMPIXELS) return 0;
-    return index;
-  }
-
-  bool nonBlockDelay(unsigned int interval) {
-    unsigned long current_millis = millis();
-    if ((current_millis - previousMillis) > interval) {
-      previousMillis = current_millis;
-      return true;
-    }
-    return false;
-  }
+  virtual void update() = 0;
 
  public:
-  virtual void setup() = 0;
-  virtual void loop() = 0;
+  virtual void wakeUp() = 0;
+  virtual void loop() {
+    configChangeFlag = false;
+    update();
+  };
+  virtual bool hasConfigChanged() { return configChangeFlag; }
   Animation(){};
 };
 #endif
