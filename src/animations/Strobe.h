@@ -3,14 +3,13 @@
 
 class Strobe : public Animation {
  private:
-  CRGB *leds;
   bool goWhite = true;
   unsigned long startMillis = 0;
   const static unsigned long strobeDuration = 750;
   MilliTimer timer{};
 
  public:
-  Strobe(CRGB leds_[]) : leds(leds_) {}
+  Strobe(CRGB leds_[]) : Animation(leds_) {}
 
   bool is_done() {
     if (startMillis == 0) {

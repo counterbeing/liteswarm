@@ -6,7 +6,6 @@ class Race : public Animation {
   uint8_t hue = 0;
   uint32_t pixelIndex = 0;
   int32_t delay = 60;
-  CRGB *leds;
   MilliTimer timer{};
   KnobControl knobControl{5, 400, false};
 
@@ -17,7 +16,7 @@ class Race : public Animation {
   }
 
  public:
-  Race(CRGB leds_[]) : leds(leds_) {}
+  Race(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(delay);

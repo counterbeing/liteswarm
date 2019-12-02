@@ -4,14 +4,13 @@
 
 class Stripes : public Animation {
  private:
-  CRGB *leds;
   MilliTimer timer{};
   int lastPosition = 0;
   int32_t delay = 180;
   KnobControl knobControl{0, 500, false};
 
  public:
-  Stripes(CRGB leds_[]) : leds(leds_) {}
+  Stripes(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(delay);

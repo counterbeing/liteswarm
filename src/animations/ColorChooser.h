@@ -2,12 +2,11 @@
 
 class ColorChooser : public Animation {
  private:
-  CRGB *leds;
   int32_t hue = 180;
   KnobControl knobControl{0, 255, true};
 
  public:
-  ColorChooser(CRGB leds_[]) : leds(leds_) {}
+  ColorChooser(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(hue);

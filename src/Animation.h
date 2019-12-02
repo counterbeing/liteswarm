@@ -6,6 +6,7 @@
 
 class Animation {
  protected:
+  CRGB *leds;
   bool configChangeFlag = false;
 
   virtual void update() = 0;
@@ -17,6 +18,7 @@ class Animation {
     update();
   };
   virtual bool hasConfigChanged() { return configChangeFlag; }
-  Animation(){};
+  Animation(CRGB leds_[]) : leds(leds_) {};
 };
+
 #endif

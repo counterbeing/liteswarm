@@ -3,11 +3,10 @@
 
 class FindMyBike : public Animation {
  private:
-  CRGB *leds;
   MilliTimer timer{};
 
  public:
-  FindMyBike(CRGB leds_[]) : leds(leds_) {}
+  FindMyBike(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
   }

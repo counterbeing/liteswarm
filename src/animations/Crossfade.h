@@ -5,14 +5,13 @@
 
 class Crossfade : public Animation {
  private:
-  CRGB *leds;
   int32_t delay = 35;
   MilliTimer timer{};
   KnobControl knobControl{5, 200, false};
   uint8_t hue = 0;
 
  public:
-  Crossfade(CRGB leds_[]) : leds(leds_) {}
+  Crossfade(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(delay);

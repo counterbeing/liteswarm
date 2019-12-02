@@ -2,12 +2,11 @@
 
 class Rainbow : public Animation {
  private:
-  CRGB *leds;
   int32_t offset = 1;
   KnobControl knobControl{1, 255, true};
 
  public:
-  Rainbow(CRGB leds_[]) : leds(leds_) {}
+  Rainbow(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(offset);

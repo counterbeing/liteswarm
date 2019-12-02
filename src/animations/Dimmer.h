@@ -3,12 +3,11 @@
 
 class Dimmer : public Animation {
  private:
-  CRGB* leds;
   int32_t brightness = 100;
   KnobControl knobControl{10, 180, false};
 
  public:
-  Dimmer(CRGB leds_[]) : leds(leds_) {}
+  Dimmer(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(brightness);

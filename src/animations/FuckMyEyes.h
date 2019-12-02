@@ -3,14 +3,13 @@
 
 class FuckMyEyes : public Animation {
  private:
-  CRGB *leds;
   int lastColor = 0;
   MilliTimer timer{};
   int32_t delay = 200;
   KnobControl knobControl{0, 300, false};
 
  public:
-  FuckMyEyes(CRGB leds_[]) : leds(leds_) {}
+  FuckMyEyes(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(delay);

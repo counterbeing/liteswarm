@@ -3,13 +3,12 @@
 
 class DiamondNecklace : public Animation {
  private:
-  CRGB *leds;
   MilliTimer timer{};
   int32_t delay = 50;
   KnobControl knobControl{0, 300, false};
 
  public:
-  DiamondNecklace(CRGB leds_[]) : leds(leds_) {}
+  DiamondNecklace(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(delay);

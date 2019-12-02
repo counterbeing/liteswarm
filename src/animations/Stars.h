@@ -5,7 +5,6 @@
 // TODO: Stars is basically the same as Stripes but with different settings. Collapse them?
 class Stars : public Animation {
  private:
-  CRGB *leds;
   MilliTimer timer{};
   int lastPosition = 0;
   int32_t delay = 100;
@@ -13,7 +12,7 @@ class Stars : public Animation {
   KnobControl knobControl{0, 1000, false};
 
  public:
-  Stars(CRGB leds_[]) : leds(leds_) {}
+  Stars(CRGB leds_[]) : Animation(leds_) {}
 
   void wakeUp() {
     knobControl.setPosition(delay);
