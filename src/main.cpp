@@ -132,10 +132,10 @@ class AnimationModeController : public BaseController {
   }
 };
 
-ButtonControl buttonControl{};
 
 class MasterController {
  private:
+  ButtonControl buttonControl{};
   OffModeController offModeController{};
   AnimationModeController animationModeController{};
   MilliTimer radioTimer{};
