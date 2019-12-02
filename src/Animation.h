@@ -7,9 +7,6 @@
 class Animation {
  protected:
   bool configChangeFlag = false;
-  int start;
-  int finish;
-  int initialSetting;
 
   virtual void update() = 0;
 

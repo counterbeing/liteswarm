@@ -37,7 +37,6 @@ class ButtonControl {
 
   bool hasClickEventOccurred() { return clickEventOccurredFlag; }
 
-  // void checkButton(int *_aiIndex) {
   void checkButton() {
     clickEventOccurredFlag = false;
 
@@ -51,13 +50,10 @@ class ButtonControl {
           possibleDoubleClick = false;
           if (KNOB_DEBUG)
             debugLog("Event occurred: DOUBLE_CLICK");
-          // offMode = !offMode;
           clickEventOccurredFlag = true;
         }
         else {
           possibleDoubleClick = true;
-          // if (KNOB_DEBUG)
-            // debugLog("possible double click");
         }
       }
       else {
@@ -77,7 +73,6 @@ class ButtonControl {
         possibleDoubleClick = false;
         if (KNOB_DEBUG)
           debugLog("Event occurred: CLICK");
-        // (*_aiIndex)++;
         clickEventOccurredFlag = true;
       }
     }
