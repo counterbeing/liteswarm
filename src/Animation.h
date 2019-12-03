@@ -12,13 +12,16 @@ class Animation {
   virtual void update() = 0;
 
  public:
+  Animation(CRGB leds_[]) : leds(leds_) {};
+
   virtual void wakeUp() = 0;
+
   virtual void loop() {
     configChangeFlag = false;
     update();
   };
+
   virtual bool hasConfigChanged() { return configChangeFlag; }
-  Animation(CRGB leds_[]) : leds(leds_) {};
 };
 
 #endif

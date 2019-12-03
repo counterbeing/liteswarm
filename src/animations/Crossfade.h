@@ -5,26 +5,23 @@
 
 class Crossfade : public Animation {
  private:
-  int32_t delay = 35;
+  KnobSetting delay{35, 5, 200, false};
   MilliTimer timer{};
-  KnobControl knobControl{5, 200, false};
   uint8_t hue = 0;
 
  public:
   Crossfade(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
-    knobControl.setPosition(delay);
-    debugLog("Crossfade::wakeUp() set position (delay) to ", delay);
+  void wakeUp() override {
+    delay.activate();
   }
 
-  void update() {
-    if (knobControl.updateSettingOnChange(delay)) {
+  void update() override {
+    if (delay.update()) {
       configChangeFlag = true;
-      if (ANIM_DEBUG) debugLog("config change: Crossfade::delay = ", delay);
     }
 
-    if (timer.hasElapsedWithReset(delay)) {
+    if (timer.hasElapsedWithReset(delay.get())) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
     }
   }

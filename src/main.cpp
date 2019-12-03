@@ -18,7 +18,7 @@
 #include "animations/Rainbow.h"
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
-#include "animations/Strobe.h"
+// #include "animations/Strobe.h"
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
@@ -38,46 +38,44 @@ FuckMyEyes fuck_my_eyes(leds);
 Stripes stripes(leds);
 DiamondNecklace diamond_necklace(leds);
 Dimmer dimmer(leds);
-Strobe strobe(leds);
+// Strobe strobe(leds);
 
 const int NUM_ANIMATONS = 9;
-// const int NUM_ANIMATONS = 2;
 Animation* animations[NUM_ANIMATONS] = {
-    // &crossfade, &color_chooser};
     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
     &stripes,   &diamond_necklace, &dimmer};
 
 int old_animation_index = 0;
 MyKnob knob{};
 Radio radio(knob, old_animation_index);
+ButtonControl buttonControl{};
 
 class BaseController {
  private:
-   bool activeFlag = false;
+   bool justActivated = false;
 
  public:
-  void setAsActive() { activeFlag = true; }
+  void setAsActive() { justActivated = true; }
 
   virtual void run() {
-    if (activeFlag) {
-      activeFlag = false;
+    if (justActivated) {
       activate();
     }
-    loop();
+    loop(justActivated);
+    justActivated = false;
   }
 
  protected:
   virtual void activate() = 0;
-  virtual void loop() = 0;
+  virtual void loop(bool justActivated) = 0;
 };
 
 class OffModeController : public BaseController {
  protected:
-  virtual void activate() {
-    debugLog("OffModeController::activate()");
+  virtual void activate() override {
   }
 
-  virtual void loop() {
+  virtual void loop(bool justActivated) override {
       fill_solid(leds, NUMPIXELS, CRGB::Black);
       FastLED.show();
   }
@@ -85,49 +83,54 @@ class OffModeController : public BaseController {
 
 class AnimationModeController : public BaseController {
  private:
+  ButtonControl &buttonControl;
   uint8_t animationIndex = 0;
-  bool animationChanged = false;
   bool configChangeFlag = false;
 
  public:
+  AnimationModeController(ButtonControl &buttonControl_) : buttonControl(buttonControl_) {}
+
   bool hasConfigChanged() {
     return configChangeFlag;
   }
+
   void nextAnimation() {
     animationIndex++;
     if (animationIndex == NUM_ANIMATONS) {
       animationIndex = 0;
     }
-    animationChanged = true;
+    if (ANIM_DEBUG) {
+      // debugLog("----------------------------------------------");
+      debugLog("--- Animation Index = ", animationIndex);
+      // debugLog("----------------------------------------------");
+    }
   }
 
  protected:
-  virtual void activate() {
-    debugLog("AnimationModeController::activate()");
+  virtual void activate() override {
+    // debugLog("AnimationModeController::activate()");
   }
 
-  virtual void loop() {
+  virtual void loop(bool justActivated) override {
+    // TODO: add this back in later
+    // radio.check();
+
+    bool animationChanged = buttonControl.hasClickEventOccurred(ClickEvent::CLICK);
+
     configChangeFlag = animationChanged;
 
-    if (animationChanged) {
-
-      if (ANIM_DEBUG) {
-        // debugLog("----------------------------------------------");
-        debugLog("Animation Index = ", animationIndex);
-        // debugLog("----------------------------------------------");
-      }
-    }
+    if (animationChanged)
+      nextAnimation();
 
     Animation *currentAnimation = animations[animationIndex];
 
-    if (animationChanged) {
+    if (animationChanged || justActivated) {
       currentAnimation->wakeUp();
     }
 
     currentAnimation->loop();
     configChangeFlag = configChangeFlag || currentAnimation->hasConfigChanged();
 
-    animationChanged = false;
     FastLED.show();
   }
 };
@@ -135,37 +138,82 @@ class AnimationModeController : public BaseController {
 
 class MasterController {
  private:
-  ButtonControl buttonControl{};
+  ButtonControl &buttonControl;
+  AnimationModeController animationModeController;
   OffModeController offModeController{};
-  AnimationModeController animationModeController{};
   MilliTimer radioTimer{};
   bool offMode = false;
+  bool firstLoop = true;
+
+  void activateMode() {
+    firstLoop = false;
+    if (offMode) {
+      offModeController.setAsActive();
+    }
+    else {
+      animationModeController.setAsActive();
+    }
+  }
 
  public:
+  MasterController(ButtonControl &buttonControl_)
+      : buttonControl(buttonControl_),
+        animationModeController{buttonControl_} {}
+
+  void startupLoop(unsigned long now) {
+    uint32_t counter = (now / 333) % 14;
+    switch (counter)
+    {
+      case 1:
+        fill_solid(leds, NUMPIXELS, CRGB::Red);
+        break;
+      case 3:
+        fill_solid(leds, NUMPIXELS, CRGB::Yellow);
+        break;
+      case 5:
+        fill_solid(leds, NUMPIXELS, CRGB::Green);
+        break;
+      case 7:
+        fill_solid(leds, NUMPIXELS, CRGB::Blue);
+        break;
+      case 9:
+        fill_solid(leds, NUMPIXELS, CRGB::Indigo);
+        break;
+      default:
+        fill_solid(leds, NUMPIXELS, CRGB::Black);
+        break;
+    }
+    FastLED.show();
+  }
+
   void loop() {
+    unsigned long now = millis();
+    if (now <= 3663) { // 333 * 11 = 3663
+      startupLoop(now);
+      return;
+    }
+
     button_debouncer.update();
     buttonControl.checkButton();
+
     bool modeChange = buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
     if (modeChange)
       offMode = !offMode;
 
+    if (modeChange || firstLoop) {
+      firstLoop = false;
+      activateMode();
+    }
+
     if (offMode) {
-      if (modeChange)
-        offModeController.setAsActive();
       offModeController.run();
     }
     else {
-      if (modeChange)
-        animationModeController.setAsActive();
-      // radio.check();  // TODO: add this back in later
-      if (buttonControl.hasClickEventOccurred(ClickEvent::CLICK) ){
-        animationModeController.nextAnimation();
-      }
       animationModeController.run();
     }
   }
 
-} masterController;
+} masterController{buttonControl};
 
 void setup() {
 #ifdef SCARF_WS2811

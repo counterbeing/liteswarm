@@ -4,27 +4,25 @@
 
 class Stripes : public Animation {
  private:
+  KnobSetting delay{180, 0, 500, false};
   MilliTimer timer{};
   int lastPosition = 0;
-  int32_t delay = 180;
-  KnobControl knobControl{0, 500, false};
 
  public:
   Stripes(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
-    knobControl.setPosition(delay);
+  void wakeUp() override {
+    delay.activate();
   }
 
-  void update() {
-    if (knobControl.updateSettingOnChange(delay)) {
+  void update() override {
+    if (delay.update()) {
       configChangeFlag = true;
-      if (ANIM_DEBUG) debugLog("config change: Strips::delay = ", delay);
     }
 
     int stripeLength = 4;
 
-    if (timer.hasElapsedWithReset(delay)) {
+    if (timer.hasElapsedWithReset(delay.get())) {
       lastPosition++;
       if (lastPosition >= (stripeLength * 2)) {
         lastPosition = 0;
@@ -38,5 +36,4 @@ class Stripes : public Animation {
 
     }
   }
-}
-;
+};

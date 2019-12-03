@@ -2,23 +2,21 @@
 
 class Rainbow : public Animation {
  private:
-  int32_t offset = 1;
-  KnobControl knobControl{1, 255, true};
+  KnobSetting offset{1, 1, 255, true};
 
  public:
   Rainbow(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
-    knobControl.setPosition(offset);
+  void wakeUp() override {
+    offset.activate();
   }
 
-  void update() {
-    if (knobControl.updateSettingOnChange(offset)) {
+  void update() override {
+    if (offset.update()) {
       configChangeFlag = true;
-      if (ANIM_DEBUG) debugLog("config change: Rainbow::offset = ", offset);
     }
 
-    fill_rainbow(leds, NUMPIXELS, offset, 5);
+    fill_rainbow(leds, NUMPIXELS, offset.get(), 5);
     
   }
 

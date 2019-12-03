@@ -1,26 +1,22 @@
 #include "Animation.h"
-#include <string.h>
 
 class Dimmer : public Animation {
  private:
-  int32_t brightness = 100;
-  KnobControl knobControl{10, 180, false};
+  KnobSetting brightness{100, 10, 180, false};
 
  public:
   Dimmer(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
-    knobControl.setPosition(brightness);
+  void wakeUp() override {
+    brightness.activate();
   }
 
-
-  void update() {
-    if (knobControl.updateSettingOnChange(brightness)) {
+  void update() override {
+    if (brightness.update()) {
       configChangeFlag = true;
-      if (ANIM_DEBUG) debugLog("config change: Dimmer::brightness = ", brightness);
     }
 
-    fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness));
+    fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness.get()));
   }
 
 };

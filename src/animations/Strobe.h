@@ -4,46 +4,25 @@
 class Strobe : public Animation {
  private:
   bool goWhite = true;
-  unsigned long startMillis = 0;
-  const static unsigned long strobeDuration = 750;
   MilliTimer timer{};
+  KnobSetting blinkDuration{250, 50, 500, false};
 
  public:
   Strobe(CRGB leds_[]) : Animation(leds_) {}
 
-  bool is_done() {
-    if (startMillis == 0) {
-      startMillis = millis();
-    }
-
-    if (nonBlockDelaySinceStart(strobeDuration)) {
-      startMillis = 0;
-      return true;
-    }
-    return false;
+  void wakeUp() override {
+    blinkDuration.activate();
   }
 
-  void wakeUp() {
-  }
+  void update() override {
+    if (blinkDuration.update()) {
+      configChangeFlag = true;
+    }
 
-  void update() {
-    if (timer.hasElapsedWithReset(50)) {
-      if (goWhite) {
-        fill_solid(leds, NUMPIXELS, CRGB::White);
-        goWhite = false;
-      }
-      else {
-        fill_solid(leds, NUMPIXELS, CRGB::Black);
-        goWhite = true;
-      }      
+    if (timer.hasElapsedWithReset(blinkDuration.get())) {
+      fill_solid(leds, NUMPIXELS, goWhite ? CRGB::White : CRGB::Black);
+      goWhite = !goWhite;
     }
   }
 
-  bool nonBlockDelaySinceStart(unsigned int interval) {
-    unsigned long current_millis = millis();
-    if ((current_millis - startMillis) > interval) {
-      return true;
-    }
-    return false;
-  }
 };

@@ -136,14 +136,14 @@ class KnobControl {
   int32_t getPosition() {
     int32_t position = encoder_knob.read();
     if (position < minValue) {
-      debugLog("KnobControl::position below min, position=", position);
+      // debugLog("KnobControl::getPosition() below min, position=", position);
       position = loopRotary ? maxValue : minValue;
-      debugLog("KnobControl::position below min, now ", position);
+      // debugLog("KnobControl::getPosition() below min, now ", position);
       encoder_knob.write(position);
     }
     else if (position > maxValue) {
       position = loopRotary ? minValue : maxValue;
-      debugLog("KnobControl::getPosition() above max, set to ", position);
+      // debugLog("KnobControl::getPosition() above max, set to ", position);
       encoder_knob.write(position);
     }
     return position;
@@ -157,6 +157,29 @@ class KnobControl {
     }
     return false;
   }
+};
+
+class KnobSetting {
+ private:
+  int32_t currentValue;
+  KnobControl knobControl;
+
+ public:
+  KnobSetting(int32_t initialValue, int32_t minValue, int32_t maxValue, bool loopRotary)
+      : currentValue(initialValue), knobControl{minValue, maxValue, loopRotary} {}
+
+  int32_t get() {
+    return currentValue;
+  }
+
+  bool update() {
+    return knobControl.updateSettingOnChange(currentValue);
+  }
+
+  void activate() {
+    knobControl.setPosition(currentValue);
+  }
+
 };
 
 #endif

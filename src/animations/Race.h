@@ -3,11 +3,10 @@
 
 class Race : public Animation {
  private:
+  KnobSetting delay{60, 5, 400, false};
+  MilliTimer timer{};
   uint8_t hue = 0;
   uint32_t pixelIndex = 0;
-  int32_t delay = 60;
-  MilliTimer timer{};
-  KnobControl knobControl{5, 400, false};
 
   uint16_t nextPixelIndex() {
     if (++pixelIndex > NUMPIXELS)
@@ -18,8 +17,8 @@ class Race : public Animation {
  public:
   Race(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
-    knobControl.setPosition(delay);
+  void wakeUp() override {
+    delay.activate();
   }
 
   // Associativity specification is redundant for unary operators and is only
@@ -29,13 +28,12 @@ class Race : public Animation {
   // associativity is meaningful for member access operators, even though they
   // are grouped with unary postfix operators: a.b++ is parsed (a.b)++ and not
   // a.(b++).
-  void update() {
-    if (knobControl.updateSettingOnChange(delay)) {
+  void update() override {
+    if (delay.update()) {
       configChangeFlag = true;
-      if (ANIM_DEBUG) debugLog("config change: Race::delay = ", delay);
     }
 
-    if (timer.hasElapsedWithReset(delay)) {
+    if (timer.hasElapsedWithReset(delay.get())) {
       // leds[nextPixelIndex()] = CHSV(hue++, 255, 150);
       leds[nextPixelIndex()] = CHSV(hue++, 255, 255);
       

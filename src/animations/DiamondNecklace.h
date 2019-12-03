@@ -3,24 +3,22 @@
 
 class DiamondNecklace : public Animation {
  private:
+  KnobSetting delay{50, 0, 300, false};
   MilliTimer timer{};
-  int32_t delay = 50;
-  KnobControl knobControl{0, 300, false};
 
  public:
   DiamondNecklace(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
-    knobControl.setPosition(delay);
+  void wakeUp() override {
+    delay.activate();
   }
 
-  void update() {
-    if (knobControl.updateSettingOnChange(delay)) {
+  void update() override {
+    if (delay.update()) {
       configChangeFlag = true;
-      if (ANIM_DEBUG) debugLog("config change: DiamondNecklace::delay = ", delay);
     }
 
-    if (timer.hasElapsedWithReset(delay)) {
+    if (timer.hasElapsedWithReset(delay.get())) {
       for (int i = 0; i < NUMPIXELS; i++) {
         leds[i].fadeLightBy(128);
         if (random(40) == 1) { leds[i] = CRGB::White; }

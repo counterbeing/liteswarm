@@ -3,25 +3,23 @@
 
 class FuckMyEyes : public Animation {
  private:
-  int lastColor = 0;
+  KnobSetting delay{2000, 0, 300, false};
   MilliTimer timer{};
-  int32_t delay = 200;
-  KnobControl knobControl{0, 300, false};
+  uint8_t lastColor = 0;
 
  public:
   FuckMyEyes(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
-    knobControl.setPosition(delay);
+  void wakeUp() override {
+    delay.activate();
   }
 
-  void update() {
-    if (knobControl.updateSettingOnChange(delay)) {
+  void update() override {
+    if (delay.update()) {
       configChangeFlag = true;
-      if (ANIM_DEBUG) debugLog("config change: FuckMyEyes::delay = ", delay);
     }
 
-    if (timer.hasElapsedWithReset(delay)) {
+    if (timer.hasElapsedWithReset(delay.get())) {
       switch (lastColor) {
         case 0:
           fill_solid(leds, NUMPIXELS, CRGB::Red);
@@ -37,6 +35,6 @@ class FuckMyEyes : public Animation {
           break;
       }
     }
-    
   }
+
 };
