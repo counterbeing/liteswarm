@@ -1,4 +1,5 @@
 #include "Animation.h"
+#include "MyKnob.h"
 
 class Rainbow : public Animation {
  private:

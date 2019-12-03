@@ -1,4 +1,5 @@
 #include "Animation.h"
+#include "MyKnob.h"
 #include "MilliTimer.h"
 
 class Race : public Animation {

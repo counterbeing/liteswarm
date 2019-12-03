@@ -1,7 +1,6 @@
 #ifndef BaseControllers_H
 #define BaseControllers_H
 
-
 class BaseController {
  private:
    bool justActivated = false;

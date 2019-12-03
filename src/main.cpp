@@ -6,6 +6,7 @@
 #include "FastLED.h"
 #include "Radio.h"
 #include "config.h"
+#include "BaseControllers.h"
 #include "DebugLog.h"
 #include "MilliTimer.h"
 
@@ -82,15 +83,12 @@ class AnimationModeController : public BaseController {
       animationIndex = 0;
     }
     if (ANIM_DEBUG) {
-      // debugLog("----------------------------------------------");
       debugLog("--- Animation Index = ", animationIndex);
-      // debugLog("----------------------------------------------");
     }
   }
 
  protected:
   virtual void activate() override {
-    // debugLog("AnimationModeController::activate()");
   }
 
   virtual void loop(bool justActivated) override {

@@ -1,11 +1,12 @@
 #include "Animation.h"
+#include "MyKnob.h"
 #include "MilliTimer.h"
 
 class Strobe : public Animation {
  private:
-  bool goWhite = true;
-  MilliTimer timer{};
   KnobSetting blinkDuration{250, 50, 500, false};
+  MilliTimer timer{};
+  bool goWhite = true;
 
  public:
   Strobe(CRGB leds_[]) : Animation(leds_) {}

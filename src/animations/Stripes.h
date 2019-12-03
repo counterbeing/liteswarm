@@ -1,5 +1,5 @@
 #include "Animation.h"
-#include "DebugLog.h"
+#include "MyKnob.h"
 #include "MilliTimer.h"
 
 class Stripes : public Animation {

@@ -1,6 +1,5 @@
-// #include <MyKnob.h>
 #include "Animation.h"
-// #include "FastLED.h"
+#include "MyKnob.h"
 #include "MilliTimer.h"
 
 class Crossfade : public Animation {

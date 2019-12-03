@@ -1,5 +1,5 @@
 #include "Animation.h"
-#include "DebugLog.h"
+#include "MyKnob.h"
 #include "MilliTimer.h"
 
 // TODO: Stars is basically the same as Stripes but with different settings. Collapse them?
