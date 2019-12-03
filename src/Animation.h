@@ -1,6 +1,5 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
-#include <MyKnob.h>
 #include "FastLED.h"
 #include "config.h"
 #include "BaseControllers.h"
