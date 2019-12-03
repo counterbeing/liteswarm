@@ -9,22 +9,25 @@ class DiamondNecklace : public Animation {
  public:
   DiamondNecklace(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     delay.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (delay.update()) {
       configChangeFlag = true;
     }
 
-    if (timer.hasElapsedWithReset(delay.get())) {
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       for (int i = 0; i < NUMPIXELS; i++) {
         leds[i].fadeLightBy(128);
         if (random(40) == 1) { leds[i] = CRGB::White; }
       }
+      return true;
     }
 
+    return false;
   }
 
 };

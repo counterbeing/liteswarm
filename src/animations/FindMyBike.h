@@ -8,14 +8,18 @@ class FindMyBike : public Animation {
  public:
   FindMyBike(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() {
+ protected:
+  void activate() override {
   }
 
-  void loop() {
-    FastLED.clear();
-    if (timer.hasElapsedWithReset(3000)) {
+  bool updateAnimation(bool justActivated) override {
+    // FastLED.clear();
+    if (timer.hasElapsedWithReset(3000) || justActivated) {
       fill_solid(leds, NUMPIXELS, CRGB::White);
+      return true;
     }
+
+    return false;
   }
 
 };

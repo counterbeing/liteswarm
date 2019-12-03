@@ -7,16 +7,22 @@ class Dimmer : public Animation {
  public:
   Dimmer(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     brightness.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (brightness.update()) {
       configChangeFlag = true;
     }
 
-    fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness.get()));
+    if (configChangeFlag || justActivated) {
+      fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness.get()));
+      return true;
+    }
+
+    return false;
   }
 
 };

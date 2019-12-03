@@ -17,7 +17,8 @@ class Race : public Animation {
  public:
   Race(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     delay.activate();
   }
 
@@ -28,7 +29,7 @@ class Race : public Animation {
   // associativity is meaningful for member access operators, even though they
   // are grouped with unary postfix operators: a.b++ is parsed (a.b)++ and not
   // a.(b++).
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (delay.update()) {
       configChangeFlag = true;
     }
@@ -36,8 +37,10 @@ class Race : public Animation {
     if (timer.hasElapsedWithReset(delay.get())) {
       // leds[nextPixelIndex()] = CHSV(hue++, 255, 150);
       leds[nextPixelIndex()] = CHSV(hue++, 255, 255);
-      
+      return true;
     }
+
+    return false;
   }
 
 };

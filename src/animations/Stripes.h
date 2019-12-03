@@ -11,18 +11,19 @@ class Stripes : public Animation {
  public:
   Stripes(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     delay.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (delay.update()) {
       configChangeFlag = true;
     }
 
     int stripeLength = 4;
 
-    if (timer.hasElapsedWithReset(delay.get())) {
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       lastPosition++;
       if (lastPosition >= (stripeLength * 2)) {
         lastPosition = 0;
@@ -33,7 +34,9 @@ class Stripes : public Animation {
           leds[dot + band] = CRGB::Purple;
         }
       }
-
+      return true;
     }
+
+    return false;
   }
 };

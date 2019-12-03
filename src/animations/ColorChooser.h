@@ -8,16 +8,22 @@ class ColorChooser : public Animation {
  public:
   ColorChooser(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     hue.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (hue.update()) {
       configChangeFlag = true;
     }
 
-    fill_solid(leds, NUMPIXELS, CHSV(hue.get(), 255, 255));
+    if (configChangeFlag || justActivated) {
+      fill_solid(leds, NUMPIXELS, CHSV(hue.get(), 255, 255));
+      return true;
+    }
+
+    return false;
   }
 
 };

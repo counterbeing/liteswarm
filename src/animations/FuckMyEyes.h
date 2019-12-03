@@ -10,16 +10,17 @@ class FuckMyEyes : public Animation {
  public:
   FuckMyEyes(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     delay.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (delay.update()) {
       configChangeFlag = true;
     }
 
-    if (timer.hasElapsedWithReset(delay.get())) {
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       switch (lastColor) {
         case 0:
           fill_solid(leds, NUMPIXELS, CRGB::Red);
@@ -34,7 +35,10 @@ class FuckMyEyes : public Animation {
           lastColor = 0;
           break;
       }
+      return true;
     }
+
+    return false;
   }
 
 };

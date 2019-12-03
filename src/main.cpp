@@ -50,34 +50,16 @@ MyKnob knob{};
 Radio radio(knob, old_animation_index);
 ButtonControl buttonControl{};
 
-class BaseController {
- private:
-   bool justActivated = false;
-
- public:
-  void setAsActive() { justActivated = true; }
-
-  virtual void run() {
-    if (justActivated) {
-      activate();
-    }
-    loop(justActivated);
-    justActivated = false;
-  }
-
- protected:
-  virtual void activate() = 0;
-  virtual void loop(bool justActivated) = 0;
-};
-
 class OffModeController : public BaseController {
  protected:
   virtual void activate() override {
   }
 
   virtual void loop(bool justActivated) override {
+    if (justActivated) {
       fill_solid(leds, NUMPIXELS, CRGB::Black);
       FastLED.show();
+    }
   }
 };
 
@@ -125,13 +107,11 @@ class AnimationModeController : public BaseController {
     Animation *currentAnimation = animations[animationIndex];
 
     if (animationChanged || justActivated) {
-      currentAnimation->wakeUp();
+      currentAnimation->setAsActive();
     }
 
-    currentAnimation->loop();
+    currentAnimation->run();
     configChangeFlag = configChangeFlag || currentAnimation->hasConfigChanged();
-
-    FastLED.show();
   }
 };
 

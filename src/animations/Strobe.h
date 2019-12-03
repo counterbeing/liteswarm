@@ -10,19 +10,23 @@ class Strobe : public Animation {
  public:
   Strobe(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     blinkDuration.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (blinkDuration.update()) {
       configChangeFlag = true;
     }
 
-    if (timer.hasElapsedWithReset(blinkDuration.get())) {
+    if (timer.hasElapsedWithReset(blinkDuration.get()) || justActivated) {
       fill_solid(leds, NUMPIXELS, goWhite ? CRGB::White : CRGB::Black);
       goWhite = !goWhite;
+      return true;
     }
+
+    return false;
   }
 
 };

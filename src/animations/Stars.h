@@ -13,17 +13,18 @@ class Stars : public Animation {
  public:
   Stars(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     delay.activate();
   }
 
   // TODO: is something wrong with going past finish?
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (delay.update()) {
       configChangeFlag = true;
     }
 
-    if (timer.hasElapsedWithReset(delay.get())) {
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       lastPosition++;
       if (lastPosition > numPixelsBetweenStars) {
         lastPosition = 0;
@@ -32,7 +33,10 @@ class Stars : public Animation {
       for (int dot = lastPosition; dot < NUMPIXELS; dot += numPixelsBetweenStars + 1) {
         leds[dot] = CRGB::Coral;
       }
+      return true;
     }
+
+    return false;
   }
 
 };

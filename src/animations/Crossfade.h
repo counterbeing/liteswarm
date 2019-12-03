@@ -12,18 +12,22 @@ class Crossfade : public Animation {
  public:
   Crossfade(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     delay.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (delay.update()) {
       configChangeFlag = true;
     }
 
-    if (timer.hasElapsedWithReset(delay.get())) {
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
+      return true;
     }
+
+    return false;
   }
 
 };

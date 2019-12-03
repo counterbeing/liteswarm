@@ -7,17 +7,22 @@ class Rainbow : public Animation {
  public:
   Rainbow(CRGB leds_[]) : Animation(leds_) {}
 
-  void wakeUp() override {
+ protected:
+  void activate() override {
     offset.activate();
   }
 
-  void update() override {
+  bool updateAnimation(bool justActivated) override {
     if (offset.update()) {
       configChangeFlag = true;
     }
 
-    fill_rainbow(leds, NUMPIXELS, offset.get(), 5);
+    if (configChangeFlag || justActivated) {
+      fill_rainbow(leds, NUMPIXELS, offset.get(), 5);
+      return true;
+    }
     
+    return false;
   }
 
 };
