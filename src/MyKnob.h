@@ -31,57 +31,90 @@ class ButtonControl {
   static const unsigned int SHORT_CLICK_MAX_DURATION = 250;
   static const unsigned int LONG_CLICK_MIN_DURATION = 1750;
   bool possibleDoubleClick = false;
-  ClickEvent latestClick = ClickEvent::OTHER;
+  bool possibleLongClick = false;
+  ClickEvent latestClickEvent = ClickEvent::OTHER;
   bool clickEventOccurredFlag = false;
+
+  void setLatestClickEvent(ClickEvent clickEvent) {
+    latestClickEvent = clickEvent;
+    clickEventOccurredFlag = true;
+    if (KNOB_DEBUG) {
+      switch (clickEvent)
+      {
+      case ClickEvent::CLICK:
+        debugLog("Event occurred: CLICK");
+        break;
+      case ClickEvent::LONG_CLICK:
+        debugLog("Event occurred: LONG_CLICK");
+        break;
+      case ClickEvent::DOUBLE_CLICK:
+        debugLog("Event occurred: DOUBLE_CLICK");
+        break;
+      default:
+        debugLog("Event occurred: OTHER");
+        break;
+      }
+    }
+  }
+
  public:
 
+  ClickEvent getLatestClickEvent() { return latestClickEvent; }
+
   bool hasClickEventOccurred() { return clickEventOccurredFlag; }
+
+  bool hasClickEventOccurred(ClickEvent clickEvent) {
+    return clickEventOccurredFlag && clickEvent == latestClickEvent;
+  }
 
   void checkButton() {
     clickEventOccurredFlag = false;
 
     if (button_debouncer.rose()) {
       unsigned long buttonDownDuration = button_debouncer.previousDuration();
-      // if (KNOB_DEBUG)
-        // debugLog("button up, down duration = ", buttonDownDuration);
+      if (KNOB_DEBUG)
+        debugLog("button up, down duration = ", buttonDownDuration);
+
+      possibleLongClick = false;
+
       if (buttonDownDuration <= SHORT_CLICK_MAX_DURATION) {
         if (possibleDoubleClick) {
-          latestClick = ClickEvent::DOUBLE_CLICK;
           possibleDoubleClick = false;
-          if (KNOB_DEBUG)
-            debugLog("Event occurred: DOUBLE_CLICK");
-          clickEventOccurredFlag = true;
+          setLatestClickEvent(ClickEvent::DOUBLE_CLICK);
+          return;
         }
-        else {
-          possibleDoubleClick = true;
-        }
+
+        possibleDoubleClick = true;
       }
-      else {
+
+      else { 
         possibleDoubleClick = false;
-        if (buttonDownDuration >= LONG_CLICK_MIN_DURATION) {
-          latestClick = ClickEvent::LONG_CLICK;
-          if (KNOB_DEBUG)
-            debugLog("Event occurred: LONG_CLICK");
-          clickEventOccurredFlag = true;
-        }
       }
+
     }
 
-    else if (!button_debouncer.fell()) {  // no button state change since neither rose nor fell
+    else if (button_debouncer.fell()) {
+      if (KNOB_DEBUG)
+        debugLog("button down, up duration = ", button_debouncer.previousDuration());
+      possibleLongClick = true;
+    }
+
+    else { // no button state change since neither rose nor fell
+      if (possibleLongClick && button_debouncer.duration() >= LONG_CLICK_MIN_DURATION) {
+        setLatestClickEvent(ClickEvent::LONG_CLICK);
+        possibleLongClick = false;
+        return;
+      }
+
       if (possibleDoubleClick && button_debouncer.duration() > DOUBLE_CLICK_MAX_GAP) {
-        latestClick = ClickEvent::CLICK;
+        setLatestClickEvent(ClickEvent::CLICK);
         possibleDoubleClick = false;
-        if (KNOB_DEBUG)
-          debugLog("Event occurred: CLICK");
-        clickEventOccurredFlag = true;
+        return;
       }
     }
 
   }
 
-  ClickEvent getLatestClickEvent() {
-    return latestClick;
-  }
 };
 
 class KnobControl {

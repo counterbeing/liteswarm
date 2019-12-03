@@ -145,9 +145,7 @@ class MasterController {
   void loop() {
     button_debouncer.update();
     buttonControl.checkButton();
-    bool modeChange =
-        buttonControl.hasClickEventOccurred() &&
-        buttonControl.getLatestClickEvent() == ClickEvent::DOUBLE_CLICK;
+    bool modeChange = buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
     if (modeChange)
       offMode = !offMode;
 
@@ -160,8 +158,7 @@ class MasterController {
       if (modeChange)
         animationModeController.setAsActive();
       // radio.check();  // TODO: add this back in later
-      if (buttonControl.hasClickEventOccurred() &&
-          buttonControl.getLatestClickEvent() == ClickEvent::CLICK) {
+      if (buttonControl.hasClickEventOccurred(ClickEvent::CLICK) ){
         animationModeController.nextAnimation();
       }
       animationModeController.run();
