@@ -139,7 +139,7 @@ class MasterController {
         animationModeController{buttonControl_} {}
 
   void startupLoop(unsigned long now) {
-    uint32_t counter = (now / 333) % 14;
+    uint32_t counter = (now / 333) % 11;
     switch (counter)
     {
       case 1:
