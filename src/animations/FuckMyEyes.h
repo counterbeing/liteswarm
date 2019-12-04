@@ -17,9 +17,7 @@ class FuckMyEyes : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (delay.update()) {
-      configChangeFlag = true;
-    }
+    delay.update();
 
     if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       switch (lastColor) {
@@ -40,6 +38,10 @@ class FuckMyEyes : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return delay.get();
   }
 
 };

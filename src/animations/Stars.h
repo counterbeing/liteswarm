@@ -20,9 +20,7 @@ class Stars : public Animation {
 
   // TODO: is something wrong with going past finish?
   bool updateAnimation(bool justActivated) override {
-    if (delay.update()) {
-      configChangeFlag = true;
-    }
+    delay.update();
 
     if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       lastPosition++;
@@ -37,6 +35,10 @@ class Stars : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return delay.get();
   }
 
 };

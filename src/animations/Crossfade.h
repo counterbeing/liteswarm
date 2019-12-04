@@ -17,9 +17,7 @@ class Crossfade : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (delay.update()) {
-      configChangeFlag = true;
-    }
+    delay.update();
 
     if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
@@ -27,6 +25,10 @@ class Crossfade : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return delay.get();
   }
 
 };

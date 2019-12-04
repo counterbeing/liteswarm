@@ -17,9 +17,7 @@ class Strobe : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (blinkDuration.update()) {
-      configChangeFlag = true;
-    }
+    blinkDuration.update();
 
     if (timer.hasElapsedWithReset(blinkDuration.get()) || justActivated) {
       fill_solid(leds, NUMPIXELS, goWhite ? CRGB::White : CRGB::Black);
@@ -28,6 +26,10 @@ class Strobe : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return blinkDuration.get();
   }
 
 };

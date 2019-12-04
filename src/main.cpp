@@ -46,9 +46,7 @@ Animation* animations[NUM_ANIMATONS] = {
     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
     &stripes,   &diamond_necklace, &dimmer};
 
-int old_animation_index = 0;
-MyKnob knob{};
-Radio radio(knob, old_animation_index);
+Radio radio{};
 ButtonControl buttonControl{};
 
 class OffModeController : public BaseController {
@@ -68,23 +66,17 @@ class AnimationModeController : public BaseController {
  private:
   ButtonControl &buttonControl;
   uint8_t animationIndex = 0;
-  bool configChangeFlag = false;
+  MilliTimer radioTimer{};
 
  public:
   AnimationModeController(ButtonControl &buttonControl_) : buttonControl(buttonControl_) {}
-
-  bool hasConfigChanged() {
-    return configChangeFlag;
-  }
 
   void nextAnimation() {
     animationIndex++;
     if (animationIndex == NUM_ANIMATONS) {
       animationIndex = 0;
     }
-    if (ANIM_DEBUG) {
-      debugLog("--- Animation Index = ", animationIndex);
-    }
+    if (ANIM_DEBUG) debugLog("--- Animation Index = ", animationIndex);
   }
 
  protected:
@@ -93,23 +85,23 @@ class AnimationModeController : public BaseController {
 
   virtual void loop(bool justActivated) override {
     // TODO: add this back in later
-    // radio.check();
+    radio.checkRadioReceive();
 
     bool animationChanged = buttonControl.hasClickEventOccurred(ClickEvent::CLICK);
-
-    configChangeFlag = animationChanged;
 
     if (animationChanged)
       nextAnimation();
 
     Animation *currentAnimation = animations[animationIndex];
 
+    if (radioTimer.hasElapsedWithReset(1000))
+      radio.send(animationIndex, currentAnimation->getKnobPosition());
+
     if (animationChanged || justActivated) {
       currentAnimation->setAsActive();
     }
 
     currentAnimation->run();
-    configChangeFlag = configChangeFlag || currentAnimation->hasConfigChanged();
   }
 };
 

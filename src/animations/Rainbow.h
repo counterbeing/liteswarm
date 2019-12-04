@@ -14,9 +14,7 @@ class Rainbow : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (offset.update()) {
-      configChangeFlag = true;
-    }
+    bool configChangeFlag = offset.update();
 
     if (configChangeFlag || justActivated) {
       fill_rainbow(leds, NUMPIXELS, offset.get(), 5);
@@ -24,6 +22,10 @@ class Rainbow : public Animation {
     }
     
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return offset.get();
   }
 
 };

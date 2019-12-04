@@ -31,9 +31,7 @@ class Race : public Animation {
   // are grouped with unary postfix operators: a.b++ is parsed (a.b)++ and not
   // a.(b++).
   bool updateAnimation(bool justActivated) override {
-    if (delay.update()) {
-      configChangeFlag = true;
-    }
+    delay.update();
 
     if (timer.hasElapsedWithReset(delay.get())) {
       // leds[nextPixelIndex()] = CHSV(hue++, 255, 150);
@@ -42,6 +40,10 @@ class Race : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return delay.get();
   }
 
 };

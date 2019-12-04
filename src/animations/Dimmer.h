@@ -14,9 +14,7 @@ class Dimmer : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (brightness.update()) {
-      configChangeFlag = true;
-    }
+    bool configChangeFlag = brightness.update();
 
     if (configChangeFlag || justActivated) {
       fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness.get()));
@@ -24,6 +22,10 @@ class Dimmer : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return brightness.get();
   }
 
 };

@@ -16,9 +16,7 @@ class DiamondNecklace : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (delay.update()) {
-      configChangeFlag = true;
-    }
+    delay.update();
 
     if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       for (int i = 0; i < NUMPIXELS; i++) {
@@ -29,6 +27,10 @@ class DiamondNecklace : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return delay.get();
   }
 
 };

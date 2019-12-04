@@ -20,8 +20,6 @@ class Radio {
   RadioPacket _outboundRadioPacket;
   NRFLite _radio;
   bool radioAlive = false;
-  MyKnob &knob;
-  int &animation_index;
   const static uint8_t SHARED_RADIO_ID = 1;
   const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
   const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
@@ -29,11 +27,12 @@ class Radio {
   // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
   const static uint8_t SHARED_SECRET = 42;
   uint8_t RADIO_ID = random();
-  int previousAnimationIndex;
-  int previousRotaryPosition = -1;
-  long lastIntervalTime = millis();
 
+ public:
   void checkRadioReceive() {
+    if (!radioAlive)
+      return;
+
     while (_radio.hasData()) {
       _radio.readData(&_incomingRadioPacket);
       if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
@@ -46,81 +45,45 @@ class Radio {
         debugLog("animationId:    ", _incomingRadioPacket.animationId);
         debugLog("senderId:       ", _incomingRadioPacket.senderId);
       }
-      if (stateChanged()) {
-        knob.set(_incomingRadioPacket.rotaryPosition);
-        animation_index = _incomingRadioPacket.animationId;
-        lastIntervalTime = millis();
-      }
     }
   }
 
-  void checkRadioSend() {
+  void send(uint8_t animationId, uint32_t rotaryPosition) {
+    if (!radioAlive)
+      return;
+
     // Stay silent for the first moment in order to try to join a group rather
     // than telling all others to change.
-    if (millis() < 1500) {
+    if (millis() < 1500)
       return;
-    }
+
+    _outboundRadioPacket.rotaryPosition = rotaryPosition;
+    _outboundRadioPacket.animationId = animationId;
+
     if (RADIO_DEBUG) {
-      debugLog("--- Sending Data");
+      debugLo("--- RADIO SENDING @ ");
+      debugLo(millis());
+      debugLo("  SHARED_SECRET=");
+      debugLo(_outboundRadioPacket.SHARED_SECRET);
+      debugLo(", rotaryPosition=");
+      debugLo(_outboundRadioPacket.rotaryPosition);
+      debugLo(", animationId=");
+      debugLo(_outboundRadioPacket.animationId);
+      debugLog(", senderId=", _outboundRadioPacket.senderId);
     }
-    _outboundRadioPacket.rotaryPosition = knob.get();
-    _outboundRadioPacket.animationId = animation_index;
 
     _radio.send(SHARED_RADIO_ID, &_outboundRadioPacket,
                 sizeof(_outboundRadioPacket), NRFLite::NO_ACK);
   }
 
-  bool stateChanged() {
-    int currentRotaryPosition = knob.get();
-    return !(_incomingRadioPacket.rotaryPosition == currentRotaryPosition &&
-             _incomingRadioPacket.animationId == animation_index);
-  }
-
-  bool runAfterInterval(int interval) {
-    long nextRunTime = lastIntervalTime + interval;
-    long current = millis();
-    if (current > nextRunTime) {
-      lastIntervalTime = current;
-      return true;
-    }
-    return false;
-  }
-
-  // constructor declaration vvvvvvvvvvvv : vvvvvvvvvvv -member initializer
-  // list- vvvvvvvv
- public:  //                                             vvvvv <--init named
-          //                                             identifier (knob) with
-          //                                             these params (knob_)
-  Radio(MyKnob &knob_, int &animation_index_)
-      : knob(knob_), animation_index(animation_index_) {}
   void setup() {
+    pinMode(14, INPUT_PULLUP);
+
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
-    if (RADIO_DEBUG) {
-      debugLog("Picking random radio id: ");
-      debugLog(RADIO_ID);
-    }
-    pinMode(14, INPUT_PULLUP);
-    if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN)) {
-      radioAlive = false;
-      if (RADIO_DEBUG) {
-        debugLog("radio fail");
-      }
-    } else {
-      radioAlive = true;
-      if (RADIO_DEBUG) {
-        debugLog("radio ok");
-      }
-    }
-  }
-  void check() {
-    // int newRotaryPosition = knob.get();
-    knob.get();
-    if (radioAlive) {
-      checkRadioReceive();
-      if (knob.manuallyChanged() || runAfterInterval(1000)) {
-        checkRadioSend();
-      }
-    }
+    if (RADIO_DEBUG)  debugLog("Picking random radio id: ", RADIO_ID);
+
+    radioAlive = _radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN);
+    if (RADIO_DEBUG) debugLog(radioAlive ? "radio ok" : "radio fail");
   }
 };

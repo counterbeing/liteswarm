@@ -17,9 +17,7 @@ class Stripes : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (delay.update()) {
-      configChangeFlag = true;
-    }
+    delay.update();
 
     int stripeLength = 4;
 
@@ -39,4 +37,9 @@ class Stripes : public Animation {
 
     return false;
   }
+
+  uint32_t getKnobPosition() override {
+    return delay.get();
+  }
+
 };

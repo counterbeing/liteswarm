@@ -14,9 +14,7 @@ class ColorChooser : public Animation {
   }
 
   bool updateAnimation(bool justActivated) override {
-    if (hue.update()) {
-      configChangeFlag = true;
-    }
+    bool configChangeFlag = hue.update();
 
     if (configChangeFlag || justActivated) {
       fill_solid(leds, NUMPIXELS, CHSV(hue.get(), 255, 255));
@@ -24,6 +22,10 @@ class ColorChooser : public Animation {
     }
 
     return false;
+  }
+
+  uint32_t getKnobPosition() override {
+    return hue.get();
   }
 
 };

@@ -7,12 +7,10 @@
 class Animation : public BaseController {
  protected:
   CRGB *leds;
-  bool configChangeFlag = false;
 
   virtual bool updateAnimation(bool justActivated) = 0;
 
   virtual void loop(bool justActivated) override {
-    configChangeFlag = false;
     if (updateAnimation(justActivated))
       FastLED.show();
   };
@@ -20,7 +18,7 @@ class Animation : public BaseController {
  public:
   Animation(CRGB leds_[]) : leds(leds_) {};
 
-  virtual bool hasConfigChanged() { return configChangeFlag; }
+  virtual uint32_t getKnobPosition() { return 0; }
 };
 
 #endif
