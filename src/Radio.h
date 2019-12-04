@@ -81,7 +81,7 @@ class Radio {
 
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
-    if (RADIO_DEBUG)  debugLog("Picking random radio id: ", RADIO_ID);
+    if (RADIO_DEBUG) debugLog("Picking random radio id: ", RADIO_ID);
 
     radioAlive = _radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN);
     if (RADIO_DEBUG) debugLog(radioAlive ? "radio ok" : "radio fail");

@@ -41,7 +41,7 @@ DiamondNecklace diamond_necklace(leds);
 Dimmer dimmer(leds);
 // Strobe strobe(leds);
 
-const int NUM_ANIMATONS = 9;
+#define NUM_ANIMATONS 9
 Animation* animations[NUM_ANIMATONS] = {
     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
     &stripes,   &diamond_necklace, &dimmer};
@@ -71,17 +71,8 @@ class AnimationModeController : public BaseController {
  public:
   AnimationModeController(ButtonControl &buttonControl_) : buttonControl(buttonControl_) {}
 
-  void nextAnimation() {
-    animationIndex++;
-    if (animationIndex == NUM_ANIMATONS) {
-      animationIndex = 0;
-    }
-    if (ANIM_DEBUG) debugLog("--- Animation Index = ", animationIndex);
-  }
-
  protected:
-  virtual void activate() override {
-  }
+  virtual void activate() override {}
 
   virtual void loop(bool justActivated) override {
     // TODO: add this back in later
@@ -90,7 +81,7 @@ class AnimationModeController : public BaseController {
     bool animationChanged = buttonControl.hasClickEventOccurred(ClickEvent::CLICK);
 
     if (animationChanged)
-      nextAnimation();
+      animationIndex = (animationIndex == NUM_ANIMATONS - 1) ? 1: animationIndex + 1;
 
     Animation *currentAnimation = animations[animationIndex];
 
