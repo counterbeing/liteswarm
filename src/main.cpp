@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #define FASTLED_INTERNAL
+#include "BaseControllers.h"
+#include "DebugLog.h"
+#include "FastLED.h"
+#include "MilliTimer.h"
+#include "Radio.h"
+#include "config.h"
 #include <Encoder.h>
 #include <MyKnob.h>
 #include <SPI.h>
-#include "FastLED.h"
-#include "Radio.h"
-#include "config.h"
-#include "BaseControllers.h"
-#include "DebugLog.h"
-#include "MilliTimer.h"
 
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
@@ -42,7 +42,7 @@ Dimmer dimmer(leds);
 // Strobe strobe(leds);
 
 #define NUM_ANIMATONS 9
-Animation* animations[NUM_ANIMATONS] = {
+Animation * animations[NUM_ANIMATONS] = {
     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
     &stripes,   &diamond_necklace, &dimmer};
 
@@ -51,8 +51,7 @@ ButtonControl buttonControl{};
 
 class OffModeController : public BaseController {
  protected:
-  virtual void activate() override {
-  }
+  virtual void activate() override {}
 
   virtual void loop(bool justActivated) override {
     if (justActivated) {
@@ -64,12 +63,13 @@ class OffModeController : public BaseController {
 
 class AnimationModeController : public BaseController {
  private:
-  ButtonControl &buttonControl;
+  ButtonControl & buttonControl;
   uint8_t animationIndex = 0;
   MilliTimer radioTimer{};
 
  public:
-  AnimationModeController(ButtonControl &buttonControl_) : buttonControl(buttonControl_) {}
+  AnimationModeController(ButtonControl & buttonControl_)
+      : buttonControl(buttonControl_) {}
 
  protected:
   virtual void activate() override {}
@@ -78,12 +78,14 @@ class AnimationModeController : public BaseController {
     // TODO: add this back in later
     radio.checkRadioReceive();
 
-    bool animationChanged = buttonControl.hasClickEventOccurred(ClickEvent::CLICK);
+    bool animationChanged =
+        buttonControl.hasClickEventOccurred(ClickEvent::CLICK);
 
     if (animationChanged)
-      animationIndex = (animationIndex == NUM_ANIMATONS - 1) ? 1: animationIndex + 1;
+      animationIndex =
+          (animationIndex == NUM_ANIMATONS - 1) ? 1 : animationIndex + 1;
 
-    Animation *currentAnimation = animations[animationIndex];
+    Animation * currentAnimation = animations[animationIndex];
 
     if (radioTimer.hasElapsedWithReset(1000))
       radio.send(animationIndex, currentAnimation->getKnobPosition());
@@ -96,10 +98,9 @@ class AnimationModeController : public BaseController {
   }
 };
 
-
 class MasterController {
  private:
-  ButtonControl &buttonControl;
+  ButtonControl & buttonControl;
   AnimationModeController animationModeController;
   OffModeController offModeController{};
   MilliTimer radioTimer{};
@@ -110,21 +111,19 @@ class MasterController {
     firstLoop = false;
     if (offMode) {
       offModeController.setAsActive();
-    }
-    else {
+    } else {
       animationModeController.setAsActive();
     }
   }
 
  public:
-  MasterController(ButtonControl &buttonControl_)
-      : buttonControl(buttonControl_),
-        animationModeController{buttonControl_} {}
+  MasterController(ButtonControl & buttonControl_)
+      : buttonControl(buttonControl_), animationModeController{buttonControl_} {
+  }
 
   void startupLoop(unsigned long now) {
     uint32_t counter = (now / 333) % 11;
-    switch (counter)
-    {
+    switch (counter) {
       case 1:
         fill_solid(leds, NUMPIXELS, CRGB::Red);
         break;
@@ -157,7 +156,8 @@ class MasterController {
     button_debouncer.update();
     buttonControl.checkButton();
 
-    bool modeChange = buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
+    bool modeChange =
+        buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
     if (modeChange)
       offMode = !offMode;
 
@@ -168,8 +168,7 @@ class MasterController {
 
     if (offMode) {
       offModeController.run();
-    }
-    else {
+    } else {
       animationModeController.run();
     }
   }
@@ -198,6 +197,4 @@ void setup() {
   radio.setup();
 }
 
-void loop() {
-  masterController.loop();
-}
+void loop() { masterController.loop(); }

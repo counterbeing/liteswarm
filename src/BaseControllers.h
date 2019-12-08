@@ -3,7 +3,7 @@
 
 class BaseController {
  private:
-   bool justActivated = false;
+  bool justActivated = false;
 
  public:
   void setAsActive() { justActivated = true; }
@@ -20,6 +20,5 @@ class BaseController {
   virtual void activate() = 0;
   virtual void loop(bool justActivated) = 0;
 };
-
 
 #endif // BaseControllers_H

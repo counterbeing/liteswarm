@@ -1,6 +1,6 @@
 #include "Animation.h"
-#include "MyKnob.h"
 #include "MilliTimer.h"
+#include "MyKnob.h"
 
 class Strobe : public Animation {
  private:
@@ -12,9 +12,7 @@ class Strobe : public Animation {
   Strobe(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    blinkDuration.activate();
-  }
+  void activate() override { blinkDuration.activate(); }
 
   bool updateAnimation(bool justActivated) override {
     blinkDuration.update();
@@ -28,8 +26,5 @@ class Strobe : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return blinkDuration.get();
-  }
-
+  uint32_t getKnobPosition() override { return blinkDuration.get(); }
 };

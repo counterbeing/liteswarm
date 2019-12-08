@@ -9,9 +9,7 @@ class Dimmer : public Animation {
   Dimmer(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    brightness.activate();
-  }
+  void activate() override { brightness.activate(); }
 
   bool updateAnimation(bool justActivated) override {
     bool configChangeFlag = brightness.update();
@@ -24,8 +22,5 @@ class Dimmer : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return brightness.get();
-  }
-
+  uint32_t getKnobPosition() override { return brightness.get(); }
 };

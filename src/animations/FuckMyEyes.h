@@ -1,6 +1,6 @@
 #include "Animation.h"
-#include "MyKnob.h"
 #include "MilliTimer.h"
+#include "MyKnob.h"
 
 class FuckMyEyes : public Animation {
  private:
@@ -12,9 +12,7 @@ class FuckMyEyes : public Animation {
   FuckMyEyes(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    delay.activate();
-  }
+  void activate() override { delay.activate(); }
 
   bool updateAnimation(bool justActivated) override {
     delay.update();
@@ -40,8 +38,5 @@ class FuckMyEyes : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return delay.get();
-  }
-
+  uint32_t getKnobPosition() override { return delay.get(); }
 };

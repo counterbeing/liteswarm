@@ -1,6 +1,6 @@
 #include "Animation.h"
-#include "MyKnob.h"
 #include "MilliTimer.h"
+#include "MyKnob.h"
 
 class Stripes : public Animation {
  private:
@@ -12,9 +12,7 @@ class Stripes : public Animation {
   Stripes(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    delay.activate();
-  }
+  void activate() override { delay.activate(); }
 
   bool updateAnimation(bool justActivated) override {
     delay.update();
@@ -38,8 +36,5 @@ class Stripes : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return delay.get();
-  }
-
+  uint32_t getKnobPosition() override { return delay.get(); }
 };

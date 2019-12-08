@@ -1,6 +1,6 @@
 #include "Animation.h"
-#include "MyKnob.h"
 #include "MilliTimer.h"
+#include "MyKnob.h"
 
 class Race : public Animation {
  private:
@@ -19,9 +19,7 @@ class Race : public Animation {
   Race(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    delay.activate();
-  }
+  void activate() override { delay.activate(); }
 
   // Associativity specification is redundant for unary operators and is only
   // shown for completeness: unary prefix operators always associate
@@ -42,8 +40,5 @@ class Race : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return delay.get();
-  }
-
+  uint32_t getKnobPosition() override { return delay.get(); }
 };

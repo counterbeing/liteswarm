@@ -9,9 +9,7 @@ class Rainbow : public Animation {
   Rainbow(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    offset.activate();
-  }
+  void activate() override { offset.activate(); }
 
   bool updateAnimation(bool justActivated) override {
     bool configChangeFlag = offset.update();
@@ -20,12 +18,9 @@ class Rainbow : public Animation {
       fill_rainbow(leds, NUMPIXELS, offset.get(), 5);
       return true;
     }
-    
+
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return offset.get();
-  }
-
+  uint32_t getKnobPosition() override { return offset.get(); }
 };

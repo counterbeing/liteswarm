@@ -9,9 +9,7 @@ class ColorChooser : public Animation {
   ColorChooser(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    hue.activate();
-  }
+  void activate() override { hue.activate(); }
 
   bool updateAnimation(bool justActivated) override {
     bool configChangeFlag = hue.update();
@@ -24,8 +22,5 @@ class ColorChooser : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return hue.get();
-  }
-
+  uint32_t getKnobPosition() override { return hue.get(); }
 };

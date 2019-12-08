@@ -1,6 +1,6 @@
 #include "Animation.h"
-#include "MyKnob.h"
 #include "MilliTimer.h"
+#include "MyKnob.h"
 
 class DiamondNecklace : public Animation {
  private:
@@ -11,9 +11,7 @@ class DiamondNecklace : public Animation {
   DiamondNecklace(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    delay.activate();
-  }
+  void activate() override { delay.activate(); }
 
   bool updateAnimation(bool justActivated) override {
     delay.update();
@@ -21,7 +19,9 @@ class DiamondNecklace : public Animation {
     if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       for (int i = 0; i < NUMPIXELS; i++) {
         leds[i].fadeLightBy(128);
-        if (random(40) == 1) { leds[i] = CRGB::White; }
+        if (random(40) == 1) {
+          leds[i] = CRGB::White;
+        }
       }
       return true;
     }
@@ -29,8 +29,5 @@ class DiamondNecklace : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return delay.get();
-  }
-
+  uint32_t getKnobPosition() override { return delay.get(); }
 };

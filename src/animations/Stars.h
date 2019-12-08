@@ -1,8 +1,9 @@
 #include "Animation.h"
-#include "MyKnob.h"
 #include "MilliTimer.h"
+#include "MyKnob.h"
 
-// TODO: Stars is basically the same as Stripes but with different settings. Collapse them?
+// TODO: Stars is basically the same as Stripes but with different settings.
+// Collapse them?
 class Stars : public Animation {
  private:
   KnobSetting delay{100, 0, 1000, false};
@@ -14,9 +15,7 @@ class Stars : public Animation {
   Stars(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-    delay.activate();
-  }
+  void activate() override { delay.activate(); }
 
   // TODO: is something wrong with going past finish?
   bool updateAnimation(bool justActivated) override {
@@ -28,7 +27,8 @@ class Stars : public Animation {
         lastPosition = 0;
       }
       fill_solid(leds, NUMPIXELS, CRGB::Black);
-      for (int dot = lastPosition; dot < NUMPIXELS; dot += numPixelsBetweenStars + 1) {
+      for (int dot = lastPosition; dot < NUMPIXELS;
+           dot += numPixelsBetweenStars + 1) {
         leds[dot] = CRGB::Coral;
       }
       return true;
@@ -37,8 +37,5 @@ class Stars : public Animation {
     return false;
   }
 
-  uint32_t getKnobPosition() override {
-    return delay.get();
-  }
-
+  uint32_t getKnobPosition() override { return delay.get(); }
 };

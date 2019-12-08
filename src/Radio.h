@@ -1,17 +1,17 @@
+#include "DebugLog.h"
+#include "config.h"
 #include <NRFLite.h>
 #include <SPI.h>
 #include <stdint.h>
-#include "config.h"
-#include "DebugLog.h"
 
-struct RadioPacket          // Any packet up to 32 bytes can be sent.
-{                           // 0 - bit count (256 max)
-  uint8_t SHARED_SECRET;    // 8
-  uint8_t senderId;         // 16
-  uint32_t rotaryPosition;  // 48
-  uint8_t animationId;      // 56
-                            // uint32_t keyframe;       //
-                            // ... 200
+struct RadioPacket         // Any packet up to 32 bytes can be sent.
+{                          // 0 - bit count (256 max)
+  uint8_t SHARED_SECRET;   // 8
+  uint8_t senderId;        // 16
+  uint32_t rotaryPosition; // 48
+  uint8_t animationId;     // 56
+                           // uint32_t keyframe;       //
+                           // ... 200
 };
 
 class Radio {
@@ -21,8 +21,8 @@ class Radio {
   NRFLite _radio;
   bool radioAlive = false;
   const static uint8_t SHARED_RADIO_ID = 1;
-  const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
-  const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
+  const static uint8_t PIN_RADIO_CE = 7;  // 7 on PCBs 1.3, was 6 on 1.1
+  const static uint8_t PIN_RADIO_CSN = 6; // 6 on PCBs 1.3, was 7 on 1.1
   // const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
   // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
   const static uint8_t SHARED_SECRET = 42;
@@ -81,9 +81,11 @@ class Radio {
 
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
-    if (RADIO_DEBUG) debugLog("Picking random radio id: ", RADIO_ID);
+    if (RADIO_DEBUG)
+      debugLog("Picking random radio id: ", RADIO_ID);
 
     radioAlive = _radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN);
-    if (RADIO_DEBUG) debugLog(radioAlive ? "radio ok" : "radio fail");
+    if (RADIO_DEBUG)
+      debugLog(radioAlive ? "radio ok" : "radio fail");
   }
 };

@@ -1,12 +1,12 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
+#include "BaseControllers.h"
 #include "FastLED.h"
 #include "config.h"
-#include "BaseControllers.h"
 
 class Animation : public BaseController {
  protected:
-  CRGB *leds;
+  CRGB * leds;
 
   virtual bool updateAnimation(bool justActivated) = 0;
 
@@ -16,7 +16,7 @@ class Animation : public BaseController {
   };
 
  public:
-  Animation(CRGB leds_[]) : leds(leds_) {};
+  Animation(CRGB leds_[]) : leds(leds_){};
 
   virtual uint32_t getKnobPosition() { return 0; }
 };

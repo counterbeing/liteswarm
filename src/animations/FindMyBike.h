@@ -9,8 +9,7 @@ class FindMyBike : public Animation {
   FindMyBike(CRGB leds_[]) : Animation(leds_) {}
 
  protected:
-  void activate() override {
-  }
+  void activate() override {}
 
   bool updateAnimation(bool justActivated) override {
     // FastLED.clear();
@@ -21,5 +20,4 @@ class FindMyBike : public Animation {
 
     return false;
   }
-
 };
