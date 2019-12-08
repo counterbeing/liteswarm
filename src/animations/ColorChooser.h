@@ -11,7 +11,7 @@ class ColorChooser : public Animation {
  protected:
   void activate() override { hue.activate(); }
 
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     bool configChangeFlag = hue.update();
 
     if (configChangeFlag || justActivated) {
@@ -23,4 +23,7 @@ class ColorChooser : public Animation {
   }
 
   uint32_t getKnobPosition() override { return hue.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { hue.set(newPosition); }
+
 };

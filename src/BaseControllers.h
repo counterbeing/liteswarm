@@ -18,7 +18,7 @@ class BaseController {
 
  protected:
   virtual void activate() = 0;
-  virtual void loop(bool justActivated) = 0;
+  virtual void loop(const bool justActivated) = 0;
 };
 
 #endif // BaseControllers_H

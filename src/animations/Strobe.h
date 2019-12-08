@@ -14,7 +14,7 @@ class Strobe : public Animation {
  protected:
   void activate() override { blinkDuration.activate(); }
 
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     blinkDuration.update();
 
     if (timer.hasElapsedWithReset(blinkDuration.get()) || justActivated) {
@@ -27,4 +27,7 @@ class Strobe : public Animation {
   }
 
   uint32_t getKnobPosition() override { return blinkDuration.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { blinkDuration.set(newPosition); }
+
 };

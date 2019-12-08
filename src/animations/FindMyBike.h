@@ -11,7 +11,7 @@ class FindMyBike : public Animation {
  protected:
   void activate() override {}
 
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     // FastLED.clear();
     if (timer.hasElapsedWithReset(3000) || justActivated) {
       fill_solid(leds, NUMPIXELS, CRGB::White);
@@ -20,4 +20,9 @@ class FindMyBike : public Animation {
 
     return false;
   }
+
+  uint32_t getKnobPosition() override { return 0; }
+
+  void setKnobPosition(const uint32_t newPosition) override {}
+
 };

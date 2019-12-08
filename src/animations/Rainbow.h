@@ -11,7 +11,7 @@ class Rainbow : public Animation {
  protected:
   void activate() override { offset.activate(); }
 
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     bool configChangeFlag = offset.update();
 
     if (configChangeFlag || justActivated) {
@@ -23,4 +23,7 @@ class Rainbow : public Animation {
   }
 
   uint32_t getKnobPosition() override { return offset.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { offset.set(newPosition); }
+
 };

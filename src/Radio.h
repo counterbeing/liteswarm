@@ -27,28 +27,46 @@ class Radio {
   // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
   const static uint8_t SHARED_SECRET = 42;
   uint8_t RADIO_ID = random();
+  const uint8_t numAnimations;
 
  public:
-  void checkRadioReceive() {
+  Radio(const uint8_t numAnimations_) : numAnimations(numAnimations_) {}
+
+  bool checkRadioReceive() {
     if (!radioAlive)
-      return;
+      return false;
 
     while (_radio.hasData()) {
       _radio.readData(&_incomingRadioPacket);
-      if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
-        return;
-      }
+
+      if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET)
+        continue;
+      if (_incomingRadioPacket.animationId < 0 || _incomingRadioPacket.animationId >= numAnimations)
+        continue;
+
       if (RADIO_DEBUG) {
-        debugLog("------INCOMING---------");
-        debugLog("SHARED_SECRET:  ", _incomingRadioPacket.SHARED_SECRET);
-        debugLog("rotaryPosition: ", _incomingRadioPacket.rotaryPosition);
-        debugLog("animationId:    ", _incomingRadioPacket.animationId);
-        debugLog("senderId:       ", _incomingRadioPacket.senderId);
+        debugLo("Radio receiving from ");
+        debugLo(_incomingRadioPacket.senderId);
+        debugLo(" @ ");
+        debugLo(millis());
+        debugLo(": animationId=");
+        debugLo(_incomingRadioPacket.animationId);
+        debugLog(", rotaryPosition=", _incomingRadioPacket.rotaryPosition);
       }
+      return true;
     }
+    return false;
   }
 
-  void send(uint8_t animationId, uint32_t rotaryPosition) {
+  uint8_t getLatestReceivedAnimationId() {
+    return _incomingRadioPacket.animationId;
+  }
+
+  uint32_t getLatestReceivedRotaryPosition() {
+    return _incomingRadioPacket.rotaryPosition;
+  }
+
+  void send(const uint8_t animationId, const uint32_t rotaryPosition) {
     if (!radioAlive)
       return;
 
@@ -61,15 +79,11 @@ class Radio {
     _outboundRadioPacket.animationId = animationId;
 
     if (RADIO_DEBUG) {
-      debugLo("--- RADIO SENDING @ ");
+      debugLo("Radio sending @ ");
       debugLo(millis());
-      debugLo("  SHARED_SECRET=");
-      debugLo(_outboundRadioPacket.SHARED_SECRET);
-      debugLo(", rotaryPosition=");
-      debugLo(_outboundRadioPacket.rotaryPosition);
-      debugLo(", animationId=");
+      debugLo(": animationId=");
       debugLo(_outboundRadioPacket.animationId);
-      debugLog(", senderId=", _outboundRadioPacket.senderId);
+      debugLog(", rotaryPosition=", _outboundRadioPacket.rotaryPosition);
     }
 
     _radio.send(SHARED_RADIO_ID, &_outboundRadioPacket,
@@ -81,11 +95,13 @@ class Radio {
 
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
-    if (RADIO_DEBUG)
-      debugLog("Picking random radio id: ", RADIO_ID);
 
     radioAlive = _radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN);
-    if (RADIO_DEBUG)
+
+    if (RADIO_DEBUG) {
+      debugLog("shared radio id=", SHARED_RADIO_ID);
+      debugLog("random radio id=", RADIO_ID);
       debugLog(radioAlive ? "radio ok" : "radio fail");
+    }
   }
 };

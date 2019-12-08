@@ -13,7 +13,7 @@ class DiamondNecklace : public Animation {
  protected:
   void activate() override { delay.activate(); }
 
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     delay.update();
 
     if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
@@ -30,4 +30,7 @@ class DiamondNecklace : public Animation {
   }
 
   uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };

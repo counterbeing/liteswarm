@@ -11,7 +11,7 @@ class Dimmer : public Animation {
  protected:
   void activate() override { brightness.activate(); }
 
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     bool configChangeFlag = brightness.update();
 
     if (configChangeFlag || justActivated) {
@@ -23,4 +23,7 @@ class Dimmer : public Animation {
   }
 
   uint32_t getKnobPosition() override { return brightness.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { brightness.set(newPosition); }
+
 };

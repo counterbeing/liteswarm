@@ -11,18 +11,6 @@ Bounce button_debouncer = Bounce();
 
 Encoder encoder_knob(2, 3);
 
-class MyKnob {
- private:
-  int32_t position;
-  bool manualChange = false;
-
- public:
-  MyKnob() {}
-  void set(int position) { encoder_knob.write(position); }
-  uint32_t get() { return encoder_knob.read(); }
-  bool manuallyChanged() { return manualChange; }
-};
-
 enum ClickEvent : uint8_t { CLICK, LONG_CLICK, DOUBLE_CLICK, OTHER };
 
 class ButtonControl {
@@ -31,9 +19,9 @@ class ButtonControl {
       250; // max ms between clicks for single event
   static const unsigned int SHORT_CLICK_MAX_DURATION = 250;
   static const unsigned int LONG_CLICK_MIN_DURATION = 1750;
+  ClickEvent latestClickEvent = ClickEvent::OTHER;
   bool possibleDoubleClick = false;
   bool possibleLongClick = false;
-  ClickEvent latestClickEvent = ClickEvent::OTHER;
   bool clickEventOccurredFlag = false;
 
   void setLatestClickEvent(ClickEvent clickEvent) {
@@ -62,7 +50,7 @@ class ButtonControl {
 
   bool hasClickEventOccurred() { return clickEventOccurredFlag; }
 
-  bool hasClickEventOccurred(ClickEvent clickEvent) {
+  bool hasClickEventOccurred(const ClickEvent clickEvent) {
     return clickEventOccurredFlag && clickEvent == latestClickEvent;
   }
 
@@ -120,9 +108,9 @@ class ButtonControl {
 class KnobSetting {
  private:
   int32_t currentValue;
-  int32_t minValue;
-  int32_t maxValue;
-  bool loopRotary;
+  const int32_t minValue;
+  const int32_t maxValue;
+  const bool loopRotary;
 
  public:
   KnobSetting(int32_t initialValue, int32_t minValue_, int32_t maxValue_,
@@ -131,6 +119,21 @@ class KnobSetting {
         loopRotary(loopRotary_) {}
 
   int32_t get() { return currentValue; }
+
+  void set(int32_t newValue) {
+    if (newValue < minValue) {
+      newValue = loopRotary ? maxValue : minValue;
+    }
+    else if (newValue > maxValue) {
+      newValue = loopRotary ? minValue : maxValue;
+    }
+
+    if (newValue == currentValue)
+      return;
+
+    encoder_knob.write(newValue);
+    currentValue = newValue;
+  }
 
   int32_t getCorrectedValue() {
     int32_t position = encoder_knob.read();

@@ -28,7 +28,7 @@ class Race : public Animation {
   // associativity is meaningful for member access operators, even though they
   // are grouped with unary postfix operators: a.b++ is parsed (a.b)++ and not
   // a.(b++).
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     delay.update();
 
     if (timer.hasElapsedWithReset(delay.get())) {
@@ -41,4 +41,7 @@ class Race : public Animation {
   }
 
   uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };

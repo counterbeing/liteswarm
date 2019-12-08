@@ -8,17 +8,19 @@ class Animation : public BaseController {
  protected:
   CRGB * leds;
 
-  virtual bool updateAnimation(bool justActivated) = 0;
-
-  virtual void loop(bool justActivated) override {
+  virtual void loop(const bool justActivated) override {
     if (updateAnimation(justActivated))
       FastLED.show();
   };
 
+  virtual bool updateAnimation(const bool justActivated) = 0;
+
  public:
   Animation(CRGB leds_[]) : leds(leds_){};
 
-  virtual uint32_t getKnobPosition() { return 0; }
+  virtual uint32_t getKnobPosition() = 0;
+
+  virtual void setKnobPosition(const uint32_t newPosition) = 0;
 };
 
 #endif

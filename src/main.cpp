@@ -46,14 +46,14 @@ Animation * animations[NUM_ANIMATONS] = {
     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
     &stripes,   &diamond_necklace, &dimmer};
 
-Radio radio{};
+Radio radio{NUM_ANIMATONS};
 ButtonControl buttonControl{};
 
 class OffModeController : public BaseController {
  protected:
   virtual void activate() override {}
 
-  virtual void loop(bool justActivated) override {
+  virtual void loop(const bool justActivated) override {
     if (justActivated) {
       fill_solid(leds, NUMPIXELS, CRGB::Black);
       FastLED.show();
@@ -74,23 +74,32 @@ class AnimationModeController : public BaseController {
  protected:
   virtual void activate() override {}
 
-  virtual void loop(bool justActivated) override {
-    // TODO: add this back in later
-    radio.checkRadioReceive();
+  virtual void loop(const bool justActivated) override {
+    bool animationIndexChanged = false;
 
-    bool animationChanged =
-        buttonControl.hasClickEventOccurred(ClickEvent::CLICK);
+    if (radio.checkRadioReceive()) {
+      uint8_t incomingAnimationId = radio.getLatestReceivedAnimationId();
+      uint32_t incomingRotaryPosition = radio.getLatestReceivedRotaryPosition();
+      if (incomingAnimationId != animationIndex) {
+        animationIndexChanged = true;
+        animationIndex = incomingAnimationId;
+      }
+      if (animationIndexChanged || animations[animationIndex]->getKnobPosition() != incomingRotaryPosition)
+        animations[animationIndex]->setKnobPosition(incomingRotaryPosition);
+    }
 
-    if (animationChanged)
-      animationIndex =
-          (animationIndex == NUM_ANIMATONS - 1) ? 1 : animationIndex + 1;
+    if (buttonControl.hasClickEventOccurred(ClickEvent::CLICK)) {
+      animationIndexChanged = true;
+      // BUG! setting animationIndex to 0 crashes system so setting it to 1
+      animationIndex = (animationIndex == NUM_ANIMATONS - 1) ? 1 : animationIndex + 1;
+    }
 
     Animation * currentAnimation = animations[animationIndex];
 
     if (radioTimer.hasElapsedWithReset(1000))
       radio.send(animationIndex, currentAnimation->getKnobPosition());
 
-    if (animationChanged || justActivated) {
+    if (animationIndexChanged || justActivated) {
       currentAnimation->setAsActive();
     }
 
@@ -106,15 +115,6 @@ class MasterController {
   MilliTimer radioTimer{};
   bool offMode = false;
   bool firstLoop = true;
-
-  void activateMode() {
-    firstLoop = false;
-    if (offMode) {
-      offModeController.setAsActive();
-    } else {
-      animationModeController.setAsActive();
-    }
-  }
 
  public:
   MasterController(ButtonControl & buttonControl_)
@@ -161,16 +161,17 @@ class MasterController {
     if (modeChange)
       offMode = !offMode;
 
+    BaseController *activeController = 
+      offMode 
+      ? dynamic_cast<BaseController*>(&offModeController) 
+      : dynamic_cast<BaseController*>(&animationModeController);
+
     if (modeChange || firstLoop) {
       firstLoop = false;
-      activateMode();
+      activeController->setAsActive();
     }
 
-    if (offMode) {
-      offModeController.run();
-    } else {
-      animationModeController.run();
-    }
+    activeController->run();
   }
 
 } masterController{buttonControl};

@@ -18,7 +18,7 @@ class Stars : public Animation {
   void activate() override { delay.activate(); }
 
   // TODO: is something wrong with going past finish?
-  bool updateAnimation(bool justActivated) override {
+  bool updateAnimation(const bool justActivated) override {
     delay.update();
 
     if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
@@ -38,4 +38,7 @@ class Stars : public Animation {
   }
 
   uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };
