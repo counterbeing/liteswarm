@@ -28,18 +28,52 @@ These are some of the materials we've used to build our own. You can pretty much
 - [wire](https://www.amazon.com/StrivedayTM-Flexible-Silicone-electronic-electrics/dp/B01KQ2JNLI/ref=sr_1_8?keywords=soldering+wire&qid=1559956794&s=gateway&sr=8-8)
 
 ## Contributing
+
 ### Getting Involved
+
 If you'd like to submit a bug, go ahead and use the issue tracker.
 
 If you'd like to make submit a feature or a fix.
-  - Open an issue to get buy in.
-  - Fork the repo.
-  - Make your changes.
-  - Submit a pull request.
+
+- Open an issue to get buy in.
+- Fork the repo.
+- Make your changes.
+- Submit a pull request.
 
 ### Troubleshooting
+
 Things you might be missing.
+
 - edit using VSCode with PlatformIO plugin
 - OpenOCD some USB stuff `brew install openocd` (or else `dyld: Library not loaded: /usr/local/opt/libftdi/lib/libftdi1.2.dylib`)
 
+## Install and Upload
 
+### ESP32
+
+First make sure you can upload a basic sketch.
+
+- Download these drivers if you have not: [Espressif USB Drivers](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers]
+- Use the arduino IDE and add the repo `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json` in the preferences for installing boards.
+- Install esptool `brew install esptool`
+- In the boards manager install the latest `espressif` boards.
+- Select the `ESP32 Dev Kit` as your target board.
+- Change upload rate to 921600
+- Your port should reference UART `/dev/cu.SLAB_USBtoUART`
+- Run the following example Blink.
+
+```c++
+int LED_BUILTIN = 2;
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+}
+```
+
+If you have a flashing blue LED you're in business.

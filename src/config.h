@@ -1,13 +1,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define KNOB_DEBUG false   // set flag to false to disable serial logging in knob
+#define KNOB_DEBUG false  // set flag to false to disable serial logging in knob
 #define RADIO_DEBUG false  // set flag to false to disable logging for Radio
-#define ANIM_DEBUG false 
+#define ANIM_DEBUG false
 
 // #define SCARF_DOTSTAR
-// #define SCARF_WS2811     // IC has pink dot
-#define SCARF_SK9822  // IC has green dot
+#define SCARF_WS2811  // IC has pink dot
+// #define SCARF_SK9822  // IC has green dot
 // #define BIGRED_WS2815    // IC has purple dot?
 
 ////////////////////////////////////////////////////
@@ -28,9 +28,8 @@
 //////////////////////////////////////////////////
 // WS2811
 #ifdef SCARF_WS2811
-const int NUMPIXELS = 75;
+const int NUMPIXELS = 300;
 #endif
-
 
 //////////////////////////////////////////////////
 // SK9822
@@ -38,13 +37,11 @@ const int NUMPIXELS = 75;
 const int NUMPIXELS = 75;
 #endif
 
-
 //////////////////////////////////////////////////
 // DOTSTAR
 #ifdef SCARF_DOTSTAR
 const int NUMPIXELS = 75;
 #endif
-
 
 //////////////////////////////////////////////////
 // BIGRED 12v WS2815 strip
@@ -58,14 +55,11 @@ const int NUMPIXELS = 75;
 const int NUMPIXELS = 375;
 #endif
 
-
 //////////////////////////////////////////////////
 // mac's protoboard
 // #define DATAPIN 5 // mac's protoboard
 // #define CLOCKPIN 7 // mac protoboard
 //////////////////////////////////////////////////
-
-
 
 #endif
 

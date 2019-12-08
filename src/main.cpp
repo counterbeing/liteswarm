@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #define FASTLED_INTERNAL
-#include <Encoder.h>
+#include <ESP32Encoder.h>
 #include <MyKnob.h>
 #include <SPI.h>
-#include "FastLED.h"
-#include "Radio.h"
-#include "config.h"
 #include "BaseControllers.h"
 #include "DebugLog.h"
+#include "FastLED.h"
 #include "MilliTimer.h"
+#include "Radio.h"
+#include "config.h"
 
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
@@ -149,34 +149,30 @@ class MasterController {
 
   void loop() {
     unsigned long now = millis();
-    if (now <= 3663) { // 333 * 11 = 3663
-      startupLoop(now);
-      return;
-    }
+    startupLoop(now);
 
-    button_debouncer.update();
-    buttonControl.checkButton();
+    //   button_debouncer.update();
+    //   buttonControl.checkButton();
 
-    bool modeChange = buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
-    if (modeChange)
-      offMode = !offMode;
+    //   bool modeChange =
+    //       buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
+    //   if (modeChange) offMode = !offMode;
 
-    if (modeChange || firstLoop) {
-      firstLoop = false;
-      activateMode();
-    }
+    //   if (modeChange || firstLoop) {
+    //     firstLoop = false;
+    //     activateMode();
+    //   }
 
-    if (offMode) {
-      offModeController.run();
-    }
-    else {
-      animationModeController.run();
-    }
+    //   if (offMode) {
+    //     offModeController.run();
+    //   } else {
+    //     animationModeController.run();
+    //   }
   }
-
 } masterController{buttonControl};
 
 void setup() {
+  ESP32Encoder::useInternalWeakPullResistors = true;
 #ifdef SCARF_WS2811
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
 #endif
@@ -191,13 +187,7 @@ void setup() {
 #ifdef BIGRED_WS2815
   FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
 #endif
-  Serial.begin(57600);
-
-  button_debouncer.attach(buttonPin, INPUT_PULLUP);
-  button_debouncer.interval(5);
-  radio.setup();
+  Serial.begin(115200);
 }
 
-void loop() {
-  masterController.loop();
-}
+void loop() { masterController.loop(); }
