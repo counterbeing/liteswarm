@@ -1,11 +1,14 @@
 #include <Arduino.h>
 #define FASTLED_INTERNAL
+#include "BaseControllers.h"
+#include "DebugLog.h"
+#include "FastLED.h"
+#include "MilliTimer.h"
+#include "Radio.h"
+#include "config.h"
 #include <Encoder.h>
 #include <MyKnob.h>
 #include <SPI.h>
-#include "FastLED.h"
-#include "Radio.h"
-#include "config.h"
 
 #include "animations/ColorChooser.h"
 #include "animations/Crossfade.h"
@@ -16,127 +19,162 @@
 #include "animations/Rainbow.h"
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
+// #include "animations/Strobe.h"
 
 // Pins for the rotary
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 
 int buttonPin = A0;
-bool offMode = false;
 
 CRGB leds[NUMPIXELS];
-int feedbackPattern = -1;
-MyKnob knob(rotary1, rotary2, offMode, feedbackPattern);
 
 // Load animations...
-Crossfade crossfade(knob, leds);
-ColorChooser color_chooser(knob, leds);
-Race race(knob, leds);
-Stars stars(knob, leds);
-Rainbow rainbow(knob, leds);
-FuckMyEyes fuck_my_eyes(knob, leds);
-Stripes stripes(knob, leds);
-DiamondNecklace diamond_necklace(knob, leds);
-Dimmer dimmer(knob, leds);
+Crossfade crossfade(leds);
+ColorChooser color_chooser(leds);
+Race race(leds);
+Stars stars(leds);
+Rainbow rainbow(leds);
+FuckMyEyes fuck_my_eyes(leds);
+Stripes stripes(leds);
+DiamondNecklace diamond_necklace(leds);
+Dimmer dimmer(leds);
+// Strobe strobe(leds);
 
-int animation_index = 0;
-Radio radio(knob, animation_index);
+#define NUM_ANIMATONS 9
+Animation * animations[NUM_ANIMATONS] = {
+    &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
+    &stripes,   &diamond_necklace, &dimmer};
 
-// Animation *current_animation = &rainbow;
-Animation *current_animation = &crossfade;
-int previous_animation_index = -1;
+Radio radio{NUM_ANIMATONS};
+ButtonControl buttonControl{};
 
-int feedbackLength = 800;
-long feedbackEnd = (millis() + feedbackLength);
+class OffModeController : public BaseController {
+ protected:
+  virtual void activate() override {}
 
-void runAdjustments() {
-  if (feedbackPattern < 0) {
-    return;
+  virtual void loop(const bool justActivated) override {
+    if (justActivated) {
+      fill_solid(leds, NUMPIXELS, CRGB::Black);
+      FastLED.show();
+    }
   }
-  if (feedbackPattern > 0) {
-    // Serial.println("STARTING FEEBACK");
-    feedbackEnd = (millis() + feedbackLength);
-  }
-  feedbackPattern = 0;
+};
 
-  int currentLapse = feedbackEnd - millis();
-  if (currentLapse < 0) {
-    feedbackPattern = -1;
-  }
+class AnimationModeController : public BaseController {
+ private:
+  ButtonControl & buttonControl;
+  uint8_t animationIndex = 0;
+  MilliTimer radioTimer{};
 
-  CRGB color1;
-  CRGB color2;
+ public:
+  AnimationModeController(ButtonControl & buttonControl_)
+      : buttonControl(buttonControl_) {}
 
-  switch (feedbackPattern) {
-    case 0:
-      color1 = CRGB::Blue;
-      color2 = CRGB::Green;
-      break;
-    case 1:
-      color1 = CRGB::Black;
-      color2 = CRGB::Red;
-      break;
-  }
+ protected:
+  virtual void activate() override {}
 
-  if ((currentLapse / 100) % 2 == 0) {
-    fill_solid(leds, NUMPIXELS, color1);
-  } else {
-    fill_solid(leds, NUMPIXELS, color2);
-  }
-}
-void playAnimation() {
-  if (animation_index != previous_animation_index) {
-    if (animation_index > 8) animation_index = 0;
-    // BUG CAUTION
-    // never follow one animation function immediately with itself in the the
-    // next case
+  virtual void loop(const bool justActivated) override {
+    bool animationIndexChanged = false;
 
-    if (KNOB_DEBUG) {
-      Serial.print("Animation Index: ");
-      Serial.println(animation_index);
+    if (radio.checkRadioReceive()) {
+      uint8_t incomingAnimationId = radio.getLatestReceivedAnimationId();
+      uint32_t incomingRotaryPosition = radio.getLatestReceivedRotaryPosition();
+      if (incomingAnimationId != animationIndex) {
+        animationIndexChanged = true;
+        animationIndex = incomingAnimationId;
+      }
+      if (animationIndexChanged || animations[animationIndex]->getKnobPosition() != incomingRotaryPosition)
+        animations[animationIndex]->setKnobPosition(incomingRotaryPosition);
     }
 
-    switch (animation_index) {
-      case 0:
-        current_animation = &crossfade;
-        break;
+    if (buttonControl.hasClickEventOccurred(ClickEvent::CLICK)) {
+      animationIndexChanged = true;
+      // BUG! setting animationIndex to 0 crashes system so setting it to 1
+      animationIndex = (animationIndex == NUM_ANIMATONS - 1) ? 1 : animationIndex + 1;
+    }
+
+    Animation * currentAnimation = animations[animationIndex];
+
+    if (radioTimer.hasElapsedWithReset(1000))
+      radio.send(animationIndex, currentAnimation->getKnobPosition());
+
+    if (animationIndexChanged || justActivated) {
+      currentAnimation->setAsActive();
+    }
+
+    currentAnimation->run();
+  }
+};
+
+class MasterController {
+ private:
+  ButtonControl & buttonControl;
+  AnimationModeController animationModeController;
+  OffModeController offModeController{};
+  MilliTimer radioTimer{};
+  bool offMode = false;
+  bool firstLoop = true;
+
+ public:
+  MasterController(ButtonControl & buttonControl_)
+      : buttonControl(buttonControl_), animationModeController{buttonControl_} {
+  }
+
+  void startupLoop(unsigned long now) {
+    uint32_t counter = (now / 333) % 11;
+    switch (counter) {
       case 1:
-        current_animation = &color_chooser;
-        break;
-      case 2:
-        current_animation = &race;
+        fill_solid(leds, NUMPIXELS, CRGB::Red);
         break;
       case 3:
-        current_animation = &stars;
-        break;
-      case 4:
-        current_animation = &rainbow;
+        fill_solid(leds, NUMPIXELS, CRGB::Yellow);
         break;
       case 5:
-        current_animation = &fuck_my_eyes;
-        break;
-      case 6:
-        current_animation = &stripes;
+        fill_solid(leds, NUMPIXELS, CRGB::Green);
         break;
       case 7:
-        current_animation = &diamond_necklace;
+        fill_solid(leds, NUMPIXELS, CRGB::Blue);
         break;
-      case 8:
-        current_animation = &dimmer;
+      case 9:
+        fill_solid(leds, NUMPIXELS, CRGB::Indigo);
         break;
       default:
-        // Serial.println("\n\nWARN: default animation switch case");
+        fill_solid(leds, NUMPIXELS, CRGB::Black);
         break;
     }
-    current_animation->setup();
-    previous_animation_index = animation_index;
+    FastLED.show();
   }
-  current_animation->run();
 
-  runAdjustments();
+  void loop() {
+    unsigned long now = millis();
+    if (now <= 3663) { // 333 * 11 = 3663
+      startupLoop(now);
+      return;
+    }
 
-  FastLED.show();
-}
+    button_debouncer.update();
+    buttonControl.checkButton();
+
+    bool modeChange =
+        buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
+    if (modeChange)
+      offMode = !offMode;
+
+    BaseController *activeController = 
+      offMode 
+      ? dynamic_cast<BaseController*>(&offModeController) 
+      : dynamic_cast<BaseController*>(&animationModeController);
+
+    if (modeChange || firstLoop) {
+      firstLoop = false;
+      activeController->setAsActive();
+    }
+
+    activeController->run();
+  }
+
+} masterController{buttonControl};
 
 void setup() {
 #ifdef SCARF_WS2811
@@ -160,14 +198,4 @@ void setup() {
   radio.setup();
 }
 
-void loop() {
-  button_debouncer.update();
-  knob.check(&animation_index);
-  if (offMode) {
-    fill_solid(leds, NUMPIXELS, CRGB::Black);
-    FastLED.show();
-    return;
-  }
-  radio.check();
-  playAnimation();
-}
+void loop() { masterController.loop(); }

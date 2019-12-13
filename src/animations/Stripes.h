@@ -1,45 +1,42 @@
 #include "Animation.h"
+#include "MilliTimer.h"
+#include "MyKnob.h"
 
 class Stripes : public Animation {
  private:
-  int initialPosition = 180;
-  int start = 0;
-  int finish = 500;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
+  const static uint8_t STRIPE_LENGTH = 4;
+  KnobSetting delay{180, 0, 500, false};
+  MilliTimer timer{};
   int lastPosition = 0;
-  MyKnob &knob;
-  CRGB *leds;
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+ public:
+  Stripes(CRGB leds_[]) : Animation(leds_) {}
 
-  void loop() {
-    int delay = knob.confine();
+ protected:
+  void activate() override { delay.activate(); }
 
-    int stripeLength = 4;
+  bool updateAnimation(const bool justActivated) override {
+    delay.update();
 
-    if (nonBlockDelay(delay)) {
-      if (ANIM_DEBUG) {
-        Serial.println(lastPosition);
-      }
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       lastPosition++;
-      if (lastPosition >= (stripeLength * 2)) {
+      if (lastPosition >= (STRIPE_LENGTH * 2)) {
         lastPosition = 0;
       }
       fill_solid(leds, NUMPIXELS, CRGB::Red);
-      for (int dot = lastPosition; dot < NUMPIXELS; dot += (stripeLength * 2)) {
-        for (int band = 0; band < stripeLength; band++) {
+      for (int dot = lastPosition; dot < NUMPIXELS; dot += (STRIPE_LENGTH * 2)) {
+        for (int band = 0; band < STRIPE_LENGTH; band++) {
           leds[dot + band] = CRGB::Purple;
         }
       }
-
-      
+      return true;
     }
+
+    return false;
   }
 
- public:
-  Stripes(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };

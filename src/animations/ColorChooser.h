@@ -1,26 +1,29 @@
 #include "Animation.h"
+#include "MyKnob.h"
 
 class ColorChooser : public Animation {
  private:
-  int initialPosition = 180;
-  int start = 0;
-  int finish = 255;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = true;
-  MyKnob &knob;
-  CRGB *leds;
-
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
-
-  void loop() {
-    int color = knob.confine();
-    fill_solid(leds, NUMPIXELS, CHSV(color, 255, 255));
-    
-  }
+  KnobSetting hue{180, 0, 255, true};
 
  public:
-  ColorChooser(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  ColorChooser(CRGB leds_[]) : Animation(leds_) {}
+
+ protected:
+  void activate() override { hue.activate(); }
+
+  bool updateAnimation(const bool justActivated) override {
+    bool configChangeFlag = hue.update();
+
+    if (configChangeFlag || justActivated) {
+      fill_solid(leds, NUMPIXELS, CHSV(hue.get(), 255, 255));
+      return true;
+    }
+
+    return false;
+  }
+
+  uint32_t getKnobPosition() override { return hue.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { hue.set(newPosition); }
+
 };

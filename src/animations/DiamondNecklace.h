@@ -1,33 +1,36 @@
 #include "Animation.h"
+#include "MilliTimer.h"
+#include "MyKnob.h"
 
 class DiamondNecklace : public Animation {
  private:
-  int initialPosition = 50;
-  int start = 0;
-  int finish = 300;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
-  MyKnob &knob;
-  CRGB *leds;
+  KnobSetting delay{50, 0, 300, false};
+  MilliTimer timer{};
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+ public:
+  DiamondNecklace(CRGB leds_[]) : Animation(leds_) {}
 
-  void loop() {
-    int dlay = knob.confine();
-    if (nonBlockDelay(dlay)) {
+ protected:
+  void activate() override { delay.activate(); }
+
+  bool updateAnimation(const bool justActivated) override {
+    delay.update();
+
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       for (int i = 0; i < NUMPIXELS; i++) {
         leds[i].fadeLightBy(128);
         if (random(40) == 1) {
           leds[i] = CRGB::White;
         }
       }
-      
+      return true;
     }
+
+    return false;
   }
 
- public:
-  DiamondNecklace(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };

@@ -1,31 +1,32 @@
-#include <MyKnob.h>
 #include "Animation.h"
-#include "FastLED.h"
+#include "MilliTimer.h"
+#include "MyKnob.h"
 
 class Crossfade : public Animation {
  private:
-  int initialPosition = 40;
-  int start = 5;
-  int finish = 200;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
-  MyKnob &knob;
-  CRGB *leds;
-
-  void loop() {
-    int dlay = knob.confine();
-    static uint8_t hue = 0;
-    if (nonBlockDelay(dlay)) {
-      // FastLED.showColor(CHSV(hue++, 255, 255));
-      fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
-    }
-  }
+  KnobSetting delay{35, 5, 200, false};
+  MilliTimer timer{};
+  uint8_t hue = 0;
 
  public:
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+  Crossfade(CRGB leds_[]) : Animation(leds_) {}
 
-  Crossfade(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+ protected:
+  void activate() override { delay.activate(); }
+
+  bool updateAnimation(const bool justActivated) override {
+    delay.update();
+
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
+      fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
+      return true;
+    }
+
+    return false;
+  }
+
+  uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };

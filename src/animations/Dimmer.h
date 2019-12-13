@@ -1,27 +1,29 @@
 #include "Animation.h"
+#include "MyKnob.h"
 
 class Dimmer : public Animation {
  private:
-  int initialPosition = 100;
-  int start = 10;
-  int finish = 180;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
-  int lastPosition = 0;
-  MyKnob &knob;
-  CRGB *leds;
-
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
-
-  void loop() {
-    int brightness = knob.confine();
-    fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness));
-    
-  }
+  KnobSetting brightness{100, 10, 180, false};
 
  public:
-  Dimmer(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Dimmer(CRGB leds_[]) : Animation(leds_) {}
+
+ protected:
+  void activate() override { brightness.activate(); }
+
+  bool updateAnimation(const bool justActivated) override {
+    bool configChangeFlag = brightness.update();
+
+    if (configChangeFlag || justActivated) {
+      fill_solid(leds, NUMPIXELS, CHSV(0, 0, brightness.get()));
+      return true;
+    }
+
+    return false;
+  }
+
+  uint32_t getKnobPosition() override { return brightness.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { brightness.set(newPosition); }
+
 };

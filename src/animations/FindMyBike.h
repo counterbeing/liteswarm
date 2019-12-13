@@ -1,29 +1,28 @@
 #include "Animation.h"
+#include "MilliTimer.h"
 
 class FindMyBike : public Animation {
  private:
-  int initialPosition = 0;
-  int start = 0;
-  int finish = 300;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
-  MyKnob &knob;
-  CRGB *leds;
-  int lastColor = 0;
-
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
-
-  void loop() {
-    FastLED.clear();
-    if (nonBlockDelay(3000)) {
-      fill_solid(leds, NUMPIXELS, CRGB::White);
-    }
-    
-  }
+  MilliTimer timer{};
 
  public:
-  FindMyBike(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  FindMyBike(CRGB leds_[]) : Animation(leds_) {}
+
+ protected:
+  void activate() override {}
+
+  bool updateAnimation(const bool justActivated) override {
+    // FastLED.clear();
+    if (timer.hasElapsedWithReset(3000) || justActivated) {
+      fill_solid(leds, NUMPIXELS, CRGB::White);
+      return true;
+    }
+
+    return false;
+  }
+
+  uint32_t getKnobPosition() override { return 0; }
+
+  void setKnobPosition(const uint32_t newPosition) override {}
+
 };

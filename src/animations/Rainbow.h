@@ -1,25 +1,29 @@
 #include "Animation.h"
+#include "MyKnob.h"
 
 class Rainbow : public Animation {
  private:
-  int initialPosition = 1;
-  int start = 1;
-  int finish = 255;
-  bool initialized = false;
-  bool loopRotary = true;
-  MyKnob &knob;
-  CRGB *leds;
-
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
-
-  void loop() {
-    int offset = knob.confine();
-    fill_rainbow(leds, NUMPIXELS, offset, 5);
-    
-  }
+  KnobSetting offset{1, 1, 255, true};
 
  public:
-  Rainbow(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  Rainbow(CRGB leds_[]) : Animation(leds_) {}
+
+ protected:
+  void activate() override { offset.activate(); }
+
+  bool updateAnimation(const bool justActivated) override {
+    bool configChangeFlag = offset.update();
+
+    if (configChangeFlag || justActivated) {
+      fill_rainbow(leds, NUMPIXELS, offset.get(), 5);
+      return true;
+    }
+
+    return false;
+  }
+
+  uint32_t getKnobPosition() override { return offset.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { offset.set(newPosition); }
+
 };

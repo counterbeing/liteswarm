@@ -1,19 +1,25 @@
 #include "Animation.h"
+#include "MilliTimer.h"
+#include "MyKnob.h"
 
 class Race : public Animation {
  private:
-  int initialPosition = 60;
-  int start = 5;
-  int finish = 400;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
-  MyKnob &knob;
-  CRGB *leds;
+  KnobSetting delay{60, 5, 400, false};
+  MilliTimer timer{};
+  uint8_t hue = 0;
+  uint32_t pixelIndex = 0;
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+  uint16_t nextPixelIndex() {
+    if (++pixelIndex > NUMPIXELS)
+      pixelIndex = 0;
+    return pixelIndex;
+  }
+
+ public:
+  Race(CRGB leds_[]) : Animation(leds_) {}
+
+ protected:
+  void activate() override { delay.activate(); }
 
   // Associativity specification is redundant for unary operators and is only
   // shown for completeness: unary prefix operators always associate
@@ -22,19 +28,20 @@ class Race : public Animation {
   // associativity is meaningful for member access operators, even though they
   // are grouped with unary postfix operators: a.b++ is parsed (a.b)++ and not
   // a.(b++).
-  void loop() {
-    int dlay = knob.confine();
-    if (nonBlockDelay(dlay)) {
-      static uint8_t hue = 0;
-      head = remapInRange(++head);
-      leds[head] = CRGB::Black;
-      leds[head] = CHSV(hue++, 255, 150);
-      head = remapInRange(++head);
-      leds[head] = CHSV(hue++, 255, 255);
-      
+  bool updateAnimation(const bool justActivated) override {
+    delay.update();
+
+    if (timer.hasElapsedWithReset(delay.get())) {
+      // leds[nextPixelIndex()] = CHSV(hue++, 255, 150);
+      leds[nextPixelIndex()] = CHSV(hue++, 255, 255);
+      return true;
     }
+
+    return false;
   }
 
- public:
-  Race(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };

@@ -1,45 +1,44 @@
 #include "Animation.h"
+#include "MilliTimer.h"
+#include "MyKnob.h"
 
+// TODO: Stars is basically the same as Stripes but with different settings.
+// Collapse them?
 class Stars : public Animation {
  private:
-  int initialPosition = 100;
-  int start = 0;
-  int finish = 400;
-  bool initialized = false;
-  int head = 0;
-  bool loopRotary = false;
+  KnobSetting delay{100, 0, 1000, false};
+  MilliTimer timer{};
   int lastPosition = 0;
-  MyKnob &knob;
-  CRGB *leds;
+  int32_t numPixelsBetweenStars = 13;
 
-  void setup() {
-    knob.setDefaults(initialPosition, start, finish, loopRotary);
-  };
+ public:
+  Stars(CRGB leds_[]) : Animation(leds_) {}
 
-  void loop() {
-    int delay = knob.confine();
+ protected:
+  void activate() override { delay.activate(); }
 
-    int stripeLength = 7;
+  // TODO: is something wrong with going past finish?
+  bool updateAnimation(const bool justActivated) override {
+    delay.update();
 
-    if (nonBlockDelay(delay)) {
-      if (ANIM_DEBUG) {
-        Serial.println(lastPosition);
-      }
+    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
       lastPosition++;
-      if (lastPosition >= (stripeLength * 2)) {
+      if (lastPosition > numPixelsBetweenStars) {
         lastPosition = 0;
       }
       fill_solid(leds, NUMPIXELS, CRGB::Black);
-      for (int dot = lastPosition; dot < NUMPIXELS; dot += (stripeLength * 2)) {
-        for (int band = 0; band < 1; band++) {
-          leds[dot + band] = CRGB::Coral;
-        }
+      for (int dot = lastPosition; dot < NUMPIXELS;
+           dot += numPixelsBetweenStars + 1) {
+        leds[dot] = CRGB::Coral;
       }
-
-      
+      return true;
     }
+
+    return false;
   }
 
- public:
-  Stars(MyKnob &knob_, CRGB leds_[]) : knob(knob_), leds(leds_) {}
+  uint32_t getKnobPosition() override { return delay.get(); }
+
+  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
+
 };
