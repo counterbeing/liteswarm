@@ -41,6 +41,11 @@ class Radio {
     while (_radio.hasData()) {
       _radio.readData(&_incomingRadioPacket);
       if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
+        Serial.println("xxxxxxxxx INCOMING fail xxxxxxxxxx");
+        Serial.print("incoming SHARED_SECRET: ");
+        Serial.print(_incomingRadioPacket.SHARED_SECRET);
+        Serial.print(" != ");
+        Serial.print(SHARED_SECRET);
         return;
       }
       if (RADIO_DEBUG) {
@@ -79,6 +84,7 @@ class Radio {
   }
 
   bool stateChanged() {
+    // BUG THIS COULD BE AS LARGE AS INT32 (drop it down to INT16? -32767 - 32767 ?)
     int currentRotaryPosition = knob.get();
     return !(_incomingRadioPacket.rotaryPosition == currentRotaryPosition &&
              _incomingRadioPacket.animationId == animation_index);
