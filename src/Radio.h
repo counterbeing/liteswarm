@@ -8,9 +8,9 @@
 struct RadioPacket          // Any packet up to 32 bytes can be sent.
 {                           // 0 - bit count (256 max)
   uint8_t SHARED_SECRET;    // 8
-  uint8_t senderId;         // 16
-  int16_t rotaryPosition;   // 32
-  uint8_t animationId;      // 40
+  int32_t rotaryPosition;   // 40
+  int8_t animationId;      // 48
+  uint16_t senderId;        // 64
                             // uint32_t keyframe;       //
                             // ... 200
 };
@@ -22,34 +22,26 @@ class Radio {
   NRFLite _radio;
   bool radioAlive = false;
   MyKnob &knob;
-  int &animation_index;
+  int8_t &animation_index;
   const static uint8_t SHARED_RADIO_ID = 1;
-  uint16_t RADIO_ID = random(1024,65532);
+  uint16_t RADIO_ID = random(1024,65400);
   const static uint8_t SHARED_SECRET = 42;
-  // const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
-  // const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
-  // const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
-  // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
-  // const static uint8_t PIN_RADIO_CE = CONF_PIN_RADIO_CE;
-  // const static uint8_t PIN_RADIO_CSN = CONF_PIN_RADIO_CSN;
-  const static uint8_t PIN_RADIO_CE = 5;
-  const static uint8_t PIN_RADIO_CSN = 10; // is CSN the same as SS? pin 10 on teensylc
 
-  int previousAnimationIndex;
-  int16_t previousRotaryPosition = -1;
+  // uint16_t previousAnimationIndex; // unusued?
+  int32_t previousRotaryPosition = -1;
   long lastIntervalTime = millis();
 
   void checkRadioReceive() {
     while (_radio.hasData()) {
       _radio.readData(&_incomingRadioPacket);
       if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET) {
-        Serial.println("xxxxxxxxx INCOMING fail xxxxxxxxxx");
+        Serial.println("\n\nxxxxxxxxx INCOMING fail xxxxxxxxxx");
         Serial.print("incoming SHARED_SECRET: ");
         Serial.print(_incomingRadioPacket.SHARED_SECRET);
         Serial.print(" != ");
         Serial.print(SHARED_SECRET);
         Serial.print("\n\n");
-        return;
+        // return;
       }
       if (RADIO_DEBUG) {
         Serial.println("------INCOMING---------");
@@ -58,8 +50,10 @@ class Radio {
         Serial.print("rotaryPosition: ");
         Serial.println(_incomingRadioPacket.rotaryPosition);
         Serial.print("animationId: ");
-        Serial.println(_incomingRadioPacket.animationId);
-        Serial.print("senderId: ");
+        Serial.print(_incomingRadioPacket.animationId);
+        Serial.print("  (local animationId: ");
+        Serial.print(animation_index);
+        Serial.print(")\nsenderId: ");
         Serial.println(_incomingRadioPacket.senderId);
       }
       if (stateChanged()) {
@@ -79,8 +73,10 @@ class Radio {
     if (RADIO_DEBUG) {
       Serial.println("--- Sending Data");
     }
+    _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.rotaryPosition = knob.get();
-    _outboundRadioPacket.animationId = animation_index;
+    _outboundRadioPacket.animationId = animation_index;  // extraneous?
+    _outboundRadioPacket.senderId = RADIO_ID;            // extraneous?
 
     _radio.send(SHARED_RADIO_ID, &_outboundRadioPacket,
                 sizeof(_outboundRadioPacket), NRFLite::NO_ACK);
@@ -88,7 +84,7 @@ class Radio {
 
   bool stateChanged() {
     // BUG THIS COULD BE AS LARGE AS INT32 (drop it down to INT16? -32767 - 32767 ?)
-    int16_t currentRotaryPosition = knob.get();
+    int32_t currentRotaryPosition = knob.get();
     return !(_incomingRadioPacket.rotaryPosition == currentRotaryPosition &&
              _incomingRadioPacket.animationId == animation_index);
   }
@@ -104,20 +100,29 @@ class Radio {
   }
 
  public:
-  Radio(MyKnob &knob_, int &animation_index_): knob(knob_), animation_index(animation_index_) {}
+  Radio(MyKnob &knob_, int8_t &animation_index_): knob(knob_), animation_index(animation_index_) {
+    // _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
+    // _outboundRadioPacket.rotaryPosition = 0;
+    // _outboundRadioPacket.animationId = 0;
+    // _outboundRadioPacket.senderId = RADIO_ID;
+
+    // _incomingRadioPacket.SHARED_SECRET = SHARED_SECRET;
+    // _incomingRadioPacket.rotaryPosition = 0;
+    // _incomingRadioPacket.animationId = 0;
+    // _incomingRadioPacket.senderId = RADIO_ID;
+
+  }
   
   void setup() {
-    _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
-    _outboundRadioPacket.senderId = RADIO_ID;
+
     if (RADIO_DEBUG) {
       Serial.print("Picking random radio id: ");
       Serial.println(RADIO_ID);
     }
     
-    // MAC 12/12/19 TODO DELETE
-    // digital pin 14 = A0 = buttonPin
-    // button_debouncer() in main sets INPUT_PULLUP so we don't need the following line
-    // pinMode(14, INPUT_PULLUP);
+    // MAC 12/12/19 TODO DELETE?
+    // teensy sets all pins as input by default
+    // radio needs CE high otherwise it goes to sleep
     pinMode(PIN_RADIO_CE, OUTPUT);
     digitalWrite(PIN_RADIO_CE, HIGH);
     pinMode(PIN_RADIO_CSN, OUTPUT);
@@ -130,7 +135,6 @@ class Radio {
     // ========================
 
     if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN)) {
-      // if (!_radio.init(SHARED_RADIO_ID, CONF_PIN_RADIO_CE, CONF_PIN_RADIO_CSN)) {
       radioAlive = false;
       if (RADIO_DEBUG) {
         Serial.println("radio fail");
@@ -147,7 +151,7 @@ class Radio {
     knob.get();
     if (radioAlive) {
       checkRadioReceive();
-      if (knob.manuallyChanged() || runAfterInterval(2000)) {
+      if (knob.manuallyChanged() || runAfterInterval(3000)) {
         checkRadioSend();
       }
     }

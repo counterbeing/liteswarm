@@ -1,9 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define KNOB_DEBUG true   // set flag to false to disable serial logging in knob
+#define KNOB_DEBUG false   // set flag to false to disable serial logging in knob
 #define RADIO_DEBUG true  // set flag to false to disable logging for Radio
-#define ANIM_DEBUG true 
+#define ANIM_DEBUG false 
 
 // #define SCARF_DOTSTAR
 // #define SCARF_WS2811     // IC has pink dot
@@ -13,11 +13,12 @@
 
 ////////////////////////////////////////////////////
 // DEFAULTS
-//
-// change these if NOT using ws2811 with arduino
+//   switch LED strand type & pintouts here for nano platform
 #ifndef PIOENV_TEENSY
   #define DATAPIN 5   // default for SCARFYMCSARFACE pcb
   #define CLOCKPIN 4  // Not applicable to 4 wire APA102 type strands
+  // #define CONF_BUTTON_PIN A0
+  const int buttonPin = A0;
   #define SCARF_WS2811
   // const int NUMPIXELS = 75;
   
@@ -27,29 +28,27 @@
   // rotary2 = 3
   
   // RADIO
-  // PIN_RADIO_CE = 6; // will be 6 on PCBs, was 9
-  // PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
-    // "CSN" = "Chip Select Not"; normally low, master sets high to tell 24l01 to listen
-    // "CE" = "Chip Enable"; Activates RX or TX mode; CE=0 sets 24l01 to standby?
+  const int PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
+  const int PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
 
 ////////////////////////////////////////////////////
 // TEENSY MODE!
+//  set pinouts and LED strand type for teensy
 #else
-
   // LEDs ------------------------
   #define DATAPIN 17 // provides Vin voltage 8mA max to LED logic
-  const int NUMPIXELS = 20;
+  // const int NUMPIXELS = 20;
+  const int NUMPIXELS = 75;
   // #define SCARF_WS2811 // hardcoded in main.cpp for teensy
 
   // RADIO ------------------------
-  // #define CONF_PIN_RADIO_CE 5 // will be 6 on PCBs, was 9
-  // #define CONF_PIN_RADIO_CSN 6 // will be 7 on PCBs, was 10
-  // #define _PIN_RADIO_SS = 10;  //?? see Radio.10#L109
+  const int PIN_RADIO_CE = 9;
+  const int PIN_RADIO_CSN = 10;
 
   // KNOB ------------------------
   // rotary1 = 0
   // rotary2 = 1
-  // buttonPin = A9
+  const int buttonPin = A9;
   
 #endif
 //========================================================

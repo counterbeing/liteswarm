@@ -19,13 +19,25 @@ keep you safe for nights of partying, or bicycling. Keep your friends all in a g
 
 ### Materials / Shopping List
 These are some of the materials we've used to build our own. You can pretty much bank on them workin for your project.
-- [portable battery packs](https://smile.amazon.com/Smallest-Jackery-3350mAh-Portable-Charger/dp/B00L9F95RO/ref=sr_1_8?keywords=jackery+battery+pack&qid=1559954560&s=gateway&sr=8-8), not a bad idea to have two. These are small enough to fit inside of a fuzzy scarf, and they don't turn off on you. You can get a few hours out of one of these... Depends on the animation you run.
+- [portable battery packs](https://smile.amazon.com/Smallest-Jackery-3350mAh-Portable-Charger/dp/B00L9F95RO/ref=sr_1_8?keywords=jackery+battery+pack&qid=1559954560&s=gateway&sr=8-8), not a bad idea to have two. These are small enough to fit inside of a fuzzy scarf, and they don't turn off on you. You can get a few hours out of one of these... Depends on the animation you run. *mac likes Jackery if you can find 6000-12000mAh capacity for less than $20)
+- another batt option [PowerAdd Slim 2 5000 mAh Compact Battery Packs](https://www.amazon.com/dp/B00KG45W08) ($13)
 - [fabric](https://www.joann.com/luxury-faux-husky-fur-fabric--white/14387674.html)
 - [arduino nanos](https://smile.amazon.com/gp/product/B07HF5RMHV/ref=crt_ewc_title_dp_2?ie=UTF8&psc=1&smid=A278BT9THV444Y)
 - [led strips](https://www.aliexpress.com/item/5m-5V-WS2812B-WS2812-Led-Strip-light-Individually-Addressable-Smart-RGB-Led-pixel-strips-Black-White/32995915537.html?spm=a2g0o.cart.0.0.69a03c00Io4CfT)
+- moar strips [WS2811](https://hackmd.io/@100ideas/scarfswarm#LED-strips) (see hackmd doc below for links to Ray Wu's led store)
 - [usb cables](https://www.amazon.com/HTTX-Straight-Soldering-Connector-Replacement/dp/B07D1HDJM8/ref=sr_1_10?keywords=usb-a+connector+male&qid=1559956539&s=gateway&sr=8-10)
 - [rotary encoder](https://smile.amazon.com/DIYhz-Rotary-Encoder-Digital-Potentiometer/dp/B07D3D64X7/ref=sr_1_10?keywords=rotary+encoder&qid=1559955080&s=industrial&sr=1-10)
 - [wire](https://www.amazon.com/StrivedayTM-Flexible-Silicone-electronic-electrics/dp/B01KQ2JNLI/ref=sr_1_8?keywords=soldering+wire&qid=1559956794&s=gateway&sr=8-8)
+- [nRF24L01+ 2.4 Ghz radio](http://a.co/d/3rhLgCT)
+- Bourns PEC11 12mm 24-pulse rotary encoder (PEC11-4215F-S24) [adafruit #377](https://www.adafruit.com/product/377) ($4.50/1); [datasheet](https://cdn-shop.adafruit.com/datasheets/pec11.pdf) (need 10x)
+- [usb type a male adapter 20-pack]( https://www.amazon.com/gp/product/B07GGJGB7Q) ($11) (for making power cables)
+- [JST 4pin male-female connector pigtails, pack of 20](https://www.amazon.com/gp/product/B075K3M1TB) ($11)
+- [112Pcs 2.54mm Male and Female Pin Header Connector Assortment Kit, 100pcs Stackable Shield Header](https://www.amazon.com/gp/product/B07CWSXY7P) ($13)
+- [Capri Tools 20011 Automatic Wire Stripper and Cutter
+](https://www.amazon.com/gp/product/B01018CX46) ($14) - get one. changed my life.
+
+![scarfwarm-bigred-demo](https://i.imgur.com/xPF1xTM.jpg)[
+Scarfswarm / bikelights Big Red animation demo (youtube 2m)](https://youtu.be/5sAtdrZpyJc)
 
 ## Contributing
 ### Getting Involved
@@ -41,6 +53,16 @@ If you'd like to make submit a feature or a fix.
 Things you might be missing.
 - edit using VSCode with PlatformIO plugin
 - OpenOCD some USB stuff `brew install openocd` (or else `dyld: Library not loaded: /usr/local/opt/libftdi/lib/libftdi1.2.dylib`)
+
+## Reference
+**project documentation** https://hackmd.io/@100ideas/scarfswarm
+
+libraries we're using:
+- [FastLED.h](https://github.com/FastLED/FastLED) let their be light
+- [NRFLite.h](https://github.com/dparson55/NRFLite) ... longwave light
+- arduino / teensy [SPI](https://www.pjrc.com/teensy/td_libs_SPI.html) library
+- [Encoder](https://github.com/PaulStoffregen/Encoder) - performant quadrature encoder for rotary inputs
+- 
 
 ---
 
@@ -67,7 +89,7 @@ NRF24L01+ w/ amazon breakout boad diagram
     | nrf:teensy pin# | nrf:teensy     |      |-----------------------------------------------|
     | --------------- | -------------- |      |[1] | 2  |                      (antenna)      |
     | 1: GND   GND    | 2: VCC  (+3.3v)|      | -- | -- |        -------     ===============  |
-    | 3: ?     CE     | 4: 10?  CSN    |      | 3  | 4  |        | C H |        ||   -----||  |
+    | 3: 9     CE     | 4: 10?  CSN    |      | 3  | 4  |        | C H |        ||   -----||  |
     | 5: 13    SCK    | 6: 11   MOSI   |      | -- | -- |        | I P |        ||   ||-----  |
     | 7: 12    MISO   | 8: ?    IRQ    |      | 5  | 6  |        -------        ||   -----||  |
                                               | -- | -- |                       ||   ||-----  |

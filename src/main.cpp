@@ -32,7 +32,7 @@
 // they are assigned twice - see MyKnob.h encoder_knob(2, 3)
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
-int buttonPin = A9;
+// int buttonPin = A9; // now defined in config.h
 // ========================
 
 
@@ -54,16 +54,16 @@ DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
 
 // MAC 12/12/19 TODO DELETE
-int animation_index = 0;
+int8_t animation_index = 0;
 // int animation_index = 7;
 // ========================
 Radio radio(knob, animation_index);
 
 // Animation *current_animation = &rainbow;
 Animation *current_animation = &crossfade;
-int previous_animation_index = -1;
+int8_t previous_animation_index = -1;
 
-int feedbackLength = 800;
+uint16_t feedbackLength = 800;
 long feedbackEnd = (millis() + feedbackLength);
 
 void runAdjustments() {
@@ -76,7 +76,7 @@ void runAdjustments() {
   }
   feedbackPattern = 0;
 
-  int currentLapse = feedbackEnd - millis();
+  long currentLapse = feedbackEnd - millis();
   if (currentLapse < 0) {
     feedbackPattern = -1;
   }
@@ -103,7 +103,7 @@ void runAdjustments() {
 }
 void playAnimation() {
   if (animation_index != previous_animation_index) {
-    if (animation_index > 8) animation_index = 0;
+    if ( (animation_index > 8) || (animation_index < 0) ) animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
     // next case
@@ -142,7 +142,9 @@ void playAnimation() {
         current_animation = &dimmer;
         break;
       default:
-        // Serial.println("\n\nWARN: default animation switch case");
+        Serial.println("\n\nWARN: default animation switch case");
+        current_animation = &crossfade;
+        animation_index = 1;
         break;
     }
     current_animation->setup();
@@ -190,7 +192,7 @@ void setup() {
   #endif
 #endif
 
-  Serial.begin(57600);
+  Serial.begin(115200);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);

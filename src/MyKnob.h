@@ -54,9 +54,9 @@ class MyKnob {
   int pinA;
   int pinB;
   // int position; // BUG assigned to from LONG newPos below!
-  int16_t position;
-  int16_t start = 0;
-  int16_t finish = 10;
+  int32_t position = 1; 
+  int32_t start = 0;
+  int32_t finish = 10;
   int buttonPressCount = 0;
   bool loopRotary = false;
   long lastPressTime = 0;
@@ -65,8 +65,9 @@ class MyKnob {
   int lastButtonState = 1;
   bool &offMode;
   int &feedbackPattern;
+  
   void checkRotary() {
-    int16_t newPos = encoder_knob.read();
+    int32_t newPos = encoder_knob.read();
     if (newPos == position) {
       return;
     }
@@ -100,7 +101,7 @@ class MyKnob {
 
   // TODO lowpower mode triggered by 3000 ms long press
 
-  void checkButton(int *_aiIndex) {
+  void checkButton(uint8_t *_aiIndex) {
     int buttonState = button_debouncer.read();
     if (lastButtonState == 1 && buttonState == 0)
       holdingSince = millis();  // started press
@@ -416,9 +417,11 @@ class MyKnob {
     Serial.print("\n\noffMode_: ");
     Serial.print(offMode);
   }
-  void set(int16_t position) { encoder_knob.write(position); }
-  int16_t get() { return encoder_knob.read(); }
-  void check(int *_animationIndex) {
+  void set(int32_t posish) { 
+    encoder_knob.write(posish); 
+  }
+  uint16_t get() { return encoder_knob.read(); }
+  void check(int8_t *_animationIndex) {
     manualChange = false;
     checkButton(_animationIndex);
     checkRotary();
@@ -426,7 +429,7 @@ class MyKnob {
   bool manuallyChanged() { return manualChange; }
 
   // Set these variables once so they don't need to be set repeatedly
-  void setDefaults(int16_t position_, int16_t start_, int16_t finish_,
+  void setDefaults(int32_t position_, int32_t start_, int32_t finish_,
                    bool loopRotary_ = false) {
     position = position_;
     encoder_knob.write(position);
@@ -437,7 +440,7 @@ class MyKnob {
 
   // Sets the value for the rotary encoder to someething reasonable for the
   // animation. It returns that value.
-  int confine() {
+  int32_t confine() {
     if (position < start) {
       if (loopRotary) {
         position = finish;
@@ -446,7 +449,7 @@ class MyKnob {
       }
       encoder_knob.write(position);
     }
-    if (position > finish) {
+    else if (position > finish) {
       if (loopRotary) {
         position = start;
       } else {
