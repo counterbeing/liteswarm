@@ -150,7 +150,7 @@ void setup() {
   // FastLED.addLeds<WS2811, DATAPIN>(leds, NUMPIXELS);    // COMPILES
 // #elif defined(???)
 //     set defaults?
-#else
+#else†
   #ifdef SCARF_WS2811
     FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
   #endif
@@ -174,7 +174,7 @@ void setup() {
   button_debouncer.interval(5);
   radio.setup();
 
-#ifdef PIOENV
+#ifdef PIOENV_TEENSY
   Serial.println("\n\n\nPIOENV: PIOENV_TEENSY");
   printf("DATAPIN: %d", DATAPIN);
   printf("NUMPIXELS: %d", NUMPIXELS);
