@@ -1,0 +1,598 @@
+# 2012-12-12 teensy dev & debugging
+
+working on refactoring code from the 'master' branch for teensy_lc.
+
+Hardest part was figuring out the correct pinouts for the radio. 
+- `neopixel` style LED strip worked right off the bat
+- so did rotary encoder
+- radio is hard b/c nrf docs use terms like `csn`, & `ce`, but teensy uses `ss` and doesn't mention the other term as much. See the section in the `readme.md` for an overview.
+
+problem initially presented itself as nrf radio module + NrfLite lib on teensy reporting via terminal that 1) `radio ok`  but 2) logged values for received packets that never changed. As if the packets weren't really getting decoded (although they were being received somehow).
+
+Three theories:
+
+1). wiring is screwed up connecting teensy to nrf, so it isn't able to fully read or correctly decode incoming packets.
+
+2). there is a buffer overflow, typecasting/type mixing mistake in the code. the nrf is working, receiving packets, but decoding them is not; instead we get nonsense or zeor values from random memory locations. I was leaning towards this explanation because I found a ton of mixed types (uint8_t -> int; long -> int, etc). But after standardizing a bunch of them, still got communication problems.
+
+3). the teensy has a much faster clock (100mhz?) than the arduino. According to the official documentation and forum/issue posts on nrflite repo, the crystal resonator in the nrf24l01 that generates the radio frequencies is unable to work effectively above some frequency range... perhaps 8khz at the high end? [Here is an issue on nrflite recommending limiting clock speed to 4khz](https://github.com/dparson55/NRFLite/issues/19). But based on reading the issue, it doesn't sound particularly straightforward to force the arduino + nrf libs running on the teensy to step down to 4khz. Gonna play with this next. [also a forum post on teensy forums](https://forum.pjrc.com/threads/40499-Need-to-change-SPI-clock-rate-for-RF24-radio-modules-w-TMRh20-library).
+
+4). well one last theory: I skimmed the commit log for the master branch (counterbeing/bikelights) and didn't see anything too alarming, so thats what I adapted. But its totally possible it has subtle work-in-progress bits that are tripping up the logic of the current program. I've gone over everything a multiple times but nothing is obviously screwed up... could you guys have a look?
+
+### changes on this branch
+- added more preporcessor / compiler directives to config.h to simplofy switching between developing for nano vs teensy
+- added teensy config to `platformio.ini`. this should make two `"env"` (board)-dependant sections appear in the platformio "project tasks" sidebar, one for nano, and one for teensy. Just plug whichever board in and click the appropriate build/compile/monitor - it figures it out on its own.
+- standardized data types used to pack & upack the radio packet.
+
+### symptoms
+see console log below. its the serial output of a nano running on my desk right next to the teensy. its getting the correct 'shared_secret', and 'animationId' increments on the receiver if I spem the rotary over and over, but the system almost immediately races away from user input towards some minima or maxima; in particular, neither unit successfully synchronizes towards shared state with the other one, at least with the 'rotaryPosition' parameter. The other params seem to be more stable.
+
+So I think whats happening is a bad logic around [line 90 of Radio.h](https://). The `stateChanged()` method always sees a different local rotaryPosition than the one in the incoming packet, so it spams updates at the other device, the recipient spams back, and both get locked in an unstable positive feedback loop.  (*note: maybe we should add a naieve 'back-off' algorithm to the radios to keep the packet density from spiraling out of control like this - that, and adding CRC / checksum code...)
+
+**anyway, I can't figure out why currentRotary** isn't getting set correctly from the incoming packets. Am I trying to compare the literal value of the pointer to the local currentRotary with the proper value of the incoming packet (fail), or is the memory space of the struct in which the packet is stored is getting overriden (yes? can't tell), or is it unintended behavior from the interplay of code that sets the `rotaryPosition` after it changes (due to incoming packet or user input) and the code the animations call (` `MyKnob.h` line 442: confine()`) to scale and loop the rotary values over a particular range?
+
+Well, I've tried a bunch of little experiments and came up with nada. I finished 2/3rds of the pcb of the teensy yesterday and I need to finish it and submit it soon to have a chance at getting it fabbed for xmas. I would love to have fully validated the software side before comitting to particular pins on the teensy but I'm stuck - can you help?  Tell me if I'm using an out of date branch (gaaaahhh), or perhaps you'll see the data type error if there is one, or merge my config.h changes into your/Tony's remastered branch.
+
+---
+
+see how `rotaryPosition` changes (or doesn't) in response to me playing with the knob on either the teensy (remote) or nano (logged to serial).
+
+some interesting values:
+
+`rotaryPosition`:
+| incoming value | local value |
+| -------------- | ----------- |
+| `-939524096`   | `5`         |
+| `0`            | `5`         |
+| ...later       | ...         |
+| '0'            | '255'       |
+
+- senderId sometimes shows the correct value
+- shared secret was `0` for a long time. not sure how I fixed it.
+
+
+## control test
+testing this codebase with two vanilla nano scarves, both neopixel
+
+#### test 1: 
+- nano_a has code from this branch (teensy) with latest commit
+- nano_b has whatever code I put on it over thanksgiving. (it was working then).
+-  rotary on nano_b 
+  - clicking: nano_b flashes quickly - probably switching to new animation then instantly switching back. won't stay switched. similar to teensy.
+  - twisting - unsure if this does anything
+  - nothing shows up in serial
+  - nothing appears to happen to nano_a
+-  rotary on nano_a:
+  - clicking: switched to next animation for approx 1 sec, then back. no effect on nano_a. fast clicking can advance through several animations
+  - twisting: seems to modulate animation as expected
+
+#### test 2: 
+- nano_a & nano_b have code from this branch (teensy) with latest commit
+- **AW FUCK** both scarves perform more or less as expected. no crazy values, no runaway feedback loops....
+- **so its probably not code... but bad wiring or the clock rate on the teensy**.
+
+
+
+
+### nano communicating with teensy v2 (teensy branch latest)
+``` log
+> Executing task: platformio run --target upload --target monitor --environment nano <
+
+Processing nano (platform: atmelavr; board: nanoatmega328new; framework: arduino)
+--------------------------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/atmelavr/nanoatmega328new.html
+PLATFORM: Atmel AVR 2.0.0 > Arduino Nano ATmega328 (New Bootloader)
+HARDWARE: ATMEGA328P 16MHz, 2KB RAM, 30KB Flash
+PACKAGES: toolchain-atmelavr 1.50400.190710 (5.4.0), framework-arduino-avr 5.0.0, tool-avrdude 1.60300.190628 (6.3.0)
+LDF: Library Dependency Finder -> http://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 11 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- <FastLED> 3.3.2
+|   |-- <SPI> 1.0
+|   |-- <SoftwareSerial> 1.0
+|-- <Bounce2> 2.52
+|-- <Encoder> #4c4ec3a
+|-- <SPI> 1.0
+|-- <NRFLite> 2.2.2
+|   |-- <SPI> 1.0
+Building in release mode
+Checking size .pio/build/nano/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+DATA:    [=======   ]  68.9% (used 1412 bytes from 2048 bytes)
+PROGRAM: [=====     ]  46.6% (used 14306 bytes from 30720 bytes)
+Configuring upload protocol...
+AVAILABLE: arduino
+CURRENT: upload_protocol = arduino
+Looking for upload port...
+Auto-detected: /dev/cu.usbserial-1460
+Uploading .pio/build/nano/firmware.hex
+
+avrdude: AVR device initialized and ready to accept instructions
+
+Reading | ################################################## | 100% 0.00s
+
+avrdude: Device signature = 0x1e950f (probably m328p)
+avrdude: reading input file ".pio/build/nano/firmware.hex"
+avrdude: writing flash (14306 bytes):
+
+Writing | ################################################## | 100% 2.51s
+
+avrdude: 14306 bytes of flash written
+avrdude: verifying flash memory against .pio/build/nano/firmware.hex:
+avrdude: load data flash data from input file .pio/build/nano/firmware.hex:
+avrdude: input file .pio/build/nano/firmware.hex contains 14306 bytes
+avrdude: reading on-chip flash data:
+
+Reading | ################################################## | 100% 1.87s
+
+avrdude: verifying ...
+avrdude: 14306 bytes of flash verified
+
+avrdude: safemode: Fuses OK (E:00, H:00, L:00)
+
+avrdude done.  Thank you.
+
+================================== [SUCCESS] Took 6.97 seconds ==================================
+--- Miniterm on /dev/cu.usbserial-1460  115200,8,N,1 ---
+--- Quit: Ctrl+C | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H ---
+0Picking random radio id: 17831
+------CE & CSN---------
+PIN_RADIO_CE (chip enable): 7
+PIN_RADIO_CSN (chip select / slave select)?: 6
+radio ok
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: -939524096
+         (local rotaryPosition: 40)
+animationId: 0  (local animationId: 0)
+senderId: 0
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: -939524096
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 5)
+animationId: 0  (local animationId: 0)
+senderId: 0
+
+--- exit ---
+
+Environment    Status    Duration
+-------------  --------  ------------
+nano           SUCCESS   00:00:06.972
+teensy         IGNORED
+================================== 1 succeeded in 00:00:06.972 ==================================
+
+Terminal will be reused by tasks, press any key to close it.
+```
+
+
+### nano communicating with teensy part 2 (teensy branch latest)
+```log
+ 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+         (local rotaryPosition: 255)
+animationId: 4  (local animationId: 4)
+senderId: 0
+--- Sending Data
+------INCOMING---------
+SHARED_SECRET: 42
+rotaryPosition: 0
+```
