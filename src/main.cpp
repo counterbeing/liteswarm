@@ -28,6 +28,8 @@
 // uint8_t rotary1 = 2;
 // uint8_t rotary2 = 3;
 // int buttonPin = A0;
+// BUG TODO these pins should be assigned by config.h
+// they are assigned twice - see MyKnob.h encoder_knob(2, 3)
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 int buttonPin = A9;
@@ -52,8 +54,8 @@ DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
 
 // MAC 12/12/19 TODO DELETE
-// int animation_index = 0;
-int animation_index = 7;
+int animation_index = 0;
+// int animation_index = 7;
 // ========================
 Radio radio(knob, animation_index);
 
@@ -154,8 +156,9 @@ void playAnimation() {
 }
 
 void setup() {
-  
 
+  randomSeed(analogRead(A6));
+  
 #ifdef PIOENV_TEENSY
   // FastLED.addLeds<WS2811, DATAPIN, GRB, DATA_RATE_MHZ(12)>(leds, NUMPIXELS);
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);  // COMPILES

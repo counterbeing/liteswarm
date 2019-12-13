@@ -22,6 +22,8 @@ class Radio {
   MyKnob &knob;
   int &animation_index;
   const static uint8_t SHARED_RADIO_ID = 1;
+  uint16_t RADIO_ID = random(1024,65532);
+  const static uint8_t SHARED_SECRET = 42;
   // const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
   // const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
   // const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
@@ -29,10 +31,8 @@ class Radio {
   // const static uint8_t PIN_RADIO_CE = CONF_PIN_RADIO_CE;
   // const static uint8_t PIN_RADIO_CSN = CONF_PIN_RADIO_CSN;
   const static uint8_t PIN_RADIO_CE = 5;
-  const static uint8_t PIN_RADIO_CSN = 6;
+  const static uint8_t PIN_RADIO_CSN = 10; // is CSN the same as SS? pin 10 on teensylc
 
-  const static uint8_t SHARED_SECRET = 42;
-  uint8_t RADIO_ID = random();
   int previousAnimationIndex;
   int previousRotaryPosition = -1;
   long lastIntervalTime = millis();
@@ -110,9 +110,18 @@ class Radio {
     }
     
     // MAC 12/12/19 TODO DELETE
-    // is this "SS" on nano? must remain low during SPI transfer
-    // pinMode(14, INPUT_PULLUP); // I think this is cruft or even a bug
-    // pinMode(10, OUTPUT);
+    // digital pin 14 = A0 = buttonPin
+    // button_debouncer() in main sets INPUT_PULLUP so we don't need the following line
+    // pinMode(14, INPUT_PULLUP);
+    pinMode(PIN_RADIO_CE, OUTPUT);
+    digitalWrite(PIN_RADIO_CE, HIGH);
+    pinMode(PIN_RADIO_CSN, OUTPUT);
+
+    Serial.println("------CE & CSN---------");
+    Serial.print("PIN_RADIO_CE (chip enable): ");
+    Serial.println(PIN_RADIO_CE);
+    Serial.print("PIN_RADIO_CSN (chip select / slave select)?: ");
+    Serial.println(PIN_RADIO_CSN);
     // ========================
 
     if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN)) {
@@ -137,23 +146,5 @@ class Radio {
         checkRadioSend();
       }
     }
-
-// MAC 12/12/19 TODO DELETE
-//
-    //  if (count > 450) {
-    //    return;
-    //  } else if (count < 100) {
-    //     if(radioAlive) {
-    //       Serial.println("radio ok");
-    //     } else {
-    //       Serial.println("radio fail");
-    //     }
-    // }
-    // Serial.print("Serial test no: ");
-    // Serial.println(count);
-    // Serial.print("Radio status: ");
-    // delay(200);
-    // count++;
-// ========================
   }
 };

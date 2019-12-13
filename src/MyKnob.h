@@ -8,6 +8,8 @@
 
 Bounce button_debouncer = Bounce();
 
+// BUG TODO these pins should be assigned by config.h
+// they are assigned twice - see main.cpp rotary1 rotary2
 Encoder encoder_knob(2, 3);
 
 class MyKnob {
@@ -47,7 +49,7 @@ class MyKnob {
 
   int pinA;
   int pinB;
-  int position;
+  int position; // BUG assigned to from LONG newPos below!
   int start = 0;
   int finish = 10;
   int buttonPressCount = 0;
