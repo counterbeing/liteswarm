@@ -2,28 +2,56 @@
 #define CONFIG_H
 
 #define KNOB_DEBUG false   // set flag to false to disable serial logging in knob
-#define RADIO_DEBUG false  // set flag to false to disable logging for Radio
+#define RADIO_DEBUG true  // set flag to false to disable logging for Radio
 #define ANIM_DEBUG false 
 
 // #define SCARF_DOTSTAR
 // #define SCARF_WS2811     // IC has pink dot
-#define SCARF_SK9822  // IC has green dot
+// #define SCARF_SK9822  // IC has green dot
 // #define BIGRED_WS2815    // IC has purple dot?
+
 
 ////////////////////////////////////////////////////
 // DEFAULTS
 // All that matters to a 3pin WS* strand
-#define DATAPIN 5   // default for SCARFYMCSARFACE pcb
-#define CLOCKPIN 4  // Not applicable to 4 wire APA102 type strands
+#ifndef PIOENV_TEENSY
+  #define DATAPIN 5   // default for SCARFYMCSARFACE pcb
+  #define CLOCKPIN 4  // Not applicable to 4 wire APA102 type strands
+  // const int NUMPIXELS = 75;
+  
+  // knob defaults
+  // buttonPin = A0
+  // rotary1 = 2
+  // rotary2 = 3
+  
+  // RADIO
+  // PIN_RADIO_CE = 6; // will be 6 on PCBs, was 9
+  // PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
+    // "CSN" = "Chip Select Not"; normally low, master sets high to tell 24l01 to listen
+    // "CE" = "Chip Enable"; Activates RX or TX mode; CE=0 sets 24l01 to standby?
 
-// const int NUMPIXELS = 75;
-//
-// knob defaults
-// buttonPin = A0
-// rotary1 = 2
-// rotary2 = 3
-// PIN_RADIO_CE = 6; // will be 6 on PCBs, was 9
-// PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
+////////////////////////////////////////////////////
+// TEENSY MODE!
+#else
+
+  // LEDs ------------------------
+  #define DATAPIN 17 // provides Vin voltage 8mA max to LED logic
+  const int NUMPIXELS = 75;
+  // #define SCARF_WS2811
+
+  // RADIO ------------------------
+  #define _PIN_RADIO_CE = 6; // will be 6 on PCBs, was 9
+  #define _PIN_RADIO_CSN = 7; // will be 7 on PCBs, was 10
+  // #define _PIN_RADIO_SS = 10;  //?? see Radio.10#L109
+
+  // KNOB ------------------------
+  // rotary1 = 0
+  // rotary2 = 1
+  // buttonPin = A9
+  
+#endif
+//========================================================
+
 
 //////////////////////////////////////////////////
 // WS2811

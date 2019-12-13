@@ -103,7 +103,13 @@ class Radio {
       Serial.print("Picking random radio id: ");
       Serial.println(RADIO_ID);
     }
-    pinMode(14, INPUT_PULLUP);
+    
+    // MAC 12/12/19 TODO DELETE
+    // is this "SS" on nano? must remain low during SPI transfer
+    // pinMode(14, INPUT_PULLUP); // I think this is cruft or even a bug
+    pinMode(10, OUTPUT);
+    // ========================
+
     if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN)) {
       radioAlive = false;
       if (RADIO_DEBUG) {

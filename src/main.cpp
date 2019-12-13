@@ -17,6 +17,10 @@
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
 
+// MAC 12/12/19 TODO DELETE
+#include <printf.h>
+// ========================
+
 // Pins for the rotary
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
@@ -139,26 +143,45 @@ void playAnimation() {
 }
 
 void setup() {
-#ifdef SCARF_WS2811
-  FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
-#endif
-#ifdef SCARF_SK9822
-  FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
+
+#ifdef PIOENV_TEENSY
+  // FastLED.addLeds<WS2811, DATAPIN, GRB, DATA_RATE_MHZ(12)>(leds, NUMPIXELS);
+  FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);  // COMPILES
+  // FastLED.addLeds<WS2811, DATAPIN>(leds, NUMPIXELS);    // COMPILES
+// #elif defined(???)
+//     set defaults?
+#else
+  #ifdef SCARF_WS2811
+    FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
+  #endif
+
+  #ifdef SCARF_SK9822
+    FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
+  #endif
+
+  #ifdef SCARF_DOTSTAR
+    FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
+  #endif
+
+  #ifdef BIGRED_WS2815
+    FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
+  #endif
 #endif
 
-#ifdef SCARF_DOTSTAR
-  FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
-#endif
-
-#ifdef BIGRED_WS2815
-  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
-#endif
   Serial.begin(57600);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);
   radio.setup();
+
+#ifdef PIOENV
+  Serial.println("\n\n\nPIOENV: PIOENV_TEENSY");
+  printf("DATAPIN: %d", DATAPIN);
+  printf("NUMPIXELS: %d", NUMPIXELS);
+  // printf("PIOENV: %s", PIOENV);
+#endif
 }
+
 
 void loop() {
   button_debouncer.update();
