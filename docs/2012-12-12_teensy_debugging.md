@@ -40,6 +40,7 @@ see how `rotaryPosition` changes (or doesn't) in response to me playing with the
 some interesting values:
 
 `rotaryPosition`:
+
 | incoming value | local value |
 | -------------- | ----------- |
 | `-939524096`   | `5`         |
