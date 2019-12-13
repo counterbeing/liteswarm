@@ -10,6 +10,10 @@ Bounce button_debouncer = Bounce();
 
 // BUG TODO these pins should be assigned by config.h
 // they are assigned twice - see main.cpp rotary1 rotary2
+//
+// TODO encoder can go faster if we enable interrupts for the pins
+// just      ```#define ENCODER_USE_INTERRUPTS```
+// https://github.com/PaulStoffregen/Encoder/blob/master/Encoder.h#L43
 Encoder encoder_knob(2, 3);
 
 class MyKnob {
@@ -49,11 +53,12 @@ class MyKnob {
 
   int pinA;
   int pinB;
-  int position; // BUG assigned to from LONG newPos below!
-  int start = 0;
-  int finish = 10;
+  // int position; // BUG assigned to from LONG newPos below!
+  int16_t position;
+  int16_t start = 0;
+  int16_t finish = 10;
   int buttonPressCount = 0;
-  int loopRotary = false;
+  bool loopRotary = false;
   long lastPressTime = 0;
   long holdingSince = 0;
   bool manualChange = false;
@@ -61,7 +66,7 @@ class MyKnob {
   bool &offMode;
   int &feedbackPattern;
   void checkRotary() {
-    long newPos = encoder_knob.read();
+    int16_t newPos = encoder_knob.read();
     if (newPos == position) {
       return;
     }
@@ -411,8 +416,8 @@ class MyKnob {
     Serial.print("\n\noffMode_: ");
     Serial.print(offMode);
   }
-  void set(int position) { encoder_knob.write(position); }
-  uint32_t get() { return encoder_knob.read(); }
+  void set(int16_t position) { encoder_knob.write(position); }
+  int16_t get() { return encoder_knob.read(); }
   void check(int *_animationIndex) {
     manualChange = false;
     checkButton(_animationIndex);
@@ -421,7 +426,7 @@ class MyKnob {
   bool manuallyChanged() { return manualChange; }
 
   // Set these variables once so they don't need to be set repeatedly
-  void setDefaults(int position_, int start_, int finish_,
+  void setDefaults(int16_t position_, int16_t start_, int16_t finish_,
                    bool loopRotary_ = false) {
     position = position_;
     encoder_knob.write(position);

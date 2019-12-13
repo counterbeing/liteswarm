@@ -3,12 +3,14 @@
 #include <stdint.h>
 #include "config.h"
 
+// switched rotaryPosition to smaller value
+// uint32_t rotaryPosition;  // 48
 struct RadioPacket          // Any packet up to 32 bytes can be sent.
 {                           // 0 - bit count (256 max)
   uint8_t SHARED_SECRET;    // 8
   uint8_t senderId;         // 16
-  uint32_t rotaryPosition;  // 48
-  uint8_t animationId;      // 56
+  int16_t rotaryPosition;   // 32
+  uint8_t animationId;      // 40
                             // uint32_t keyframe;       //
                             // ... 200
 };
@@ -34,7 +36,7 @@ class Radio {
   const static uint8_t PIN_RADIO_CSN = 10; // is CSN the same as SS? pin 10 on teensylc
 
   int previousAnimationIndex;
-  int previousRotaryPosition = -1;
+  int16_t previousRotaryPosition = -1;
   long lastIntervalTime = millis();
 
   void checkRadioReceive() {
@@ -46,6 +48,7 @@ class Radio {
         Serial.print(_incomingRadioPacket.SHARED_SECRET);
         Serial.print(" != ");
         Serial.print(SHARED_SECRET);
+        Serial.print("\n\n");
         return;
       }
       if (RADIO_DEBUG) {
@@ -85,7 +88,7 @@ class Radio {
 
   bool stateChanged() {
     // BUG THIS COULD BE AS LARGE AS INT32 (drop it down to INT16? -32767 - 32767 ?)
-    int currentRotaryPosition = knob.get();
+    int16_t currentRotaryPosition = knob.get();
     return !(_incomingRadioPacket.rotaryPosition == currentRotaryPosition &&
              _incomingRadioPacket.animationId == animation_index);
   }
@@ -100,11 +103,7 @@ class Radio {
     return false;
   }
 
-  
  public:
-  int count = 0;
-  int debugCount = 0;
-
   Radio(MyKnob &knob_, int &animation_index_): knob(knob_), animation_index(animation_index_) {}
   
   void setup() {
@@ -148,7 +147,7 @@ class Radio {
     knob.get();
     if (radioAlive) {
       checkRadioReceive();
-      if (knob.manuallyChanged() || runAfterInterval(1000)) {
+      if (knob.manuallyChanged() || runAfterInterval(2000)) {
         checkRadioSend();
       }
     }
