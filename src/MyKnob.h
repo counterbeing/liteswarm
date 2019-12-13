@@ -101,7 +101,7 @@ class MyKnob {
 
   // TODO lowpower mode triggered by 3000 ms long press
 
-  void checkButton(uint8_t *_aiIndex) {
+  void checkButton(int8_t *_aiIndex) {
     int buttonState = button_debouncer.read();
     if (lastButtonState == 1 && buttonState == 0)
       holdingSince = millis();  // started press
@@ -449,7 +449,7 @@ class MyKnob {
       }
       encoder_knob.write(position);
     }
-    else if (position > finish) {
+    if (position > finish) {
       if (loopRotary) {
         position = start;
       } else {

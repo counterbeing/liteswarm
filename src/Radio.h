@@ -49,7 +49,9 @@ class Radio {
         Serial.println(_incomingRadioPacket.SHARED_SECRET);
         Serial.print("rotaryPosition: ");
         Serial.println(_incomingRadioPacket.rotaryPosition);
-        Serial.print("animationId: ");
+        Serial.print("\t (local rotaryPosition: ");
+        Serial.print(knob.get());        
+        Serial.print(")\nanimationId: ");
         Serial.print(_incomingRadioPacket.animationId);
         Serial.print("  (local animationId: ");
         Serial.print(animation_index);
@@ -124,7 +126,7 @@ class Radio {
     // teensy sets all pins as input by default
     // radio needs CE high otherwise it goes to sleep
     pinMode(PIN_RADIO_CE, OUTPUT);
-    digitalWrite(PIN_RADIO_CE, HIGH);
+    // digitalWrite(PIN_RADIO_CE, HIGH);
     pinMode(PIN_RADIO_CSN, OUTPUT);
 
     Serial.println("------CE & CSN---------");
