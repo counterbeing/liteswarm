@@ -22,10 +22,15 @@ class Radio {
   MyKnob &knob;
   int &animation_index;
   const static uint8_t SHARED_RADIO_ID = 1;
-  const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
-  const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
+  // const static uint8_t PIN_RADIO_CE = 7;   // 7 on PCBs 1.3, was 6 on 1.1
+  // const static uint8_t PIN_RADIO_CSN = 6;  // 6 on PCBs 1.3, was 7 on 1.1
   // const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
   // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
+  // const static uint8_t PIN_RADIO_CE = CONF_PIN_RADIO_CE;
+  // const static uint8_t PIN_RADIO_CSN = CONF_PIN_RADIO_CSN;
+  const static uint8_t PIN_RADIO_CE = 5;
+  const static uint8_t PIN_RADIO_CSN = 6;
+
   const static uint8_t SHARED_SECRET = 42;
   uint8_t RADIO_ID = random();
   int previousAnimationIndex;
@@ -60,7 +65,7 @@ class Radio {
   void checkRadioSend() {
     // Stay silent for the first moment in order to try to join a group rather
     // than telling all others to change.
-    if (millis() < 1500) {
+    if (millis() < 2500) {
       return;
     }
     if (RADIO_DEBUG) {
@@ -89,13 +94,13 @@ class Radio {
     return false;
   }
 
-  // constructor declaration vvvvvvvvvvvv : vvvvvvvvvvv -member initializer
-  // list- vvvvvvvv
- public:  //                                             vvvvv <--init named
-          //                                             identifier (knob) with
-          //                                             these params (knob_)
-  Radio(MyKnob &knob_, int &animation_index_)
-      : knob(knob_), animation_index(animation_index_) {}
+  
+ public:
+  int count = 0;
+  int debugCount = 0;
+
+  Radio(MyKnob &knob_, int &animation_index_): knob(knob_), animation_index(animation_index_) {}
+  
   void setup() {
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.senderId = RADIO_ID;
@@ -111,6 +116,7 @@ class Radio {
     // ========================
 
     if (!_radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN)) {
+      // if (!_radio.init(SHARED_RADIO_ID, CONF_PIN_RADIO_CE, CONF_PIN_RADIO_CSN)) {
       radioAlive = false;
       if (RADIO_DEBUG) {
         Serial.println("radio fail");
@@ -131,5 +137,23 @@ class Radio {
         checkRadioSend();
       }
     }
+
+// MAC 12/12/19 TODO DELETE
+//
+    //  if (count > 450) {
+    //    return;
+    //  } else if (count < 100) {
+    //     if(radioAlive) {
+    //       Serial.println("radio ok");
+    //     } else {
+    //       Serial.println("radio fail");
+    //     }
+    // }
+    // Serial.print("Serial test no: ");
+    // Serial.println(count);
+    // Serial.print("Radio status: ");
+    // delay(200);
+    // count++;
+// ========================
   }
 };

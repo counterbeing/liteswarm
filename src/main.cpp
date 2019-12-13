@@ -21,11 +21,19 @@
 #include <printf.h>
 // ========================
 
+
+// MAC 12/12/19 TODO DELETE
 // Pins for the rotary
+//
+// uint8_t rotary1 = 2;
+// uint8_t rotary2 = 3;
+// int buttonPin = A0;
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
+int buttonPin = A9;
+// ========================
 
-int buttonPin = A0;
+
 bool offMode = false;
 
 CRGB leds[NUMPIXELS];
@@ -43,7 +51,10 @@ Stripes stripes(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
 
-int animation_index = 0;
+// MAC 12/12/19 TODO DELETE
+// int animation_index = 0;
+int animation_index = 7;
+// ========================
 Radio radio(knob, animation_index);
 
 // Animation *current_animation = &rainbow;
@@ -143,13 +154,21 @@ void playAnimation() {
 }
 
 void setup() {
+  
 
 #ifdef PIOENV_TEENSY
   // FastLED.addLeds<WS2811, DATAPIN, GRB, DATA_RATE_MHZ(12)>(leds, NUMPIXELS);
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);  // COMPILES
   // FastLED.addLeds<WS2811, DATAPIN>(leds, NUMPIXELS);    // COMPILES
-// #elif defined(???)
-//     set defaults?
+
+  delay(4000);
+
+  Serial.println("\n\n\nPIOENV: PIOENV_TEENSY");
+  printf("DATAPIN: %d", DATAPIN);
+  printf("\nNUMPIXELS: %d\n", NUMPIXELS);
+  // printf("PIOENV: %s", PIOENV);  
+
+
 #else†
   #ifdef SCARF_WS2811
     FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
@@ -174,12 +193,8 @@ void setup() {
   button_debouncer.interval(5);
   radio.setup();
 
-#ifdef PIOENV_TEENSY
-  Serial.println("\n\n\nPIOENV: PIOENV_TEENSY");
-  printf("DATAPIN: %d", DATAPIN);
-  printf("NUMPIXELS: %d", NUMPIXELS);
-  // printf("PIOENV: %s", PIOENV);
-#endif
+// #ifdef PIOENV_TEENSY
+// #endif
 }
 
 

@@ -13,10 +13,12 @@
 
 ////////////////////////////////////////////////////
 // DEFAULTS
-// All that matters to a 3pin WS* strand
+//
+// change these if NOT using ws2811 with arduino
 #ifndef PIOENV_TEENSY
   #define DATAPIN 5   // default for SCARFYMCSARFACE pcb
   #define CLOCKPIN 4  // Not applicable to 4 wire APA102 type strands
+  #define SCARF_WS2811
   // const int NUMPIXELS = 75;
   
   // knob defaults
@@ -37,11 +39,11 @@
   // LEDs ------------------------
   #define DATAPIN 17 // provides Vin voltage 8mA max to LED logic
   const int NUMPIXELS = 75;
-  // #define SCARF_WS2811
+  // #define SCARF_WS2811 // hardcoded in main.cpp for teensy
 
   // RADIO ------------------------
-  #define _PIN_RADIO_CE = 5; // will be 6 on PCBs, was 9
-  #define _PIN_RADIO_CSN = 6; // will be 7 on PCBs, was 10
+  #define CONF_PIN_RADIO_CE 5 // will be 6 on PCBs, was 9
+  #define CONF_PIN_RADIO_CSN 6 // will be 7 on PCBs, was 10
   // #define _PIN_RADIO_SS = 10;  //?? see Radio.10#L109
 
   // KNOB ------------------------
