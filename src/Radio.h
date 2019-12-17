@@ -5,14 +5,21 @@
 
 // switched rotaryPosition to smaller value
 // uint32_t rotaryPosition;  // 48
+// struct RadioPacket          // Any packet up to 32 bytes can be sent.
+// {                           // 0 - bit count (256 max); byte count
+//   uint8_t SHARED_SECRET;    // 8  : 1
+//   int32_t rotaryPosition;   // 40 : 5
+//   int8_t animationId;       // 48 : 6
+//   uint16_t senderId;        // 64 : 8
+//                             // ... 256 : 32
+// };
 struct RadioPacket          // Any packet up to 32 bytes can be sent.
-{                           // 0 - bit count (256 max)
-  uint8_t SHARED_SECRET;    // 8
-  int32_t rotaryPosition;   // 40
-  int8_t animationId;      // 48
-  uint16_t senderId;        // 64
-                            // uint32_t keyframe;       //
-                            // ... 200
+{                           // 0 - bit count (256 max); byte count
+  int32_t rotaryPosition;   // 32 : 4
+  uint16_t senderId;        // 48 : 6
+  uint8_t SHARED_SECRET;    // 56 : 7
+  int8_t animationId;       // 64 : 8
+                            // ... 256 : 32
 };
 
 class Radio {
@@ -44,18 +51,18 @@ class Radio {
         // return;
       }
       if (RADIO_DEBUG) {
-        Serial.println("------INCOMING---------");
-        Serial.print("SHARED_SECRET: ");
+        Serial.println("\n------INCOMING---------");
+        Serial.print("SHARED_SECRET:  ");
         Serial.println(_incomingRadioPacket.SHARED_SECRET);
         Serial.print("rotaryPosition: ");
-        Serial.println(_incomingRadioPacket.rotaryPosition);
-        Serial.print("\t (local rotaryPosition: ");
+        Serial.print(_incomingRadioPacket.rotaryPosition);
+        Serial.print("  (local: ");
         Serial.print(knob.get());        
-        Serial.print(")\nanimationId: ");
+        Serial.print(")\nanimationId:    ");
         Serial.print(_incomingRadioPacket.animationId);
-        Serial.print("  (local animationId: ");
+        Serial.print("  (local: ");
         Serial.print(animation_index);
-        Serial.print(")\nsenderId: ");
+        Serial.print(")\nsenderId:       ");
         Serial.println(_incomingRadioPacket.senderId);
       }
       if (stateChanged()) {
@@ -72,9 +79,6 @@ class Radio {
     if (millis() < 2500) {
       return;
     }
-    if (RADIO_DEBUG) {
-      Serial.println("--- Sending Data");
-    }
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.rotaryPosition = knob.get();
     _outboundRadioPacket.animationId = animation_index;  // extraneous?
@@ -82,6 +86,12 @@ class Radio {
 
     _radio.send(SHARED_RADIO_ID, &_outboundRadioPacket,
                 sizeof(_outboundRadioPacket), NRFLite::NO_ACK);
+
+    if (RADIO_DEBUG) {
+      Serial.println("\n--- Sending Data...");
+      Serial.print("\t`sizeof(_outboundRadioPacket)`: ");
+      Serial.print(sizeof(_outboundRadioPacket));
+    }
   }
 
   bool stateChanged() {
@@ -124,7 +134,15 @@ class Radio {
     
     // MAC 12/12/19 TODO DELETE?
     // teensy sets all pins as input by default
-    // radio needs CE high otherwise it goes to sleep
+    // radio needs CE high otherwise it goes to sleep?
+    /*********************** NRFLite.cpp#L564 ******************************************
+      digitalWrite(_csnPin, LOW);              // Signal radio to list on the SPI bus.
+      delayMicroseconds(CSN_DISCHARGE_MICROS); // Allow capacitor on CSN pin to discharge.
+      ...
+      digitalWrite(_csnPin, HIGH);             // Stop radio from listening to the SPI bus.
+      ...
+      digitalWrite(_csnPin, LOW); // Signal radio to list on the SPI bus.
+    ************************************************************************************/
     pinMode(PIN_RADIO_CE, OUTPUT);
     // digitalWrite(PIN_RADIO_CE, HIGH);
     pinMode(PIN_RADIO_CSN, OUTPUT);

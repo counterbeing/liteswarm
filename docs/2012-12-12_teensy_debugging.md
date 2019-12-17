@@ -40,6 +40,7 @@ see how `rotaryPosition` changes (or doesn't) in response to me playing with the
 some interesting values:
 
 `rotaryPosition`:
+
 | incoming value | local value |
 | -------------- | ----------- |
 | `-939524096`   | `5`         |
@@ -71,8 +72,96 @@ testing this codebase with two vanilla nano scarves, both neopixel
 - **AW FUCK** both scarves perform more or less as expected. no crazy values, no runaway feedback loops....
 - **so its probably not code... but bad wiring or the clock rate on the teensy**.
 
+## new theory: compiler pads memory space of packet struct differently on nano (8-bit) vs teensy (32-bit)
+
+I think this is what's going on! will test soon.
+
+apparently the c compiler tries optimize the memory layout of *struct*ure members according to constraints / rules that partially depend on system architecture (word size?). If the struct's members are of different sizes, the compiler may elect to pad the smaller ones such that the whole struct lays out more regularly in memory.
+
+Our code currently packs 4 numbers into a 48-byte `struct` that is passed to the radio for transmission, or conversely received and unpacked.
+
+The preferred memory layout of the stuct in memory space is probably different on teensy vs nano - thus leading to what appear to be buffer overrun type bugs when one platform gets a packet with that was packed and padded for a different architecture.
+
+apparently the `#pragma pack(n)` compiler directive can control the compilers packing strategy, where n = how many padding bytes can be added around each member to make the struct's overall memory footprint "square". `n = 1` should make it nice and "1-dimensional" and resolve the problem if we're lucky (hopefully its not more complicated than this).
 
 
+**thanks be to @SadatD for the following explaination, originally posted to https://stackoverflow.com/questions/3318410/pragma-pack-effect#3318475**: 
+
+>  `#pragma pack` instructs the compiler to pack structure members with particular alignment.  >  Most compilers, when you declare a struct, will insert padding between members to ensure that they are aligned to appropriate addresses in memory (usually a multiple of the type's size).  This avoids the performance penalty (or outright error) on some architectures associated with accessing variables that are not aligned properly.  For example, given 4-byte integers and the following struct:
+>
+>      struct Test
+>      {
+>         char AA;
+>         int BB;
+>         char CC;
+>      };
+>  
+>  The compiler could choose to lay the struct out in memory like this:
+>  
+>      |   1   |   2   |   3   |   4   |  
+>  
+>      | AA(1) | pad.................. |
+>      | BB(1) | BB(2) | BB(3) | BB(4) | 
+>      | CC(1) | pad.................. |
+>  
+>  and `sizeof(Test)` would be 4 &times; 3 = 12, even though it only contains 6 bytes of data.  >  The most common use case for the `#pragma` (to my knowledge) is when working with hardware devices where you need to ensure that the compiler does not insert padding into the data and each member follows the previous one.  With `#pragma pack(1)`, the struct above would be laid out like this:
+>
+>      |   1   |
+>  
+>      | AA(1) |
+>      | BB(1) |
+>      | BB(2) |
+>      | BB(3) |
+>      | BB(4) |
+>      | CC(1) |
+>  
+>  
+>  
+>  And `sizeof(Test)` would be 1 &times; 6 = 6.
+>  
+>  With `#pragma pack(2)`, the struct above would be laid out like this:
+>  
+>      |   1   |   2   | 
+>  
+>      | AA(1) | pad.. |
+>      | BB(1) | BB(2) |
+>      | BB(3) | BB(4) |
+>      | CC(1) | pad.. |
+>  
+>  And `sizeof(Test)` would be 2 &times; 4 =  8.
+>  
+>  Order of variables in struct is also important. With variables ordered like following:
+>  
+>      struct Test
+>      {
+>         char AA;
+>         char CC;
+>         int BB;
+>      };
+>  
+>  and with `#pragma pack(2)`, the struct would be laid out like this:
+>  
+>  
+>      |   1   |   2   | 
+>  
+>      | AA(1) | CC(1) |
+>      | BB(1) | BB(2) |
+>      | BB(3) | BB(4) |
+>  
+>  and `sizeOf(Test)` would be 3 × 2 = 6.
+>   .
+
+
+
+references:
+- https://forum.pjrc.com/threads/24940-Teensy-3-1-nrf24l01-issue
+- https://docs.microsoft.com/en-us/cpp/preprocessor/pack?view=vs-2019
+
+
+can't wait
+
+
+---
 
 ### nano communicating with teensy v2 (teensy branch latest)
 ``` log
