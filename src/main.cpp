@@ -104,13 +104,13 @@ void runAdjustments() {
 void playAnimation() {
   if (animation_index != previous_animation_index) {
     // if ( (animation_index > 8) || (animation_index < 0) ) animation_index = 0;
-    if ( animation_index > 8 ) animation_index = 0;
+    if ( animation_index > 8 ) animation_index = 1;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
     // next case
 
     if (KNOB_DEBUG) {
-      Serial.print("Animation Index: ");
+      Serial.print("\n\n--------- Animation Index: ");
       Serial.println(animation_index);
     }
 
@@ -145,7 +145,7 @@ void playAnimation() {
       default:
         Serial.println("\n\nWARN: default animation switch case");
         // current_animation = &crossfade;
-        animation_index = 0;
+        // animation_index = 0;
         break;
     }
     current_animation->setup();

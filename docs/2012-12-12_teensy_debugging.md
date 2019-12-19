@@ -29,9 +29,15 @@ struct RadioPacket          // Any packet up to 32 bytes can be sent.
 };
 ```
 
-## remaining problems
-- animations don't loop around but get stuck at last animation index
-- fixed: knobPosition outside knob.confine() interval causes endless loop of update packets until knob is returned to range. fixed w/ liberal sprinkling of knob.confine() in radio code. bad.
+
+## other fixes
+
+- animation selection loop causes device to reset/crash once `animation_index` is set to 0 again
+  - fixed: sort of. have not figure out cause, but skipping the animation at `animation_index = 0` avoids the crash and cycles through other animation as expected.
+  - the animation causing the problem is `crossfade`. or maybe its the index? not sure.
+  - crossfade is diff from others in that it defines `setup()` as public method instead of private one.
+
+- fixed: knobPosition outside `knob.confine()` interval causes endless loop of update packets until knob is returned to range. fixed w/ liberal sprinkling of `knob.confine()` in radio code. bad.
 
 to monitor serial of two connected devices (add `~/.platformio/penv/bin` to path)
 ```
