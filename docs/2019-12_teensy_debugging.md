@@ -1,4 +1,4 @@
-# 2012-12-17 solution to struct padding
+# 2019-12-17 solution to struct padding
 
 ```c
 // Radio.h
@@ -47,7 +47,7 @@ pio device monitor --environment nano
 
 ---
 
-# 2012-12-12 teensy dev & debugging
+# 2019-12-12 teensy dev & debugging
 
 working on refactoring code from the 'master' branch for teensy_lc.
 
