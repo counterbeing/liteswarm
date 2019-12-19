@@ -3,8 +3,11 @@
 #include <stdint.h>
 #include "config.h"
 
-// switched rotaryPosition to smaller value
-// uint32_t rotaryPosition;  // 48
+// compiler will automatically pad struct differently depending on architecture
+// atmega328 is 8bit; teensy is 32bit; (can be disabled with `#pragma pack(1)`)
+// the padding happens if larger members come after smaller members. so quick fix
+// is to organize members from largest to smallest.
+// 
 // struct RadioPacket          // Any packet up to 32 bytes can be sent.
 // {                           // 0 - bit count (256 max); byte count
 //   uint8_t SHARED_SECRET;    // 8  : 1
@@ -34,7 +37,7 @@ class Radio {
   uint16_t RADIO_ID = random(1024,65400);
   const static uint8_t SHARED_SECRET = 42;
 
-  // uint16_t previousAnimationIndex; // unusued?
+  //  previousAnimationIndex; // unusued?
   int32_t previousRotaryPosition = -1;
   long lastIntervalTime = millis();
 
@@ -57,8 +60,10 @@ class Radio {
         Serial.print("rotaryPosition: ");
         Serial.print(_incomingRadioPacket.rotaryPosition);
         Serial.print("  (local: ");
-        Serial.print(knob.get());        
-        Serial.print(")\nanimationId:    ");
+        Serial.print(knob.get());
+        Serial.print(")   state changed?: ");
+        Serial.print(stateChanged());
+        Serial.print("\nanimationId:    ");
         Serial.print(_incomingRadioPacket.animationId);
         Serial.print("  (local: ");
         Serial.print(animation_index);
@@ -67,6 +72,7 @@ class Radio {
       }
       if (stateChanged()) {
         knob.set(_incomingRadioPacket.rotaryPosition);
+        knob.confine(); // HACK to prevent knob.confine() bug below
         animation_index = _incomingRadioPacket.animationId;
         lastIntervalTime = millis();
       }
@@ -79,6 +85,7 @@ class Radio {
     if (millis() < 2500) {
       return;
     }
+    knob.confine(); // HACK to prevent bug below
     _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
     _outboundRadioPacket.rotaryPosition = knob.get();
     _outboundRadioPacket.animationId = animation_index;  // extraneous?
@@ -88,15 +95,19 @@ class Radio {
                 sizeof(_outboundRadioPacket), NRFLite::NO_ACK);
 
     if (RADIO_DEBUG) {
-      Serial.println("\n--- Sending Data...");
-      Serial.print("\t`sizeof(_outboundRadioPacket)`: ");
-      Serial.print(sizeof(_outboundRadioPacket));
+      Serial.println("\n--- Sending Data...\n");
+      // Serial.print("\t`sizeof(_outboundRadioPacket)`: ");
+      // Serial.print(sizeof(_outboundRadioPacket));
     }
   }
 
   bool stateChanged() {
-    // BUG THIS COULD BE AS LARGE AS INT32 (drop it down to INT16? -32767 - 32767 ?)
-    int32_t currentRotaryPosition = knob.get();
+    // BUG - when local knob position is outside of current animations knob.confine() range,
+    // something causes an endless ping-pong of packets b/w units; incoming position could be 4
+    // but local position is 5 (because confine), so it gets changed, causing manuallyChanged()
+    // to be true (not sure why), causing an update to be sent w/ knobPosition = 5... 
+    knob.confine(); // HACK to prevent bug 
+    int32_t currentRotaryPosition = knob.get(); 
     return !(_incomingRadioPacket.rotaryPosition == currentRotaryPosition &&
              _incomingRadioPacket.animationId == animation_index);
   }
@@ -112,18 +123,7 @@ class Radio {
   }
 
  public:
-  Radio(MyKnob &knob_, int8_t &animation_index_): knob(knob_), animation_index(animation_index_) {
-    // _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
-    // _outboundRadioPacket.rotaryPosition = 0;
-    // _outboundRadioPacket.animationId = 0;
-    // _outboundRadioPacket.senderId = RADIO_ID;
-
-    // _incomingRadioPacket.SHARED_SECRET = SHARED_SECRET;
-    // _incomingRadioPacket.rotaryPosition = 0;
-    // _incomingRadioPacket.animationId = 0;
-    // _incomingRadioPacket.senderId = RADIO_ID;
-
-  }
+  Radio(MyKnob &knob_, int8_t &animation_index_): knob(knob_), animation_index(animation_index_) {}
   
   void setup() {
 
@@ -168,12 +168,16 @@ class Radio {
   }
   void check() {
     // int newRotaryPosition = knob.get();
-    knob.get();
+    // knob.get();
     if (radioAlive) {
-      checkRadioReceive();
       if (knob.manuallyChanged() || runAfterInterval(3000)) {
+        Serial.print("\nknob.manuallyChanged(): ");
+        Serial.print(knob.manuallyChanged());
+        Serial.print("\nrunAfterInterval(3000): ");
+        Serial.println(runAfterInterval(3000));
         checkRadioSend();
       }
+      checkRadioReceive();
     }
   }
 };

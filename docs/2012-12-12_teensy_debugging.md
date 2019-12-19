@@ -1,3 +1,46 @@
+# 2012-12-17 solution to struct padding
+
+```c
+// Radio.h
+
+// compiler will automatically pad struct differently depending on architecture
+// atmega328 is 8bit; teensy is 32bit; (can be disabled with `#pragma pack(1)`)
+// the padding happens if larger members come after smaller members. so quick fix
+// is to organize members from largest to smallest.
+
+// OLD code - caused padding problems when unpacking 
+// struct RadioPacket          // Any packet up to 32 bytes can be sent.
+// {                           // 0 - bit count (256 max); byte count
+//   uint8_t SHARED_SECRET;    // 8  : 1
+//   int32_t rotaryPosition;   // 40 : 5
+//   int8_t animationId;       // 48 : 6
+//   uint16_t senderId;        // 64 : 8
+//                             // ... 256 : 32
+// };
+
+// fix
+struct RadioPacket          // Any packet up to 32 bytes can be sent.
+{                           // 0 - bit count (256 max); byte count
+  int32_t rotaryPosition;   // 32 : 4
+  uint16_t senderId;        // 48 : 6
+  uint8_t SHARED_SECRET;    // 56 : 7
+  int8_t animationId;       // 64 : 8
+                            // ... 256 : 32
+};
+```
+
+## remaining problems
+- animations don't loop around but get stuck at last animation index
+- fixed: knobPosition outside knob.confine() interval causes endless loop of update packets until knob is returned to range. fixed w/ liberal sprinkling of knob.confine() in radio code. bad.
+
+to monitor serial of two connected devices (add `~/.platformio/penv/bin` to path)
+```
+pio device monitor --environment teensy
+pio device monitor --environment nano
+```
+
+---
+
 # 2012-12-12 teensy dev & debugging
 
 working on refactoring code from the 'master' branch for teensy_lc.
@@ -157,8 +200,6 @@ references:
 - https://forum.pjrc.com/threads/24940-Teensy-3-1-nrf24l01-issue
 - https://docs.microsoft.com/en-us/cpp/preprocessor/pack?view=vs-2019
 
-
-can't wait
 
 
 ---

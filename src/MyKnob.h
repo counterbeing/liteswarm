@@ -54,7 +54,7 @@ class MyKnob {
   int pinA;
   int pinB;
   // int position; // BUG assigned to from LONG newPos below!
-  int32_t position = 1; 
+  int32_t position; 
   int32_t start = 0;
   int32_t finish = 10;
   int buttonPressCount = 0;
@@ -68,11 +68,13 @@ class MyKnob {
   
   void checkRotary() {
     int32_t newPos = encoder_knob.read();
-    if (newPos == position) {
-      return;
+    // if (newPos == position) {
+    //   return;
+    // }
+    if (newPos != position) {
+      manualChange = true;
+      position = newPos;
     }
-    manualChange = true;
-    position = newPos;
   }
 
 // #define KNOB_DEBUG true     // set in config.h
@@ -417,10 +419,8 @@ class MyKnob {
     Serial.print("\n\noffMode_: ");
     Serial.print(offMode);
   }
-  void set(int32_t posish) { 
-    encoder_knob.write(posish); 
-  }
-  uint16_t get() { return encoder_knob.read(); }
+  void set(int32_t position) { encoder_knob.write(position); }
+  int32_t get() { return encoder_knob.read(); }
   void check(int8_t *_animationIndex) {
     manualChange = false;
     checkButton(_animationIndex);

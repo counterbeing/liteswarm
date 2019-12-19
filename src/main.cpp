@@ -103,7 +103,8 @@ void runAdjustments() {
 }
 void playAnimation() {
   if (animation_index != previous_animation_index) {
-    if ( (animation_index > 8) || (animation_index < 0) ) animation_index = 0;
+    // if ( (animation_index > 8) || (animation_index < 0) ) animation_index = 0;
+    if ( animation_index > 8 ) animation_index = 0;
     // BUG CAUTION
     // never follow one animation function immediately with itself in the the
     // next case
@@ -143,8 +144,8 @@ void playAnimation() {
         break;
       default:
         Serial.println("\n\nWARN: default animation switch case");
-        current_animation = &crossfade;
-        animation_index = 1;
+        // current_animation = &crossfade;
+        animation_index = 0;
         break;
     }
     current_animation->setup();
@@ -204,6 +205,7 @@ void setup() {
 
 
 void loop() {
+  // radio.check();
   button_debouncer.update();
   knob.check(&animation_index);
   if (offMode) {
