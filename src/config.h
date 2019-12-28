@@ -1,13 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define KNOB_DEBUG true   // set flag to false to disable serial logging in knob
+#define KNOB_DEBUG false   // set flag to false to disable serial logging in knob
 #define RADIO_DEBUG false  // set flag to false to disable logging for Radio
 #define ANIM_DEBUG false 
 
 // #define SCARF_DOTSTAR
 // #define SCARF_WS2811     // IC has pink dot
 #define MATRIX_WS2811     // IC has pink dot
+// #define VEST_WS2812B     // IC has pink dot
 // #define SCARF_SK9822  // IC has green dot
 // #define BIGRED_WS2815    // IC has purple dot?
 
@@ -107,6 +108,55 @@ uint8_t XY( uint8_t x, uint8_t y)
      60,  61,  62,  63,  64,  65,  66,  67,  68,  69,
      70,  71,  72,  73,  74
     };
+
+  uint8_t i = (y * kMatrixWidth) + x;
+  uint8_t j = MatrixTable[i];
+  return j;
+}
+
+#endif
+
+//////////////////////////////////////////////////
+// Vest WS2812B
+// Helper functions for a two-dimensional XY matrix of pixels.
+#ifdef VEST_WS2812B
+const uint8_t kMatrixWidth = 24;
+const uint8_t kMatrixHeight = 8;
+
+#define NUMPIXELS (kMatrixWidth * kMatrixHeight)
+#define NUM_LEFT 60
+#define NUM_RIGHT 60
+
+// This function will return the right 'led index number' for 
+// a given set of X and Y coordinates on DiscoBandCamp
+// This code, plus the supporting 80-byte table is much smaller 
+// and much faster than trying to calculate the pixel ID with code.
+#define LAST_VISIBLE_LED 119
+uint8_t XY( uint8_t x, uint8_t y)
+{
+  // any out of bounds address maps to the first hidden pixel
+  if( (x >= kMatrixWidth) || (y >= kMatrixHeight) ) {
+    return (LAST_VISIBLE_LED + 1);
+  }
+  
+  const uint8_t MatrixTable[] = {
+    10, 9,  8,  7,  6,  5,  4,  3,  2,  1,  0,  145,
+    153,60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 
+    120,11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 146,  
+    154,80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 182, 
+    121,127,21, 22, 23, 24, 25, 26, 27, 28, 29, 147, 
+    155,89, 88, 87, 86, 85, 84, 83, 82, 81, 176,183, 
+    122,128,133,30, 31, 32, 33, 34, 35, 36, 37, 148,  
+    156,97, 96, 95, 94, 93, 92, 91, 90, 171,177,184, 
+    123,129,134,135,38, 39, 40, 41, 42, 43, 44, 149,  
+    157,104,103,102,101,100,99, 98, 167,172,178,185, 
+    124,130,134,136,139,45, 46, 47, 48, 49, 50, 150,  
+    158,110,109,108,107,106,105,164,168,173,179,186, 
+    125,131,134,137,140,142,51, 52, 53, 54, 55, 151,  
+    159,115,114,113,112,111,162,165,169,174,180,187, 
+    126,132,134,138,141,143,144,56, 57, 58, 59, 152,  
+    160,119,118,117,116,161,163,166,170,175,181,188,
+  };
 
   uint8_t i = (y * kMatrixWidth) + x;
   uint8_t j = MatrixTable[i];

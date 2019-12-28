@@ -178,7 +178,7 @@ void setup() {
     // printf("PIOENV: %s", PIOENV);  
 
 
-  #else†
+  #else
   
   #ifdef SCARF_WS2811
     FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
@@ -186,6 +186,11 @@ void setup() {
   
   #ifdef MATRIX_WS2811
     FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
+  #endif
+
+  #ifdef VEST_WS2812B
+    FastLED.addLeds<WS2812B, DATAPIN, GRB>(leds, 0, NUM_LEFT);
+    FastLED.addLeds<WS2812B, CLOCKPIN, GRB>(leds, NUM_LEFT, NUM_RIGHT);
   #endif
 
   #ifdef SCARF_SK9822
