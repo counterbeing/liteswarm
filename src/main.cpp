@@ -16,6 +16,7 @@
 #include "animations/Rainbow.h"
 #include "animations/Stars.h"
 #include "animations/Stripes.h"
+#include "animations/Rider.h"
 
 // MAC 12/12/19 TODO DELETE
 #include <printf.h>
@@ -52,6 +53,7 @@ FuckMyEyes fuck_my_eyes(knob, leds);
 Stripes stripes(knob, leds);
 DiamondNecklace diamond_necklace(knob, leds);
 Dimmer dimmer(knob, leds);
+Rider rider(knob, leds);
 
 // MAC 12/12/19 TODO DELETE
 int8_t animation_index = 0;
@@ -119,7 +121,8 @@ void playAnimation() {
         current_animation = &crossfade;
         break;
       case 1:
-        current_animation = &color_chooser;
+        current_animation = &rider;
+        // current_animation = &color_chooser;
         break;
       case 2:
         current_animation = &race;
@@ -162,21 +165,26 @@ void setup() {
 
   randomSeed(analogRead(A6));
   
-#ifdef PIOENV_TEENSY
-  // FastLED.addLeds<WS2811, DATAPIN, GRB, DATA_RATE_MHZ(12)>(leds, NUMPIXELS);
-  FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);  // COMPILES
-  // FastLED.addLeds<WS2811, DATAPIN>(leds, NUMPIXELS);    // COMPILES
+  #ifdef PIOENV_TEENSY
+    // FastLED.addLeds<WS2811, DATAPIN, GRB, DATA_RATE_MHZ(12)>(leds, NUMPIXELS);
+    FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);  // COMPILES
+    // FastLED.addLeds<WS2811, DATAPIN>(leds, NUMPIXELS);    // COMPILES
 
-  delay(4000);
+    delay(4000);
 
-  Serial.println("\n\n\nPIOENV: PIOENV_TEENSY");
-  printf("DATAPIN: %d", DATAPIN);
-  printf("\nNUMPIXELS: %d\n", NUMPIXELS);
-  // printf("PIOENV: %s", PIOENV);  
+    Serial.println("\n\n\nPIOENV: PIOENV_TEENSY");
+    printf("DATAPIN: %d", DATAPIN);
+    printf("\nNUMPIXELS: %d\n", NUMPIXELS);
+    // printf("PIOENV: %s", PIOENV);  
 
 
-#else†
+  #else†
+  
   #ifdef SCARF_WS2811
+    FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
+  #endif
+  
+  #ifdef MATRIX_WS2811
     FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
   #endif
 

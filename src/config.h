@@ -7,6 +7,7 @@
 
 // #define SCARF_DOTSTAR
 // #define SCARF_WS2811     // IC has pink dot
+#define MATRIX_WS2811     // IC has pink dot
 // #define SCARF_SK9822  // IC has green dot
 // #define BIGRED_WS2815    // IC has purple dot?
 
@@ -76,6 +77,46 @@ const int NUMPIXELS = 75;
 
 
 //////////////////////////////////////////////////
+// MATRIX WS2811
+// Helper functions for a two-dimensional XY matrix of pixels.
+#ifdef MATRIX_WS2811
+const uint8_t kMatrixWidth = 75;
+const uint8_t kMatrixHeight = 1;
+
+#define NUMPIXELS (kMatrixWidth * kMatrixHeight)
+
+// This function will return the right 'led index number' for 
+// a given set of X and Y coordinates on DiscoBandCamp
+// This code, plus the supporting 80-byte table is much smaller 
+// and much faster than trying to calculate the pixel ID with code.
+#define LAST_VISIBLE_LED 74
+uint8_t XY( uint8_t x, uint8_t y)
+{
+  // any out of bounds address maps to the first hidden pixel
+  if( (x >= kMatrixWidth) || (y >= kMatrixHeight) ) {
+    return (LAST_VISIBLE_LED + 1);
+  }
+  
+  const uint8_t MatrixTable[] = {
+      0,   1,   2,   3,   4,   5,   6,   7,   8,   9,
+     10,  11,  12,  13,  14,  15,  16,  17,  18,  19,
+     20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
+     30,  31,  32,  33,  34,  35,  36,  37,  38,  39,
+     40,  41,  42,  43,  44,  45,  46,  47,  48,  49,
+     50,  51,  52,  53,  54,  55,  56,  57,  58,  59,
+     60,  61,  62,  63,  64,  65,  66,  67,  68,  69,
+     70,  71,  72,  73,  74
+    };
+
+  uint8_t i = (y * kMatrixWidth) + x;
+  uint8_t j = MatrixTable[i];
+  return j;
+}
+
+#endif
+
+
+//////////////////////////////////////////////////
 // BIGRED 12v WS2815 strip
 //   provide 12v via strip's power barrel-connector plugs
 //   connect strip ground to controller ground (strip blue wire to controller
@@ -97,71 +138,3 @@ const int NUMPIXELS = 375;
 
 
 #endif
-
-//////////////////////////////////////////////////
-// 12v WS2815 strip troubleshooting
-//
-// works, but only first 75 pixels
-//    const int NUMPIXELS = 75;
-//    FastLED.addLeds<WS2811, CLOCKPIN, GRB>(leds, 150);  // 5m
-//
-// doesn't work; changing NUMPIXELS seems to crash the main loop somehow
-//    const int NUMPIXELS = 150;
-//    FastLED.addLeds<WS2811, CLOCKPIN, GRB>(leds, 150);  // 5m
-
-// which animations work w/ NUMPIXELS = 150:
-// <ok?> - <animation>
-// y - crossfade
-// y - color_chooser
-// y - race
-// y - stars
-// y - rainbow
-// y - fuck_my_eyes
-// y - stripes
-// y - diamond_necklace
-// y - dimmer
-
-// which animations work w/ NUMPIXELS = 375 ?
-// serial strings + only crossfade
-// UH OH....
-// DATA:    [==========]  132.2% (used 2707 bytes from 2048 bytes)
-//
-// commenting out all serial.print with strings saves 406 bytes
-// DATA:    [========  ]  80.2% (used 1642 bytes from 2048 bytes)
-//
-// add colorchooser
-// DATA:    [========  ]  81.9% (used 1677 bytes from 2048 bytes)
-//
-// add race
-// DATA:    [========  ]  83.6% (used 1713 bytes from 2048 bytes)
-//
-// add stars
-// DATA:    [========= ]  85.4% (used 1750 bytes from 2048 bytes)
-//
-// add rainbow
-// DATA:    [========= ]  87.1% (used 1783 bytes from 2048 bytes)
-//
-// add fuck_my_eyes
-// DATA:    [========= ]  88.8% (used 1818 bytes from 2048 bytes)
-//
-// add stripes
-// DATA:    [========= ]  90.6% (used 1855 bytes from 2048 bytes)
-//
-// add diamond_necklace
-// DATA:    [========= ]  92.3% (used 1890 bytes from 2048 bytes)
-//
-// add dimmer
-// DATA:    [========= ]  94.1% (used 1927 bytes from 2048 bytes)
-
-// WS2815 power draw w/ NUMPIXELS = 375:
-//
-// <animation>   -     <amps>
-// crossfade:          3.0 - 4.2
-// color_chooser:      3.0 - 4.2
-// race:               2.6
-// stars:              1.0
-// rainbow:            3.4
-// fuck_my_eyes:       3.8
-// stripes:            3.5
-// diamond_necklace:   1.0
-// dimmer:             0.78 - 4.25
