@@ -2,12 +2,12 @@
 
 class Rider : public Animation {
  private:
-  int initialPosition = 60;
-  int start = 5;
-  int finish = 400;
+  int initialPosition = 0;
+  int start = 0;
+  int finish = 255;
   bool initialized = false;
   int head = 0;
-  bool loopRotary = false;
+  bool loopRotary = true;
   MyKnob &knob;
   CRGB *leds;
 
@@ -40,7 +40,8 @@ class Rider : public Animation {
     int brightness = abs(x * (256 / kMatrixWidth) - triwave8(riderPos) * 2 + 127) * 3;
     if (brightness > 255) brightness = 255;
     brightness = 255 - brightness;
-    CRGB riderColor = CHSV(120, 255, brightness);
+    // CRGB riderColor = CHSV(0, 255, brightness);
+    CRGB riderColor = CHSV(dlay, 255, brightness);
     for (byte y = 0; y < kMatrixHeight; y++) {
       leds[XY(x, y)] = riderColor;
     }
