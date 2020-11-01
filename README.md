@@ -81,3 +81,8 @@ void loop() {
 ```
 
 If you have a flashing blue LED you're in business.
+
+### Notes
+
+- Ifdef might be able to tap into env vars to contitionally include.
+-
