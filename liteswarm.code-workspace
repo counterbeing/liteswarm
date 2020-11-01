@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"terminal.integrated.env.osx": {
+			"PLATFORMIO_CALLER": "vscode"
+		},
+		"[cpp]": {
+			"editor.defaultFormatter": "xaver.clang-format",
+			"editor.formatOnSave": true
+		  },
+	},
+	"extensions": {
+		"recommendations": ["xaver.clang-format", "platformio.platformio-ide", "ms-vscode.cpptools"]
+	}
+}
