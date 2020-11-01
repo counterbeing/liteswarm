@@ -41,7 +41,8 @@ class Radio {
 
       if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET)
         continue;
-      if (_incomingRadioPacket.animationId < 0 || _incomingRadioPacket.animationId >= numAnimations)
+      if (_incomingRadioPacket.animationId < 0 ||
+          _incomingRadioPacket.animationId >= numAnimations)
         continue;
 
       if (RADIO_DEBUG) {

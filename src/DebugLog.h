@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #ifndef DebugLog_H
-#define DebugLog_H
+#  define DebugLog_H
 
 template <typename T>
 void debugLog(T t) {

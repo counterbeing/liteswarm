@@ -6,8 +6,8 @@
 #  define RADIO_DEBUG false // set flag to false to disable logging for Radio
 #  define ANIM_DEBUG false
 
-#  if BOARD == "nano"
-#  elif BOARD == "esp32"
+#  if BOARD == nano
+#  elif BOARD == esp32
 #  else
 #    error "Unexpected value of BOARD."
 #  endif

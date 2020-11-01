@@ -24,7 +24,8 @@ class Stripes : public Animation {
         lastPosition = 0;
       }
       fill_solid(leds, NUMPIXELS, CRGB::Red);
-      for (int dot = lastPosition; dot < NUMPIXELS; dot += (STRIPE_LENGTH * 2)) {
+      for (int dot = lastPosition; dot < NUMPIXELS;
+           dot += (STRIPE_LENGTH * 2)) {
         for (int band = 0; band < STRIPE_LENGTH; band++) {
           leds[dot + band] = CRGB::Purple;
         }
@@ -37,6 +38,7 @@ class Stripes : public Animation {
 
   uint32_t getKnobPosition() override { return delay.get(); }
 
-  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
-
+  void setKnobPosition(const uint32_t newPosition) override {
+    delay.set(newPosition);
+  }
 };

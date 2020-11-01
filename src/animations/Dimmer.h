@@ -24,6 +24,7 @@ class Dimmer : public Animation {
 
   uint32_t getKnobPosition() override { return brightness.get(); }
 
-  void setKnobPosition(const uint32_t newPosition) override { brightness.set(newPosition); }
-
+  void setKnobPosition(const uint32_t newPosition) override {
+    brightness.set(newPosition);
+  }
 };

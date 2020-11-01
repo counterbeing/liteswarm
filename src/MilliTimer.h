@@ -1,7 +1,7 @@
 #include "FastLED.h"
 
 #ifndef MilliTimer_H
-#define MilliTimer_H
+#  define MilliTimer_H
 
 class MilliTimer {
  private:

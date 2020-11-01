@@ -28,6 +28,7 @@ class Strobe : public Animation {
 
   uint32_t getKnobPosition() override { return blinkDuration.get(); }
 
-  void setKnobPosition(const uint32_t newPosition) override { blinkDuration.set(newPosition); }
-
+  void setKnobPosition(const uint32_t newPosition) override {
+    blinkDuration.set(newPosition);
+  }
 };

@@ -24,5 +24,4 @@ class FindMyBike : public Animation {
   uint32_t getKnobPosition() override { return 0; }
 
   void setKnobPosition(const uint32_t newPosition) override {}
-
 };

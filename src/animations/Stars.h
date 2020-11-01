@@ -39,6 +39,7 @@ class Stars : public Animation {
 
   uint32_t getKnobPosition() override { return delay.get(); }
 
-  void setKnobPosition(const uint32_t newPosition) override { delay.set(newPosition); }
-
+  void setKnobPosition(const uint32_t newPosition) override {
+    delay.set(newPosition);
+  }
 };

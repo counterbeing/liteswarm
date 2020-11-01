@@ -24,6 +24,7 @@ class ColorChooser : public Animation {
 
   uint32_t getKnobPosition() override { return hue.get(); }
 
-  void setKnobPosition(const uint32_t newPosition) override { hue.set(newPosition); }
-
+  void setKnobPosition(const uint32_t newPosition) override {
+    hue.set(newPosition);
+  }
 };

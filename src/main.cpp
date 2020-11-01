@@ -84,14 +84,17 @@ class AnimationModeController : public BaseController {
         animationIndexChanged = true;
         animationIndex = incomingAnimationId;
       }
-      if (animationIndexChanged || animations[animationIndex]->getKnobPosition() != incomingRotaryPosition)
+      if (animationIndexChanged ||
+          animations[animationIndex]->getKnobPosition() !=
+              incomingRotaryPosition)
         animations[animationIndex]->setKnobPosition(incomingRotaryPosition);
     }
 
     if (buttonControl.hasClickEventOccurred(ClickEvent::CLICK)) {
       animationIndexChanged = true;
       // BUG! setting animationIndex to 0 crashes system so setting it to 1
-      animationIndex = (animationIndex == NUM_ANIMATONS - 1) ? 1 : animationIndex + 1;
+      animationIndex =
+          (animationIndex == NUM_ANIMATONS - 1) ? 1 : animationIndex + 1;
     }
 
     Animation * currentAnimation = animations[animationIndex];
@@ -161,10 +164,9 @@ class MasterController {
     if (modeChange)
       offMode = !offMode;
 
-    BaseController *activeController = 
-      offMode 
-      ? dynamic_cast<BaseController*>(&offModeController) 
-      : dynamic_cast<BaseController*>(&animationModeController);
+    BaseController * activeController =
+        offMode ? dynamic_cast<BaseController *>(&offModeController)
+                : dynamic_cast<BaseController *>(&animationModeController);
 
     if (modeChange || firstLoop) {
       firstLoop = false;

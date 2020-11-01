@@ -5,7 +5,7 @@
 #include <Encoder.h>
 
 #ifndef MyKnob_H
-#define MyKnob_H
+#  define MyKnob_H
 
 Bounce button_debouncer = Bounce();
 
@@ -123,8 +123,7 @@ class KnobSetting {
   void set(int32_t newValue) {
     if (newValue < minValue) {
       newValue = loopRotary ? maxValue : minValue;
-    }
-    else if (newValue > maxValue) {
+    } else if (newValue > maxValue) {
       newValue = loopRotary ? minValue : maxValue;
     }
 

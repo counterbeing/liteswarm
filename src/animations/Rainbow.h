@@ -24,6 +24,7 @@ class Rainbow : public Animation {
 
   uint32_t getKnobPosition() override { return offset.get(); }
 
-  void setKnobPosition(const uint32_t newPosition) override { offset.set(newPosition); }
-
+  void setKnobPosition(const uint32_t newPosition) override {
+    offset.set(newPosition);
+  }
 };
