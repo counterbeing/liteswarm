@@ -52,3 +52,35 @@ More information about PlatformIO Library Dependency Finder
 https://repl.it/@100ideas/knobreducer-binary-sandbox
 - basically its too tricky to use binary representations
 - instead use hash map (unordered_map) fx for dispatcher
+
+
+## Install and Upload
+
+### ESP32
+
+First make sure you can upload a basic sketch.
+
+- Download these drivers if you have not: [Espressif USB Drivers](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers]
+- Use the arduino IDE and add the repo `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json` in the preferences for installing boards.
+- Install esptool `brew install esptool`
+- In the boards manager install the latest `espressif` boards.
+- Select the `ESP32 Dev Kit` as your target board.
+- Change upload rate to 921600
+- Your port should reference UART `/dev/cu.SLAB_USBtoUART`
+- Run the following example Blink.
+
+```c++
+int LED_BUILTIN = 2;
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+}
+```
+
+If you have a flashing blue LED you're in business.
