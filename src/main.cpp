@@ -10,16 +10,7 @@
 #include <MyKnob.h>
 #include <SPI.h>
 
-#include "animations/ColorChooser.h"
-#include "animations/Crossfade.h"
-#include "animations/DiamondNecklace.h"
-#include "animations/Dimmer.h"
-#include "animations/FuckMyEyes.h"
-#include "animations/Race.h"
-#include "animations/Rainbow.h"
-#include "animations/Stars.h"
-#include "animations/Stripes.h"
-// #include "animations/Strobe.h"
+#include "animations/animations.h"
 
 CRGB leds[NUMPIXELS];
 
