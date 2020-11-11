@@ -11,7 +11,13 @@
 		"[cpp]": {
 			"editor.defaultFormatter": "xaver.clang-format",
 			"editor.formatOnSave": true
-		  },
+		},
+		"search.exclude": {
+			"**/*.ai": true,
+			"**/*.lbr": true,
+			"**/*.pdf": true,
+			"eagle/**/*": true
+		},
 	},
 	"extensions": {
 		"recommendations": ["xaver.clang-format", "platformio.platformio-ide", "ms-vscode.cpptools"]

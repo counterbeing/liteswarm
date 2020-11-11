@@ -21,12 +21,6 @@
 #include "animations/Stripes.h"
 // #include "animations/Strobe.h"
 
-// Pins for the rotary
-uint8_t rotary1 = 2;
-uint8_t rotary2 = 3;
-
-int buttonPin = A0;
-
 CRGB leds[NUMPIXELS];
 
 // Load animations...

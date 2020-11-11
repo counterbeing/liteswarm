@@ -14,9 +14,9 @@
 #  define DATAPIN 5  // default for SCARFYMCSARFACE pcb
 #  define CLOCKPIN 4 // Not applicable to 4 wire APA102 type strands
 const int NUMPIXELS = 75;
-// buttonPin = A0
-// rotary1 = 2
-// rotary2 = 3
+const int buttonPin = A0;
+uint8_t rotary1 = 2;
+uint8_t rotary2 = 3;
 #elif BOARD == esp32
 #  define DATAPIN 5 // default for SCARFYMCSARFACE pcb
 #  define CLOCKPIN 4 // Not applicable to 4 wire APA102 type strands
