@@ -173,20 +173,19 @@ class MasterController {
 } masterController{buttonControl};
 
 void setup() {
-#ifdef SCARF_WS2811
+#if STRIP_TYPE == WS2811
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
-#endif
-#ifdef SCARF_SK9822
+#elif STRIP_TYPE == SK9822
   FastLED.addLeds<SK9822, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
-#endif
-
-#ifdef SCARF_DOTSTAR
+#elif STRIP_TYPE == DOTSTAR
   FastLED.addLeds<DOTSTAR, DATAPIN, CLOCKPIN, BGR>(leds, NUMPIXELS);
+#elif STRIP_TYPE == WS2815
+  FastLED.addLeds<WS2815, DATAPIN, BGR>(leds, NUMPIXELS);
+#else
+#  error "Strip type provided is unknown. \
+Either add it to main.cpp, or adjust it in config.h."
 #endif
 
-#ifdef BIGRED_WS2815
-  FastLED.addLeds<WS2811, DATAPIN, BGR>(leds, NUMPIXELS);
-#endif
   Serial.begin(57600);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
