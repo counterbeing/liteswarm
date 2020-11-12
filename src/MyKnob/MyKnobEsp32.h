@@ -2,11 +2,11 @@
 #include "config.h"
 #include <Arduino.h>
 #include <Bounce2.h>
-#include <Encoder.h>
+#include <ESP32Encoder.h>
+
+ESP32Encoder encoder;
 
 Bounce button_debouncer = Bounce();
-
-Encoder encoder_knob(2, 3);
 
 enum ClickEvent : uint8_t { CLICK, LONG_CLICK, DOUBLE_CLICK, OTHER };
 
@@ -113,7 +113,10 @@ class KnobSetting {
   KnobSetting(int32_t initialValue, int32_t minValue_, int32_t maxValue_,
               bool loopRotary_)
       : currentValue(initialValue), minValue(minValue_), maxValue(maxValue_),
-        loopRotary(loopRotary_) {}
+        loopRotary(loopRotary_) {
+    ESP32Encoder::useInternalWeakPullResistors = UP;
+    encoder.attachHalfQuad(19, 18);
+  }
 
   int32_t get() { return currentValue; }
 
@@ -127,18 +130,18 @@ class KnobSetting {
     if (newValue == currentValue)
       return;
 
-    encoder_knob.write(newValue);
+    encoder.setCount(newValue);
     currentValue = newValue;
   }
 
   int32_t getCorrectedValue() {
-    int32_t position = encoder_knob.read();
+    int32_t position = encoder.getCount();
     if (position < minValue) {
       position = loopRotary ? maxValue : minValue;
-      encoder_knob.write(position);
+      encoder.setCount(position);
     } else if (position > maxValue) {
       position = loopRotary ? minValue : maxValue;
-      encoder_knob.write(position);
+      encoder.setCount(position);
     }
     return position;
   }
@@ -152,5 +155,5 @@ class KnobSetting {
     return false;
   }
 
-  void activate() { encoder_knob.write(currentValue); }
+  void activate() { encoder.setCount(currentValue); }
 };
