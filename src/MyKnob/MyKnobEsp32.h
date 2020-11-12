@@ -2,7 +2,7 @@
 #include "config.h"
 #include <Arduino.h>
 #include <Bounce2.h>
-#include <ESP32Encoder.h>
+// #include <ESP32Encoder.h>
 
 ESP32Encoder encoder;
 

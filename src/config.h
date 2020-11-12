@@ -1,6 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
-
+#pragma once
 #define KNOB_DEBUG false  // set flag to false to disable serial logging in knob
 #define RADIO_DEBUG false // set flag to false to disable logging for Radio
 #define ANIM_DEBUG false
@@ -32,6 +30,4 @@ uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 #else
 #  error "Unexpected value of BOARD."
-#endif
-
 #endif

@@ -1,7 +1,5 @@
+#pragma once
 #include <Arduino.h>
-
-#ifndef DebugLog_H
-#  define DebugLog_H
 
 template <typename T>
 void debugLog(T t) {
@@ -16,4 +14,3 @@ template <typename T>
 void debugLo(T t) {
   Serial.print(t);
 }
-#endif // DebugLog_H

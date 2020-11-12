@@ -1,5 +1,4 @@
-#ifndef BaseControllers_H
-#define BaseControllers_H
+#pragma once
 
 class BaseController {
  private:
@@ -20,5 +19,3 @@ class BaseController {
   virtual void activate() = 0;
   virtual void loop(const bool justActivated) = 0;
 };
-
-#endif // BaseControllers_H

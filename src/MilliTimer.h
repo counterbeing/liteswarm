@@ -1,7 +1,5 @@
+#pragma once
 #include "FastLED.h"
-
-#ifndef MilliTimer_H
-#  define MilliTimer_H
 
 class MilliTimer {
  private:
@@ -23,5 +21,3 @@ class MilliTimer {
 
   void reset() { previousMillis = millis(); }
 };
-
-#endif // MilliTimer_H

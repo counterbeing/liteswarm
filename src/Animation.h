@@ -1,5 +1,5 @@
-#ifndef ANIMATION_H
-#define ANIMATION_H
+#pragma once
+
 #include "BaseControllers.h"
 #include "FastLED.h"
 #include "config.h"
@@ -22,5 +22,3 @@ class Animation : public BaseController {
 
   virtual void setKnobPosition(const uint32_t newPosition) = 0;
 };
-
-#endif
