@@ -1,3 +1,6 @@
+#pragma once
+#include "./Knob.h"
+#include "FastLED.h"
 
 class MasterState {
  private:
@@ -7,11 +10,16 @@ class MasterState {
   bool manuallySet;
 
  public:
-  MasterState(int numberOfAnimations)
+  Knob * knob;
+  CRGB leds;
+
+  MasterState(int numberOfAnimations, Knob * knob, CRGB leds_)
       : numberOfAnimations(numberOfAnimations)
       , animationIndex(0)
       , knobSetting(0)
-      , manuallySet(false) {}
+      , manuallySet(false)
+      , knob(knob)
+      , leds(leds_) {}
 
   void manualUpdateIncrementAnimation() {
     animationIndex =

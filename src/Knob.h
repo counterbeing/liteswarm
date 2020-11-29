@@ -1,3 +1,4 @@
+#pragma once
 #include "DebugLog.h"
 #include "config.h"
 #include <ESP32Encoder.h>
@@ -7,9 +8,9 @@ ESP32Encoder encoder;
 class Knob {
  private:
   int32_t currentValue;
-  const int32_t minValue;
-  const int32_t maxValue;
-  const bool loopRotary;
+  int32_t minValue;
+  int32_t maxValue;
+  bool loopRotary;
 
  public:
   Knob()
@@ -57,7 +58,13 @@ class Knob {
     return false;
   }
 
-  void activate() { encoder.setCount(currentValue); }
+  void activate(int start, int32_t min, int32_t max, bool loop) {
+    currentValue = start;
+    minValue = min;
+    maxValue = min;
+    loopRotary = loop;
+    encoder.setCount(currentValue);
+  }
 
   void setup() { encoder.attachHalfQuad(19, 18); }
 };

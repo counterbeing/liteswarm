@@ -1,33 +1,26 @@
-#include "Animation.h"
-#include "Knob.h"
-#include "MilliTimer.h"
+#pragma once
 
 class Crossfade : public Animation {
  private:
-  Knob delay{35, 5, 200, false};
+  MasterState * masterState;
   MilliTimer timer{};
   uint8_t hue = 0;
 
  public:
-  Crossfade(CRGB leds_[]) : Animation(leds_) {}
+  Crossfade(MasterState * masterState_)
+      : masterState(masterState_) {}
 
  protected:
-  void activate() override { delay.activate(); }
+  void activate() override { masterState->knob->activate(35, 5, 200, false); }
 
   bool updateAnimation(const bool justActivated) override {
-    delay.update();
+    masterState->knob->update();
 
-    if (timer.hasElapsedWithReset(delay.get()) || justActivated) {
+    if (timer.hasElapsedWithReset(masterState->knob->get()) || justActivated) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
       return true;
     }
 
     return false;
-  }
-
-  uint32_t getKnobPosition() override { return delay.get(); }
-
-  void setKnobPosition(const uint32_t newPosition) override {
-    delay.set(newPosition);
   }
 };

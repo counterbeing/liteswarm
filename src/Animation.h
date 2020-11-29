@@ -17,11 +17,11 @@ class Animation : public BaseController {
   virtual bool updateAnimation(const bool justActivated) = 0;
 
  public:
-  Animation(CRGB leds_[], Knob * knob)
-      : leds(leds_)
-      , knob(knob){};
+  // Animation(CRGB leds_[], Knob * knob)
+  //     : leds(leds_)
+  //     , knob(knob){};
 
-  virtual uint32_t getKnobPosition() = 0;
+  // virtual uint32_t getKnobPosition() = 0;
 
-  virtual void setKnobPosition(const uint32_t newPosition) = 0;
+  // virtual void setKnobPosition(const uint32_t newPosition) = 0;
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include "BaseControllers.h"
 #include "MilliTimer.h"
 #include "animations/animations.h"
@@ -6,13 +7,13 @@
 
 class AnimationModeController : public BaseController {
  private:
-  Button & button;
+  LSButton & button;
   MasterState masterState;
   uint8_t animationIndex = 0;
   MilliTimer radioTimer{};
 
  public:
-  AnimationModeController(Button & button, MasterState & masterState)
+  AnimationModeController(LSButton & button, MasterState & masterState)
       : button(button)
       , masterState(masterState) {}
 

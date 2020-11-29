@@ -18,26 +18,31 @@ CRGB leds[NUMPIXELS];
 
 Knob knob{};
 
+#define NUM_ANIMATONS 1
+const int numberOfAnimations = 1;
+MasterState masterState{numberOfAnimations, knob, leds};
+
 // Load animations...
-Crossfade crossfade(leds, knob);
-ColorChooser color_chooser(leds, knob);
-Race race(leds, knob);
-Stars stars(leds, knob);
-Rainbow rainbow(leds, knob);
-FuckMyEyes fuck_my_eyes(leds, knob);
-Stripes stripes(leds, knob);
-DiamondNecklace diamond_necklace(leds, knob);
-Dimmer dimmer(leds, knob);
+Crossfade crossfade(&masterState);
+// ColorChooser color_chooser(leds, knob);
+// Race race(leds, knob);
+// Stars stars(leds, knob);
+// Rainbow rainbow(leds, knob);
+// FuckMyEyes fuck_my_eyes(leds, knob);
+// Stripes stripes(leds, knob);
+// DiamondNecklace diamond_necklace(leds, knob);
+// Dimmer dimmer(leds, knob);
 // Strobe strobe(leds);
 
-#define NUM_ANIMATONS 9
-Animation * animations[NUM_ANIMATONS] = {
-    &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
-    &stripes,   &diamond_necklace, &dimmer};
+Animation * animations[NUM_ANIMATONS] = {&crossfade};
 
-MasterState masterState{NUM_ANIMATONS};
-Button button{};
-Radio radio{masterState, knob};
+// #define NUM_ANIMATONS 9
+// Animation * animations[NUM_ANIMATONS] = {
+//     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
+//     &stripes,   &diamond_necklace, &dimmer};
+
+LSButton button{};
+Radio radio{*masterState};
 AnimationModeController animationModeController{button, masterState};
 
 class OffModeController : public BaseController {
@@ -54,7 +59,7 @@ class OffModeController : public BaseController {
 
 class MasterController {
  private:
-  Button & button;
+  LSButton & button;
   AnimationModeController animationModeController;
   OffModeController offModeController{};
   MilliTimer radioTimer{};
@@ -62,7 +67,7 @@ class MasterController {
   bool firstLoop = true;
 
  public:
-  MasterController(Button & button,
+  MasterController(LSButton & button,
                    AnimationModeController & AnimationModeController)
       : button(button)
       , animationModeController{animationModeController} {}

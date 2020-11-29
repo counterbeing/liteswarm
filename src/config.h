@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdint>
+
 #define KNOB_DEBUG false  // set flag to false to disable serial logging in knob
 #define RADIO_DEBUG false // set flag to false to disable logging for Radio
 #define ANIM_DEBUG false
@@ -25,7 +27,7 @@ uint8_t rotary2 = 3;
 #elif BOARD == BOARD_ESP32
 const int CLOCKPIN = 4;
 const int DATAPIN = 5;
-const int buttonPin = A0;
+const int buttonPin = 15;
 uint8_t rotary1 = 2;
 uint8_t rotary2 = 3;
 #else

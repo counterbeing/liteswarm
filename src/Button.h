@@ -1,3 +1,4 @@
+#pragma once
 #include "DebugLog.h"
 #include "config.h"
 #include <Bounce2.h>
@@ -5,7 +6,7 @@ Bounce button_debouncer = Bounce();
 
 enum ClickEvent : uint8_t { CLICK, LONG_CLICK, DOUBLE_CLICK, OTHER };
 
-class Button {
+class LSButton {
  private:
   static const unsigned int DOUBLE_CLICK_MAX_GAP =
       250; // max ms between clicks for single event
