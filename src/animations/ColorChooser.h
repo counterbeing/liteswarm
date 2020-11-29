@@ -1,9 +1,9 @@
 #include "Animation.h"
-#include "MyKnob.h"
+#include "Knob.h"
 
 class ColorChooser : public Animation {
  private:
-  KnobSetting hue{180, 0, 255, true};
+  Knob hue{180, 0, 255, true};
 
  public:
   ColorChooser(CRGB leds_[]) : Animation(leds_) {}

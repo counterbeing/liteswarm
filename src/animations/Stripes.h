@@ -1,11 +1,11 @@
 #include "Animation.h"
+#include "Knob.h"
 #include "MilliTimer.h"
-#include "MyKnob.h"
 
 class Stripes : public Animation {
  private:
   const static uint8_t STRIPE_LENGTH = 4;
-  KnobSetting delay{180, 0, 500, false};
+  Knob delay{180, 0, 500, false};
   MilliTimer timer{};
   int lastPosition = 0;
 

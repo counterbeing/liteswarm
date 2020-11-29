@@ -1,16 +1,11 @@
 #include "DebugLog.h"
 #include "config.h"
-#include <Arduino.h>
 #include <Bounce2.h>
-// #include <ESP32Encoder.h>
-
-ESP32Encoder encoder;
-
 Bounce button_debouncer = Bounce();
 
 enum ClickEvent : uint8_t { CLICK, LONG_CLICK, DOUBLE_CLICK, OTHER };
 
-class ButtonControl {
+class Button {
  private:
   static const unsigned int DOUBLE_CLICK_MAX_GAP =
       250; // max ms between clicks for single event
@@ -100,60 +95,11 @@ class ButtonControl {
       }
     }
   }
-};
 
-class KnobSetting {
- private:
-  int32_t currentValue;
-  const int32_t minValue;
-  const int32_t maxValue;
-  const bool loopRotary;
-
- public:
-  KnobSetting(int32_t initialValue, int32_t minValue_, int32_t maxValue_,
-              bool loopRotary_)
-      : currentValue(initialValue), minValue(minValue_), maxValue(maxValue_),
-        loopRotary(loopRotary_) {
-    ESP32Encoder::useInternalWeakPullResistors = UP;
-    encoder.attachHalfQuad(19, 18);
+  void setup() {
+    button_debouncer.attach(buttonPin, INPUT_PULLUP);
+    button_debouncer.interval(5);
   }
 
-  int32_t get() { return currentValue; }
-
-  void set(int32_t newValue) {
-    if (newValue < minValue) {
-      newValue = loopRotary ? maxValue : minValue;
-    } else if (newValue > maxValue) {
-      newValue = loopRotary ? minValue : maxValue;
-    }
-
-    if (newValue == currentValue)
-      return;
-
-    encoder.setCount(newValue);
-    currentValue = newValue;
-  }
-
-  int32_t getCorrectedValue() {
-    int32_t position = encoder.getCount();
-    if (position < minValue) {
-      position = loopRotary ? maxValue : minValue;
-      encoder.setCount(position);
-    } else if (position > maxValue) {
-      position = loopRotary ? minValue : maxValue;
-      encoder.setCount(position);
-    }
-    return position;
-  }
-
-  bool update() {
-    int32_t newValue = getCorrectedValue();
-    if (newValue != currentValue) {
-      currentValue = newValue;
-      return true;
-    }
-    return false;
-  }
-
-  void activate() { encoder.setCount(currentValue); }
+  void loop() { button_debouncer.update(); }
 };

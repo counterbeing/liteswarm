@@ -7,6 +7,7 @@
 class Animation : public BaseController {
  protected:
   CRGB * leds;
+  Knob * knob;
 
   virtual void loop(const bool justActivated) override {
     if (updateAnimation(justActivated))
@@ -16,7 +17,9 @@ class Animation : public BaseController {
   virtual bool updateAnimation(const bool justActivated) = 0;
 
  public:
-  Animation(CRGB leds_[]) : leds(leds_){};
+  Animation(CRGB leds_[], Knob * knob)
+      : leds(leds_)
+      , knob(knob){};
 
   virtual uint32_t getKnobPosition() = 0;
 

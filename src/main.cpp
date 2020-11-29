@@ -1,29 +1,33 @@
+#include "config.h"
 #include <Arduino.h>
 #define FASTLED_INTERNAL
+#include "./Radio.h"
 #include "BaseControllers.h"
 #include "DebugLog.h"
 #include "FastLED.h"
 #include "MilliTimer.h"
-#include "Radio.h"
-#include "config.h"
-#include <Encoder.h>
-#include <MyKnob.h>
+#include <AnimationModeController.h>
+#include <Button.h>
+#include <Knob.h>
+#include <MasterState.h>
 #include <SPI.h>
 
 #include "animations/animations.h"
 
 CRGB leds[NUMPIXELS];
 
+Knob knob{};
+
 // Load animations...
-Crossfade crossfade(leds);
-ColorChooser color_chooser(leds);
-Race race(leds);
-Stars stars(leds);
-Rainbow rainbow(leds);
-FuckMyEyes fuck_my_eyes(leds);
-Stripes stripes(leds);
-DiamondNecklace diamond_necklace(leds);
-Dimmer dimmer(leds);
+Crossfade crossfade(leds, knob);
+ColorChooser color_chooser(leds, knob);
+Race race(leds, knob);
+Stars stars(leds, knob);
+Rainbow rainbow(leds, knob);
+FuckMyEyes fuck_my_eyes(leds, knob);
+Stripes stripes(leds, knob);
+DiamondNecklace diamond_necklace(leds, knob);
+Dimmer dimmer(leds, knob);
 // Strobe strobe(leds);
 
 #define NUM_ANIMATONS 9
@@ -31,8 +35,10 @@ Animation * animations[NUM_ANIMATONS] = {
     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
     &stripes,   &diamond_necklace, &dimmer};
 
-Radio radio{NUM_ANIMATONS};
-ButtonControl buttonControl{};
+MasterState masterState{NUM_ANIMATONS};
+Button button{};
+Radio radio{masterState, knob};
+AnimationModeController animationModeController{button, masterState};
 
 class OffModeController : public BaseController {
  protected:
@@ -46,58 +52,9 @@ class OffModeController : public BaseController {
   }
 };
 
-class AnimationModeController : public BaseController {
- private:
-  ButtonControl & buttonControl;
-  uint8_t animationIndex = 0;
-  MilliTimer radioTimer{};
-
- public:
-  AnimationModeController(ButtonControl & buttonControl_)
-      : buttonControl(buttonControl_) {}
-
- protected:
-  virtual void activate() override {}
-
-  virtual void loop(const bool justActivated) override {
-    bool animationIndexChanged = false;
-
-    if (radio.checkRadioReceive()) {
-      uint8_t incomingAnimationId = radio.getLatestReceivedAnimationId();
-      uint32_t incomingRotaryPosition = radio.getLatestReceivedRotaryPosition();
-      if (incomingAnimationId != animationIndex) {
-        animationIndexChanged = true;
-        animationIndex = incomingAnimationId;
-      }
-      if (animationIndexChanged ||
-          animations[animationIndex]->getKnobPosition() !=
-              incomingRotaryPosition)
-        animations[animationIndex]->setKnobPosition(incomingRotaryPosition);
-    }
-
-    if (buttonControl.hasClickEventOccurred(ClickEvent::CLICK)) {
-      animationIndexChanged = true;
-      // BUG! setting animationIndex to 0 crashes system so setting it to 1
-      animationIndex =
-          (animationIndex == NUM_ANIMATONS - 1) ? 1 : animationIndex + 1;
-    }
-
-    Animation * currentAnimation = animations[animationIndex];
-
-    if (radioTimer.hasElapsedWithReset(1000))
-      radio.send(animationIndex, currentAnimation->getKnobPosition());
-
-    if (animationIndexChanged || justActivated) {
-      currentAnimation->setAsActive();
-    }
-
-    currentAnimation->run();
-  }
-};
-
 class MasterController {
  private:
-  ButtonControl & buttonControl;
+  Button & button;
   AnimationModeController animationModeController;
   OffModeController offModeController{};
   MilliTimer radioTimer{};
@@ -105,9 +62,10 @@ class MasterController {
   bool firstLoop = true;
 
  public:
-  MasterController(ButtonControl & buttonControl_)
-      : buttonControl(buttonControl_), animationModeController{buttonControl_} {
-  }
+  MasterController(Button & button,
+                   AnimationModeController & AnimationModeController)
+      : button(button)
+      , animationModeController{animationModeController} {}
 
   void startupLoop(unsigned long now) {
     uint32_t counter = (now / 333) % 11;
@@ -141,11 +99,10 @@ class MasterController {
       return;
     }
 
-    button_debouncer.update();
-    buttonControl.checkButton();
+    button.loop();
+    button.checkButton();
 
-    bool modeChange =
-        buttonControl.hasClickEventOccurred(ClickEvent::LONG_CLICK);
+    bool modeChange = button.hasClickEventOccurred(ClickEvent::LONG_CLICK);
     if (modeChange)
       offMode = !offMode;
 
@@ -161,7 +118,7 @@ class MasterController {
     activeController->run();
   }
 
-} masterController{buttonControl};
+} masterController{button, animationModeController};
 
 void setup() {
 #if STRIP_TYPE == WS2811

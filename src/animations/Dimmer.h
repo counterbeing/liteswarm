@@ -1,9 +1,9 @@
 #include "Animation.h"
-#include "MyKnob.h"
+#include "Knob.h"
 
 class Dimmer : public Animation {
  private:
-  KnobSetting brightness{100, 10, 180, false};
+  Knob brightness{100, 10, 180, false};
 
  public:
   Dimmer(CRGB leds_[]) : Animation(leds_) {}

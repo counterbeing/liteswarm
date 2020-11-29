@@ -1,10 +1,10 @@
 #include "Animation.h"
+#include "Knob.h"
 #include "MilliTimer.h"
-#include "MyKnob.h"
 
 class FuckMyEyes : public Animation {
  private:
-  KnobSetting delay{2000, 0, 300, false};
+  Knob delay{2000, 0, 300, false};
   MilliTimer timer{};
   uint8_t lastColor = 0;
 

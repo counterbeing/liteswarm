@@ -1,9 +1,9 @@
 #include "Animation.h"
-#include "MyKnob.h"
+#include "Knob.h"
 
 class Rainbow : public Animation {
  private:
-  KnobSetting offset{1, 1, 255, true};
+  Knob offset{1, 1, 255, true};
 
  public:
   Rainbow(CRGB leds_[]) : Animation(leds_) {}

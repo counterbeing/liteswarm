@@ -1,12 +1,12 @@
 #include "Animation.h"
+#include "Knob.h"
 #include "MilliTimer.h"
-#include "MyKnob.h"
 
 // TODO: Stars is basically the same as Stripes but with different settings.
 // Collapse them?
 class Stars : public Animation {
  private:
-  KnobSetting delay{100, 0, 1000, false};
+  Knob delay{100, 0, 1000, false};
   MilliTimer timer{};
   int lastPosition = 0;
   int32_t numPixelsBetweenStars = 13;

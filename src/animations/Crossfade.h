@@ -1,10 +1,10 @@
 #include "Animation.h"
+#include "Knob.h"
 #include "MilliTimer.h"
-#include "MyKnob.h"
 
 class Crossfade : public Animation {
  private:
-  KnobSetting delay{35, 5, 200, false};
+  Knob delay{35, 5, 200, false};
   MilliTimer timer{};
   uint8_t hue = 0;
 

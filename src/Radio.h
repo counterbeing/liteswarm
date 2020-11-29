@@ -1,108 +1,86 @@
 #include "DebugLog.h"
 #include "config.h"
-#include <NRFLite.h>
+#include <ArduinoJson.h>
 #include <SPI.h>
+#include <painlessMesh.h>
 #include <stdint.h>
 
-struct RadioPacket         // Any packet up to 32 bytes can be sent.
-{                          // 0 - bit count (256 max)
-  uint8_t SHARED_SECRET;   // 8
-  uint8_t senderId;        // 16
-  uint32_t rotaryPosition; // 48
-  uint8_t animationId;     // 56
-                           // uint32_t keyframe;       //
-                           // ... 200
-};
+// struct RadioPacket         // Any packet up to 32 bytes can be sent.
+// {                          // 0 - bit count (256 max)
+//   uint8_t SHARED_SECRET;   // 8
+//   uint8_t senderId;        // 16
+//   uint32_t rotaryPosition; // 48
+//   uint8_t animationId;     // 56
+//                            // uint32_t keyframe;       //
+//                            // ... 200
+// };
+
+#define id "LiteSwarm"
+#define pass "NotSoSecret"
+#define port 5555
+
+Scheduler myScheduler;
+painlessMesh mesh;
+
+#define LED D1
+
+void sendCallback();
+Task sendTask(TASK_SECOND * 1, TASK_FOREVER, &sendCallback);
 
 class Radio {
  private:
-  RadioPacket _incomingRadioPacket;
-  RadioPacket _outboundRadioPacket;
-  NRFLite _radio;
-  bool radioAlive = false;
-  const static uint8_t SHARED_RADIO_ID = 1;
-  const static uint8_t PIN_RADIO_CE = 7;  // 7 on PCBs 1.3, was 6 on 1.1
-  const static uint8_t PIN_RADIO_CSN = 6; // 6 on PCBs 1.3, was 7 on 1.1
-  // const static uint8_t PIN_RADIO_CE = 9; // mac protoboard
-  // const static uint8_t PIN_RADIO_CSN = 10; // mac protoboard
-  const static uint8_t SHARED_SECRET = 42;
-  uint8_t RADIO_ID = random();
-  const uint8_t numAnimations;
+  MasterState & masterState;
+  Knob & knob;
+  void sendCallback() {
+    const int knobValue = knob.getCorrectedValue();
+    Serial.print("Knob Value = ");
+    Serial.println(knobValue);
+
+    String msg;
+    DynamicJsonDocument doc(1024);
+    doc["rotaryPosition"] = knobValue;
+    serializeJson(doc, msg);
+    mesh.sendBroadcast(msg);
+    Serial.println("Message Sent");
+  }
+
+  void receivedCallback(uint32_t from, String msg) {
+    Serial.print("Received = ");
+    Serial.println(msg);
+    String json = msg.c_str();
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, json);
+    if (error) {
+      Serial.print("Failed Deserializing ... ");
+      Serial.println(error.c_str());
+    }
+    // LEDState = doc["Button"];
+    // digitalWrite(LED, LEDState);
+  }
 
  public:
-  Radio(const uint8_t numAnimations_) : numAnimations(numAnimations_) {}
+  Radio(MasterState & masterState, Knob & knob)
+      : masterState(masterState)
+      , knob(knob) {}
 
-  bool checkRadioReceive() {
-    if (!radioAlive)
-      return false;
+  // uint8_t getLatestReceivedAnimationId() {
+  //   return _incomingRadioPacket.animationId;
+  // }
 
-    while (_radio.hasData()) {
-      _radio.readData(&_incomingRadioPacket);
-
-      if (_incomingRadioPacket.SHARED_SECRET != SHARED_SECRET)
-        continue;
-      if (_incomingRadioPacket.animationId < 0 ||
-          _incomingRadioPacket.animationId >= numAnimations)
-        continue;
-
-      if (RADIO_DEBUG) {
-        debugLo("Radio receiving from ");
-        debugLo(_incomingRadioPacket.senderId);
-        debugLo(" @ ");
-        debugLo(millis());
-        debugLo(": animationId=");
-        debugLo(_incomingRadioPacket.animationId);
-        debugLog(", rotaryPosition=", _incomingRadioPacket.rotaryPosition);
-      }
-      return true;
-    }
-    return false;
-  }
-
-  uint8_t getLatestReceivedAnimationId() {
-    return _incomingRadioPacket.animationId;
-  }
-
-  uint32_t getLatestReceivedRotaryPosition() {
-    return _incomingRadioPacket.rotaryPosition;
-  }
-
-  void send(const uint8_t animationId, const uint32_t rotaryPosition) {
-    if (!radioAlive)
-      return;
-
-    // Stay silent for the first moment in order to try to join a group rather
-    // than telling all others to change.
-    if (millis() < 1500)
-      return;
-
-    _outboundRadioPacket.rotaryPosition = rotaryPosition;
-    _outboundRadioPacket.animationId = animationId;
-
-    if (RADIO_DEBUG) {
-      debugLo("Radio sending @ ");
-      debugLo(millis());
-      debugLo(": animationId=");
-      debugLo(_outboundRadioPacket.animationId);
-      debugLog(", rotaryPosition=", _outboundRadioPacket.rotaryPosition);
-    }
-
-    _radio.send(SHARED_RADIO_ID, &_outboundRadioPacket,
-                sizeof(_outboundRadioPacket), NRFLite::NO_ACK);
-  }
+  // uint32_t getLatestReceivedRotaryPosition() {
+  //   return _incomingRadioPacket.rotaryPosition;
+  // }
 
   void setup() {
-    pinMode(14, INPUT_PULLUP);
+    // if (RADIO_DEBUG) {}
+    Serial.begin(115200);
+    // pinMode(LED, OUTPUT);
 
-    _outboundRadioPacket.SHARED_SECRET = SHARED_SECRET;
-    _outboundRadioPacket.senderId = RADIO_ID;
-
-    radioAlive = _radio.init(SHARED_RADIO_ID, PIN_RADIO_CE, PIN_RADIO_CSN);
-
-    if (RADIO_DEBUG) {
-      debugLog("shared radio id=", SHARED_RADIO_ID);
-      debugLog("random radio id=", RADIO_ID);
-      debugLog(radioAlive ? "radio ok" : "radio fail");
-    }
+    mesh.init(id, pass, &myScheduler, port);
+    mesh.onReceive(&receivedCallback);
+    myScheduler.addTask(sendTask);
+    sendTask.enable();
   }
+
+  void loop() { mesh.update(); }
 };

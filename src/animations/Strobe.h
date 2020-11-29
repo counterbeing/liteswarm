@@ -1,10 +1,10 @@
 #include "Animation.h"
+#include "Knob.h"
 #include "MilliTimer.h"
-#include "MyKnob.h"
 
 class Strobe : public Animation {
  private:
-  KnobSetting blinkDuration{250, 50, 500, false};
+  Knob blinkDuration{250, 50, 500, false};
   MilliTimer timer{};
   bool goWhite = true;
 

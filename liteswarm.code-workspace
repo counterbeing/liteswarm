@@ -1,42 +1,47 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"terminal.integrated.env.osx": {
-			"PLATFORMIO_CALLER": "vscode"
-		},
-		"[cpp]": {
-			"editor.defaultFormatter": "xaver.clang-format",
-			"editor.formatOnSave": true
-		},
-		"search.exclude": {
-			"**/*.ai": true,
-			"**/*.lbr": true,
-			"**/*.pdf": true,
-			"eagle/**/*": true
-		},
-		"workbench.colorCustomizations": {
-			"activityBar.activeBackground": "#ffa5b6",
-			"activityBar.activeBorder": "#188000",
-			"activityBar.background": "#ffa5b6",
-			"activityBar.foreground": "#15202b",
-			"activityBar.inactiveForeground": "#15202b99",
-			"activityBarBadge.background": "#188000",
-			"activityBarBadge.foreground": "#e7e7e7",
-			"statusBar.background": "#ff728c",
-			"statusBar.foreground": "#15202b",
-			"statusBarItem.hoverBackground": "#ff3f62",
-			"titleBar.activeBackground": "#ff728c",
-			"titleBar.activeForeground": "#15202b",
-			"titleBar.inactiveBackground": "#ff728c99",
-			"titleBar.inactiveForeground": "#15202b99"
-		},
-		"peacock.color": "#ff728c",
-	},
-	"extensions": {
-		"recommendations": ["xaver.clang-format", "platformio.platformio-ide", "ms-vscode.cpptools"]
-	}
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "terminal.integrated.env.osx": {
+      "PLATFORMIO_CALLER": "vscode"
+    },
+    "[cpp]": {
+      "editor.defaultFormatter": "xaver.clang-format",
+      "editor.formatOnSave": true
+    },
+    "search.exclude": {
+      "**/*.ai": true,
+      "**/*.lbr": true,
+      "**/*.pdf": true,
+      "eagle/**/*": true,
+      ".pio/**/*": true
+    },
+    "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#ffa5b6",
+      "activityBar.activeBorder": "#188000",
+      "activityBar.background": "#ffa5b6",
+      "activityBar.foreground": "#15202b",
+      "activityBar.inactiveForeground": "#15202b99",
+      "activityBarBadge.background": "#188000",
+      "activityBarBadge.foreground": "#e7e7e7",
+      "statusBar.background": "#ff728c",
+      "statusBar.foreground": "#15202b",
+      "statusBarItem.hoverBackground": "#ff3f62",
+      "titleBar.activeBackground": "#ff728c",
+      "titleBar.activeForeground": "#15202b",
+      "titleBar.inactiveBackground": "#ff728c99",
+      "titleBar.inactiveForeground": "#15202b99"
+    },
+    "peacock.color": "#ff728c"
+  },
+  "extensions": {
+    "recommendations": [
+      "xaver.clang-format",
+      "platformio.platformio-ide",
+      "ms-vscode.cpptools"
+    ]
+  }
 }

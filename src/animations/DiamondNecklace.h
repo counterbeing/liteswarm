@@ -1,10 +1,10 @@
 #include "Animation.h"
+#include "Knob.h"
 #include "MilliTimer.h"
-#include "MyKnob.h"
 
 class DiamondNecklace : public Animation {
  private:
-  KnobSetting delay{50, 0, 300, false};
+  Knob delay{50, 0, 300, false};
   MilliTimer timer{};
 
  public:

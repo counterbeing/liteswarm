@@ -1,10 +1,10 @@
 #include "Animation.h"
+#include "Knob.h"
 #include "MilliTimer.h"
-#include "MyKnob.h"
 
 class Race : public Animation {
  private:
-  KnobSetting delay{60, 5, 400, false};
+  Knob delay{60, 5, 400, false};
   MilliTimer timer{};
   uint8_t hue = 0;
   uint32_t pixelIndex = 0;
