@@ -22,29 +22,9 @@ Knob * knob{};
 
 
 MasterState masterState{knob, leds};
-// Animation animationBase{masterState};
 Crossfade crossfade(&masterState);
 
 Animation * animations[NUMBER_OF_ANMIATIONS] = {&crossfade};
-
-// Load animations...
-// Crossfade crossfade(&masterState);
-// ColorChooser color_chooser(leds, knob);
-// Race race(leds, knob);
-// Stars stars(leds, knob);
-// Rainbow rainbow(leds, knob);
-// FuckMyEyes fuck_my_eyes(leds, knob);
-// Stripes stripes(leds, knob);
-// DiamondNecklace diamond_necklace(leds, knob);
-// Dimmer dimmer(leds, knob);
-// Strobe strobe(leds);
-
-// Animation * animations[NUMBER_OF_ANMIATIONS] = {&crossfade};
-
-// #define NUM_ANIMATONS 9
-// Animation * animations[NUMBER_OF_ANMIATIONS] = {
-//     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
-//     &stripes,   &diamond_necklace, &dimmer};
 
 LSButton button{};
 // Radio radio{*masterState};
@@ -105,6 +85,7 @@ class MasterController {
   void loop() {
     unsigned long now = millis();
     if (now <= 3663) { // 333 * 11 = 3663
+      Serial.println(now);
       startupLoop(now);
       return;
     }
@@ -144,7 +125,7 @@ void setup() {
 Either add it to main.cpp, or adjust it in config.h."
 #endif
 
-  Serial.begin(57600);
+  Serial.begin(115200);
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);

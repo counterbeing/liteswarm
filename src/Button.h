@@ -102,5 +102,8 @@ class LSButton {
     button_debouncer.interval(5);
   }
 
-  void loop() { button_debouncer.update(); }
+  void loop() { 
+    Serial.println("LOOP");
+    button_debouncer.update(); 
+    }
 };

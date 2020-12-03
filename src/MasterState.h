@@ -13,7 +13,6 @@ class MasterState {
  public:
   Knob * knob;
   CRGB * leds;
-  // Animation * animations;
 
   MasterState(Knob * knob, struct CRGB * leds_)
       : animationIndex(0)
