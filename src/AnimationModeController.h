@@ -9,13 +9,13 @@
 class AnimationModeController : public BaseController {
  private:
   LSButton & button;
-  MasterState masterState;
+  MasterState * masterState;
   uint8_t animationIndex = 0;
   MilliTimer radioTimer{};
   Animation * animations[NUMBER_OF_ANMIATIONS];
 
  public:
-  AnimationModeController(LSButton & button, MasterState & masterState)
+  AnimationModeController(LSButton & button, MasterState * masterState)
       : button(button)
       , masterState(masterState) {}
 
@@ -26,7 +26,7 @@ class AnimationModeController : public BaseController {
     bool animationIndexChanged = false;
 
     if (button.hasClickEventOccurred(ClickEvent::CLICK)) {
-      masterState.manualUpdateIncrementAnimation();
+      masterState->manualUpdateIncrementAnimation();
     }
 
     Animation * currentAnimation = animations[animationIndex];
@@ -39,7 +39,7 @@ class AnimationModeController : public BaseController {
   }
 
   void setup(){
-    Crossfade crossfade(&masterState);
+    Crossfade crossfade(masterState);
     *animations = {&crossfade};
   }
 };

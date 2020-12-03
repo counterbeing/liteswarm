@@ -28,7 +28,7 @@ Animation * animations[NUMBER_OF_ANMIATIONS] = {&crossfade};
 
 LSButton button{};
 // Radio radio{*masterState};
-AnimationModeController animationModeController{button, masterState};
+AnimationModeController animationModeController{button, &masterState};
 
 class OffModeController : public BaseController {
  protected:
