@@ -4,6 +4,7 @@
 #include "animations/animations.h"
 #include <Button.h>
 #include <MasterState.h>
+#include "animations/Crossfade.h"
 
 class AnimationModeController : public BaseController {
  private:
@@ -11,6 +12,7 @@ class AnimationModeController : public BaseController {
   MasterState masterState;
   uint8_t animationIndex = 0;
   MilliTimer radioTimer{};
+  Animation * animations[NUMBER_OF_ANMIATIONS];
 
  public:
   AnimationModeController(LSButton & button, MasterState & masterState)
@@ -34,5 +36,10 @@ class AnimationModeController : public BaseController {
     }
 
     currentAnimation->run();
+  }
+
+  void setup(){
+    Crossfade crossfade(&masterState);
+    *animations = {&crossfade};
   }
 };

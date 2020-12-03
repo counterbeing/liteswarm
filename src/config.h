@@ -8,7 +8,7 @@
 // One of WS2811 SK9822 DOTSTAR WS2815
 #define STRIP_TYPE WS2811
 
-const int NUMPIXELS = 75;
+const int NUMPIXELS = 50;
 
 // Here we define boards as integers to be used in `platform.ini` passed build
 // flags. This way we can use the easier to reference varaiable name to keep the

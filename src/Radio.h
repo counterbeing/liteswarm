@@ -3,7 +3,8 @@
 #include "DebugLog.h"
 #include "MasterState.h"
 #include "config.h"
-#include <ArduinoJson.h>
+// #include <ArduinoJson.h>
+#include <SD.h>
 #include <SPI.h>
 #include <painlessMesh.h>
 #include <stdint.h>
@@ -25,28 +26,28 @@ class Radio {
   MasterState * masterState;
 
   void sendCallback() {
-    const int knobValue = masterState->knob->getCorrectedValue();
-    Serial.print("Knob Value = ");
-    Serial.println(knobValue);
+    // const int knobValue = masterState->knob->getCorrectedValue();
+    // Serial.print("Knob Value = ");
+    // Serial.println(knobValue);
 
-    String msg;
-    DynamicJsonDocument doc(1024);
-    doc["rotaryPosition"] = knobValue;
-    serializeJson(doc, msg);
-    mesh.sendBroadcast(msg);
-    Serial.println("Message Sent");
+    // String msg;
+    // DynamicJsonDocument doc(1024);
+    // doc["rotaryPosition"] = knobValue;
+    // serializeJson(doc, msg);
+    // mesh.sendBroadcast(msg);
+    // Serial.println("Message Sent");
   }
 
   void receivedCallback(uint32_t from, String msg) {
-    Serial.print("Received = ");
-    Serial.println(msg);
-    String json = msg.c_str();
-    DynamicJsonDocument doc(1024);
-    DeserializationError error = deserializeJson(doc, json);
-    if (error) {
-      Serial.print("Failed Deserializing ... ");
-      Serial.println(error.c_str());
-    }
+    // Serial.print("Received = ");
+    // Serial.println(msg);
+    // String json = msg.c_str();
+    // DynamicJsonDocument doc(1024);
+    // DeserializationError error = deserializeJson(doc, json);
+    // if (error) {
+    //   Serial.print("Failed Deserializing ... ");
+    //   Serial.println(error.c_str());
+    // }
     // LEDState = doc["Button"];
     // digitalWrite(LED, LEDState);
   }
@@ -69,7 +70,7 @@ class Radio {
     // pinMode(LED, OUTPUT);
 
     mesh.init(id, pass, &myScheduler, port);
-    mesh.onReceive(&receivedCallback);
+    // mesh.onReceive(&receivedCallback);
     myScheduler.addTask(sendTask);
     sendTask.enable();
   }

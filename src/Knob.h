@@ -1,5 +1,6 @@
 #pragma once
 #include "DebugLog.h"
+#include "KnobSettings.h"
 #include "config.h"
 #include <ESP32Encoder.h>
 
@@ -58,11 +59,14 @@ class Knob {
     return false;
   }
 
-  void activate(int start, int32_t min, int32_t max, bool loop) {
-    currentValue = start;
-    minValue = min;
-    maxValue = min;
-    loopRotary = loop;
+  // When activating knob settings, you're setting the ranges that are allowed
+  // for the knob for a particular animation. This is called by the Animation
+  // controller.
+  void activate(KnobSettings knobSettings) {
+    currentValue = knobSettings.currentValue;
+    minValue = knobSettings.minValue;
+    maxValue = knobSettings.maxValue;
+    loopRotary = knobSettings.loopRotary;
     encoder.setCount(currentValue);
   }
 

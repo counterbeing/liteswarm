@@ -1,29 +1,34 @@
+#define NUMBER_OF_ANMIATIONS 1
+
 #include "config.h"
 #include <Arduino.h>
 #define FASTLED_INTERNAL
-#include "./Radio.h"
+// #include "./Radio.h"
 #include "BaseControllers.h"
 #include "DebugLog.h"
 #include "FastLED.h"
+#include "KnobSettings.h"
 #include "MilliTimer.h"
+#include "animations/Crossfade.h"
 #include <AnimationModeController.h>
 #include <Button.h>
 #include <Knob.h>
 #include <MasterState.h>
 #include <SPI.h>
 
-#include "animations/animations.h"
-
 CRGB leds[NUMPIXELS];
 
-Knob knob{};
+Knob * knob{};
 
-#define NUM_ANIMATONS 1
-const int numberOfAnimations = 1;
-MasterState masterState{numberOfAnimations, knob, leds};
+
+MasterState masterState{knob, leds};
+// Animation animationBase{masterState};
+Crossfade crossfade(&masterState);
+
+Animation * animations[NUMBER_OF_ANMIATIONS] = {&crossfade};
 
 // Load animations...
-Crossfade crossfade(&masterState);
+// Crossfade crossfade(&masterState);
 // ColorChooser color_chooser(leds, knob);
 // Race race(leds, knob);
 // Stars stars(leds, knob);
@@ -34,15 +39,15 @@ Crossfade crossfade(&masterState);
 // Dimmer dimmer(leds, knob);
 // Strobe strobe(leds);
 
-Animation * animations[NUM_ANIMATONS] = {&crossfade};
+// Animation * animations[NUMBER_OF_ANMIATIONS] = {&crossfade};
 
 // #define NUM_ANIMATONS 9
-// Animation * animations[NUM_ANIMATONS] = {
+// Animation * animations[NUMBER_OF_ANMIATIONS] = {
 //     &crossfade, &color_chooser,    &race,  &stars, &rainbow, &fuck_my_eyes,
 //     &stripes,   &diamond_necklace, &dimmer};
 
 LSButton button{};
-Radio radio{*masterState};
+// Radio radio{*masterState};
 AnimationModeController animationModeController{button, masterState};
 
 class OffModeController : public BaseController {
@@ -62,7 +67,7 @@ class MasterController {
   LSButton & button;
   AnimationModeController animationModeController;
   OffModeController offModeController{};
-  MilliTimer radioTimer{};
+  // MilliTimer radioTimer{};
   bool offMode = false;
   bool firstLoop = true;
 
@@ -143,7 +148,7 @@ Either add it to main.cpp, or adjust it in config.h."
 
   button_debouncer.attach(buttonPin, INPUT_PULLUP);
   button_debouncer.interval(5);
-  radio.setup();
+  // radio.setup();
 }
 
 void loop() { masterController.loop(); }

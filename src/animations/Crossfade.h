@@ -1,22 +1,24 @@
 #pragma once
 
+#include "Animation.h"
+
 class Crossfade : public Animation {
  private:
-  MasterState * masterState;
   MilliTimer timer{};
   uint8_t hue = 0;
+  KnobSettings knobSettings = {35, 5, 200, false};
 
  public:
-  Crossfade(MasterState * masterState_)
-      : masterState(masterState_) {}
+  Crossfade(MasterState * masterState)
+      : Animation{masterState} {}
 
  protected:
-  void activate() override { masterState->knob->activate(35, 5, 200, false); }
+  void activate() override { knob->activate(knobSettings); }
 
   bool updateAnimation(const bool justActivated) override {
-    masterState->knob->update();
+    knob->update();
 
-    if (timer.hasElapsedWithReset(masterState->knob->get()) || justActivated) {
+    if (timer.hasElapsedWithReset(knob->get()) || justActivated) {
       fill_solid(leds, NUMPIXELS, CHSV(hue++, 255, 255));
       return true;
     }

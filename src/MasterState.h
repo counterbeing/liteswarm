@@ -1,21 +1,22 @@
 #pragma once
 #include "./Knob.h"
+#include "Animation.h"
 #include "FastLED.h"
 
 class MasterState {
  private:
-  int numberOfAnimations;
+  int numberOfAnmia;
   int animationIndex;
   int knobSetting;
   bool manuallySet;
 
  public:
   Knob * knob;
-  CRGB leds;
+  CRGB * leds;
+  // Animation * animations;
 
-  MasterState(int numberOfAnimations, Knob * knob, CRGB leds_)
-      : numberOfAnimations(numberOfAnimations)
-      , animationIndex(0)
+  MasterState(Knob * knob, struct CRGB * leds_)
+      : animationIndex(0)
       , knobSetting(0)
       , manuallySet(false)
       , knob(knob)
@@ -23,13 +24,17 @@ class MasterState {
 
   void manualUpdateIncrementAnimation() {
     animationIndex =
-        (animationIndex == numberOfAnimations - 1) ? 1 : animationIndex + 1;
+        (animationIndex == NUMBER_OF_ANMIATIONS - 1) ? 1 : animationIndex + 1;
     manuallySet = true;
   }
 
   void manuallyChangeKnobSetting(int newKnobSetting) {
     knobSetting = newKnobSetting;
     manuallySet = true;
+  }
+
+  void setup() {
+
   }
 
   void markAsApplied() { manuallySet = false; }
