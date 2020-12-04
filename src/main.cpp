@@ -90,6 +90,7 @@ class MasterController {
       return;
     }
 
+    Serial.println("ABOUT TO CALL LOOP");
     button.loop();
     button.checkButton();
 
@@ -112,6 +113,7 @@ class MasterController {
 } masterController{button, animationModeController};
 
 void setup() {
+  animationModeController.setup();
 #if STRIP_TYPE == WS2811
   FastLED.addLeds<WS2811, DATAPIN, GRB>(leds, NUMPIXELS);
 #elif STRIP_TYPE == SK9822
@@ -127,8 +129,9 @@ Either add it to main.cpp, or adjust it in config.h."
 
   Serial.begin(115200);
 
-  button_debouncer.attach(buttonPin, INPUT_PULLUP);
-  button_debouncer.interval(5);
+  button.setup();
+  // button_debouncer.attach(buttonPin, INPUT_PULLUP);
+  // button_debouncer.interval(5);
   // radio.setup();
 }
 

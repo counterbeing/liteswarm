@@ -17,8 +17,16 @@ class AnimationModeController : public BaseController {
  public:
   AnimationModeController(LSButton & button, MasterState * masterState)
       : button(button)
-      , masterState(masterState) {}
+      , masterState(masterState) {
 
+    Crossfade crossfade(masterState);
+    *animations = {&crossfade};
+      }
+
+  void setup(){
+    Crossfade crossfade(masterState);
+    *animations = {&crossfade};
+  }
  protected:
   virtual void activate() override {}
 
@@ -38,8 +46,5 @@ class AnimationModeController : public BaseController {
     currentAnimation->run();
   }
 
-  void setup(){
-    Crossfade crossfade(masterState);
-    *animations = {&crossfade};
-  }
+
 };

@@ -63,11 +63,8 @@ class LSButton {
           setLatestClickEvent(ClickEvent::DOUBLE_CLICK);
           return;
         }
-
         possibleDoubleClick = true;
-      }
-
-      else {
+      } else {
         possibleDoubleClick = false;
       }
 
@@ -102,8 +99,8 @@ class LSButton {
     button_debouncer.interval(5);
   }
 
-  void loop() { 
+  void loop() {
     Serial.println("LOOP");
-    button_debouncer.update(); 
-    }
+    button_debouncer.update();
+  }
 };
