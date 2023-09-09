@@ -7,6 +7,10 @@ this branch is a merge from a separate repo 100ideas/scarfswarm/releases/tag([BM
 
 The GPIO pin settings should be compatible with ESP-WROOM-32 DevKit-v1 style breakout boards. I used these "[5PCS ESP-WROOM-32 ESP32 ESP-32S Development Board...](https://www.amazon.com/dp/B0BK13HWBJ) from amazon, but I want to switch to using one of the boards made by [Unexpected Maker](https://unexpectedmaker.com/shop.html) (tbd)."
 
+I forked and old commit of the master branch, back when it was reliably working on arduino teensy in july 2019, and refactored it until it worked on esp32. Note, I have not verified that it STILL works on arduino teensy, so we should add a tag to the old master at a commit that was good on teensy, maybe around here https://github.com/counterbeing/liteswarm/blob/dc4e0e53ea9b77c02f954a00a81d340e21b89678/src/main.cpp. The most recent master commit before my merge from BM23 branch was https://github.com/counterbeing/liteswarm/tree/cc187bc9ed60972e2afc4fb52d72f6577941fd4b.
+
+I started a new repo for my development work, [100ideas/scarfswarm](https://github.com/100ideas/scarfswarm).
+
 ## about
 continutation of code developed with @counterbeing in https://github.com/counterbeing/liteswarm. `BM23` (and `master` currently) branch here is a minimal refactor of the teensy/arduino-compatible master branch of the liteswarm repo from 2019. Multiple contributors attempted to refactor or rearchitect the liteswarm code for esp32 but I couldn't get any of those branches to run. This branch does run on esp32, but it is not fancy. In fact, the code is ugly. But it works. I will push it to a branch on counterbeing/liteswarm for posterity. This repo is intended to be the home of scarfswarm FOSS firmware and hardware based on esp32, contributed by 100ideas and others.
 
