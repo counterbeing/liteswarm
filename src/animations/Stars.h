@@ -22,9 +22,6 @@ class Stars : public Animation {
     int stripeLength = 7;
 
     if (nonBlockDelay(delay)) {
-      if (ANIM_DEBUG) {
-        Serial.println(lastPosition);
-      }
       lastPosition++;
       if (lastPosition >= (stripeLength * 2)) {
         lastPosition = 0;
